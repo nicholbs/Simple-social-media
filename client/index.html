@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Forum</title>
+		<script>
+			window.ShadyDOM = {
+				force: true
+			};
+			if (window.customElements) customElements.forcePolyfill = true;
+
+			window.process = {
+            env: {
+            	NODE_ENV: 'production'
+            	}
+        	};
+
+			/*
+			* [polymer-root-path]
+			*
+			* Leave this line unchanged if you intend to serve your app from the root
+			* path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
+			*
+			* If you intend to serve your app from a non-root path (e.g., with URLs
+			* like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
+			* to indicate the path from which you'll be serving, including leading
+			* and trailing slashes (e.g., `/my-app/`).
+			*/
+			window.MyAppGlobals = {
+				rootPath: '/',
+				serverURL: 'http://localhost:8081/'
+			};
+		</script>
+
+		<!-- Load webcomponents, this needs to be activated once you have installed node -->
+		<script src="./node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+
+		<!-- Import the main component -->
+		<script type="module" src="./src/test-element.js"></script>
+	</head>
+
+	<body>
+		<test-element></test-element>
+	</body>
+</html>

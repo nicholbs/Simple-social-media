@@ -1,0 +1,57 @@
+version: "3"
+
+x-common-variables: &common-variables
+  MYSQL_USER: admin
+  MYSQL_PASSWORD: password
+  MYSQL_ROOT_PASSWORD: password
+
+services:
+  db:
+    image: mariadb:latest
+    command: --max_allowed_packet=1073741824 
+    environment:
+      MYSQL_DATABASE: prog2053-proj
+      <<: *common-variables
+    volumes:
+      - ./dbInit:/docker-entrypoint-initdb.d
+      - persistent:/var/lib/mysql
+    networks:
+        - default
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8082:80
+    environment:
+      <<: *common-variables
+      PMA_HOST: db
+    volumes: 
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    networks:
+        - default
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+    image: nodejs
+    ports:
+      - 8081:80
+    volumes:
+      - ./server:/server
+    networks:
+      - default
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - 8080:8080
+    volumes:
+      - ./client:/client
+    networks:
+        - default
+
+volumes:
+  persistent:
