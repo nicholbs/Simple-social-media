@@ -1,17 +1,14 @@
 version: "3"
 
-x-common-variables: &common-variables
-  MYSQL_USER: admin
-  MYSQL_PASSWORD: password
-  MYSQL_ROOT_PASSWORD: password
-
 services:
   db:
     image: mariadb:latest
     command: --max_allowed_packet=1073741824 
     environment:
       MYSQL_DATABASE: prog2053-proj
-      <<: *common-variables
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./dbInit:/docker-entrypoint-initdb.d
       - persistent:/var/lib/mysql
@@ -23,7 +20,9 @@ services:
     ports:
       - 8082:80
     environment:
-      <<: *common-variables
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
       PMA_HOST: db
     volumes: 
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
