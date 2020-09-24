@@ -2,7 +2,7 @@
 
 ## Installation notes: 
 - Install nodeJs
-- Run "npm i lit-element" in both the server and client folders of the project.    
+- Run "npm i" in both the server and client folders of the project.    
 - While in the root folder of the project: "docker-compose up -d" - this will take a long time the first time you do it.
 - Are you getting an error after doing "docker-compose up -d", saying "[...] Filesharing has been cancelled"? 
 -> Go to Docker for Windows app (or similar) -> Settings -> Resources -> File sharing -> Add all your drives (or play around with figuring out what exactly you need).
