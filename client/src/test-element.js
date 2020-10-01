@@ -10,7 +10,7 @@ export class TestELement extends LitElement {
 
     render() {
         return html`
-        <div>Hello from testElement!</div>
+        <div>Hello from testElement! Odd Var Her</div>
         `;
     }
 }
