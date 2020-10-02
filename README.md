@@ -17,7 +17,7 @@ Want to get in to a container for some reason?
 
 ## Group members:     
 - Oddbjørn S. Borge-Jensen
-#Odd Hald Bliksås"   
+#Odd Hald Bliksås"#   
 ## Setup: 
 - docker-compose up -d   
 
