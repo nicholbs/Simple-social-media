@@ -18,7 +18,10 @@ Want to get in to a container for some reason?
 ## Group members:     
 - Oddbjørn S. Borge-Jensen
 #Odd Hald Bliksås"#   
+- Nicholas Bodvin Sellevåg
+
 ## Setup: 
 - docker-compose up -d   
+
 
 The project runs on localhost:8080   
