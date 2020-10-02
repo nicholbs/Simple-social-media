@@ -19,7 +19,7 @@ Want to get in to a container for some reason?
 - Oddbjørn S. Borge-Jensen
 #Odd Hald Bliksås"#   
 - Nicholas Bodvin Sellevåg
-
+Wojciech Kurp
 ## Setup: 
 - docker-compose up -d   
 
