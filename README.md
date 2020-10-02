@@ -16,7 +16,7 @@ Want to get in to a container for some reason?
 - "docker-compose exec <containername> bash" 
 
 ## Group members:     
-...
+- Oddbjørn S. Borge-Jensen
    
 ## Setup: 
 - docker-compose up -d   
