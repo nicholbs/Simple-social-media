@@ -41,7 +41,7 @@ services:
     networks:
       - default
     links:
-      - db
+      - db:db
 
   client:
     build:
