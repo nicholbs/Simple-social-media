@@ -26,8 +26,8 @@ Wojciech Kurp
 #Local dependensies
 ##Server
 cd til servermappe
-npm install multer --save
-npm install cors --save
+npm install multer --save //Brukes til formdata på serversiden --Odd
+npm install cors --save //Brukes for cors autentisering mot express api, pr nå tilattes alle post requests --Odd
 
 
 The project runs on localhost:8080   
