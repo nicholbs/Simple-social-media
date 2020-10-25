@@ -23,5 +23,11 @@ Wojciech Kurp
 ## Setup: 
 - docker-compose up -d   
 
+#Local dependensies
+##Server
+cd til servermappe
+npm install multer --save
+npm install cors --save
+
 
 The project runs on localhost:8080   

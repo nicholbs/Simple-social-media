@@ -3,6 +3,8 @@
 import express from 'express';
 import path from 'path';
 import mysql from 'mysql';
+import cors from 'cors'; //bypass authentisering på post request
+import multer from 'multer'; //For form data til post express API
 const app = express();
 const PORT = 8081;
 
@@ -11,6 +13,7 @@ app.listen(PORT, () => {
 })
 
 app.use(express.static(path.resolve() + '/server'));
+app.use(cors()); //Odd Bypass sikkerhetsmekanismer for post YOLO
 
 var db = mysql.createConnection({
   host: "db",
@@ -41,3 +44,12 @@ app.get('/getUsers', function (req, res) {
     }
   });
 });
+
+//registrering av ny bruker
+const upload = multer(); //For å mota formData til post request
+app.post('/registerUser',upload.none(),function(req,res){
+  const formData = req.body; //Lagrer unna formdata objekt
+  console.log('form data', formData.email); //Skriver ut formdata objekt
+  
+  res.send("MotattReq"); //sender respons til fetch api
+})
