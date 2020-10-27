@@ -45,11 +45,48 @@ app.get('/getUsers', function (req, res) {
   });
 });
 
+
+// Eksporteres til en annen fil etterhvert -odd
+class person{
+  constructor(){
+    this.email;
+    this.repeatEmail;
+    this.password;
+    this.repeatPassword;
+  }
+  matcingInfo(){
+    //Sjekker at registeringscredentals matcher
+    if((this.email === this.repeatEmail) && this.password === this.repeatPassword){
+      console.log('Match');
+      return true;
+    }
+    else {
+      console.log('noMatch');
+      return false;
+    }
+  }
+}
+var test;
+
+
 //registrering av ny bruker
 const upload = multer(); //For å mota formData til post request
 app.post('/registerUser',upload.none(),function(req,res){
+  
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
+  test = new person;
+  dbstring = ''
+  //Flyttes inn i constructor
+  test.email = formData.email;
+  test.repeatEmail =formData.repeatEmail;
+  test.password = formData.password;
+  test.repeatPassword = formData.repeatPassword;
+  //
+  
+  test.matcingInfo();
+  
+  
   
   res.send("MotattReq"); //sender respons til fetch api
 })
