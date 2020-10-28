@@ -70,21 +70,22 @@ var test;
 
 
 //registrering av ny bruker
-const upload = multer(); //For å mota formData til post request
-app.post('/registerUser',upload.none(),function(req,res){
+const multerDecode = multer(); //For å mota formData til post request
+app.post('/registerUser',multerDecode.none(),function(req,res){
   
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
-  test = new person;
-  dbstring = ''
+  var regPers = new person;
   //Flyttes inn i constructor
-  test.email = formData.email;
-  test.repeatEmail =formData.repeatEmail;
-  test.password = formData.password;
-  test.repeatPassword = formData.repeatPassword;
+  regPers.email = formData.email;
+  regPers.repeatEmail =formData.repeatEmail;
+  regPers.password = formData.password;
+  regPers.repeatPassword = formData.repeatPassword;
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
   //
+  db.query(userReg);
   
-  test.matcingInfo();
+  regPers.matcingInfo();
   
   
   
