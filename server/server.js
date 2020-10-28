@@ -49,11 +49,53 @@ app.get('/getUsers', function (req, res) {
   });
 });
 
+
+// Eksporteres til en annen fil etterhvert -odd
+class person{
+  constructor(){
+    this.email;
+    this.repeatEmail;
+    this.password;
+    this.repeatPassword;
+  }
+  matcingInfo(){
+    //Sjekker at registeringscredentals matcher
+    if((this.email === this.repeatEmail) && this.password === this.repeatPassword){
+      console.log('Match');
+      return true;
+    }
+    else {
+      console.log('noMatch');
+      return false;
+    }
+  }
+}
+var test;
+
+
 //registrering av ny bruker
-const upload = multer(); //For å mota formData til post request
-app.post('/registerUser',upload.none(),function(req,res){
+const multerDecode = multer(); //For å mota formData til post request
+app.post('/registerUser',multerDecode.none(),function(req,res){
+  
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
+<<<<<<< HEAD
+=======
+  var regPers = new person;
+  //Flyttes inn i constructor
+  regPers.email = formData.email;
+  regPers.repeatEmail =formData.repeatEmail;
+  regPers.password = formData.password;
+  regPers.repeatPassword = formData.repeatPassword;
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
+  //
+  db.query(userReg);
+  
+  regPers.matcingInfo();
+  
+  
+  
+>>>>>>> fbe9546414834031c1cc6dd9c62b59ba12a5c810
   res.send("MotattReq"); //sender respons til fetch api
 })
 
