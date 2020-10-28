@@ -3,6 +3,7 @@
 import express from 'express';
 import path from 'path';
 import mysql from 'mysql';
+
 const app = express();
 const PORT = 8081;
 
@@ -34,6 +35,19 @@ app.get('/getUsers', function (req, res) {
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      //console.log("Result: " + res);
+    }
+  });
+});
+
+app.get('/f/:id', function (req, res) {
+  var id = req.params.id;
+  db.query('SELECT * FROM posts WHERE forum=\'' + id + '\'', function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation - Get forum posts.');
     } else {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
