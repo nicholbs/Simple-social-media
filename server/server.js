@@ -3,12 +3,9 @@
 import express from 'express';
 import path from 'path';
 import mysql from 'mysql';
-<<<<<<< HEAD
-
-=======
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
->>>>>>> 88b72e1f7b5061d75373610ea9db71f8128dcb59
+
 const app = express();
 const PORT = 8081;
 
