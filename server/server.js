@@ -1,6 +1,6 @@
 "use strict";
 
-import express, { request, urlencoded } from 'express';
+import express from 'express';
 import path from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
@@ -71,14 +71,27 @@ class person{
   }
 }
 var test;
-
+var upload=multer();
 
 //registrering av ny bruker
 const multerDecode = multer(); //For å mota formData til post request
 app.post('/registerUser',multerDecode.none(),function(req,res){
-  
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
+  var regPers = new person;
+  //Flyttes inn i constructor
+  regPers.email = formData.email;
+  regPers.repeatEmail =formData.repeatEmail;
+  regPers.password = formData.password;
+  regPers.repeatPassword = formData.repeatPassword;
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
+  //
+  db.query(userReg);
+  
+  regPers.matcingInfo();
+  
+  
+  
   res.send("MotattReq"); //sender respons til fetch api
 })
 
