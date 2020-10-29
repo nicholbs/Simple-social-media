@@ -29,13 +29,15 @@ export class CreatePost extends LitElement {
      * Important! the "input" element in form's name is the key
      * from which accesses the value inside FormData
      * 
+     * @function sendPost(e) - post user data into database
+     * @see index.html - window.MyAppGlobals.serverURL 
+     * @event e - The event generated from clicking the "submitt" button
+     * @var data - Contains user data which was written into the form
      * @author Nicholas Bodvin Sellevaag
      ******************************************************************/
     sendPost(e) 
     {
     const data = new FormData(e.target.form)
-
-    //"serverURL" is specified in "index.html" which this lit-element is loaded into, in practice: fetch('http://localhost:8081/createPost', 
     fetch(`${window.MyAppGlobals.serverURL}createPost`,
         {
         method: 'POST',
@@ -44,30 +46,60 @@ export class CreatePost extends LitElement {
         .then(res => console.log("tilbake"))        //log message available from docker extension->nodejs, right click and "View Logs"
     }
 
+    /****************************************************************
+     * This code is the first to run when creating instance of object
+     * 
+     * Constructor is the function which is called before all else
+     * when creating an instance of this lit-element.
+     * Super() - Necessary in lit-element constructors. Have not used
+     * it in practice yet, but can be applied to other functions you
+     * create to ensure the function becomes part of the initial 
+     * creation of the object (lit-element).
+     * 
+     * @author Nicholas Bodvin Sellevaag
+     ***************************************************************/
+    constructor() {
+        super();
+    };
 
-
+    /************************************************
+     * The HTML which is visible on pages is rendered
+     * 
+     * HTML is essentially simply lines of code, 
+     * nothing else. For the content of a webpage 
+     * to become "visible" the HTML code is 
+     * interpreted by software inside the browser and
+     * becomes instructions for the browser to create
+     * figures and text form.
+     * 
+     * In other words, our lit-element's contain HTML
+     * which needs to be rendered.
+     * 
+     * @see sendPost(e) - sendPost()
+     * @author Nicholas Bodvin Sellevaag
+     ***********************************************/
     render() {
     console.log("hei");    //log message available from web-browser, inspect->console
-
     return html`
+    <div class="container">
         <form class="form">
-            <h1>Create a post</h1>
-            <!--Første rad-->
-            <div class="row mt-2">
-                <div class="col">
-                    <label for="postName">Tittel: </label>
-                    <input type="text" name="postName">
+                <h1>Create a post</h1>
+                <div>
+                    <div>
+                        <label for="postName">Tittel: </label>
+                        <input type="text" name="postName">
+                    </div>
+                    <div>
+                        <label for="postContent">Skriv hva du vil poste :</label>
+                        <input type="text" name="postContent">
+                    </div>
                 </div>
-                <div class="col">
-                    <label for="postContent">Skriv hva du vil poste :</label>
-                    <input type="text" name="postContent">
+                
+                <div>
+                    <button @click="${this.sendPost}" type="submit" class="btn btn-primary" >Submitt your post</button>
                 </div>
-            </div>
-            
-            <div class="row mt-2">
-                <button @click="${this.sendPost}" type="submit" class="btn btn-primary" >Submitt your post</button>
-            </div>
-        </form>                 
+            </form>                 
+    </div>
     `;
     }
 }
