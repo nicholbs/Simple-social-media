@@ -5,6 +5,7 @@ import path from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
+import { resourceUsage } from 'process';
 const app = express();
 const PORT = 8081;
 
@@ -36,18 +37,6 @@ app.get('/', (req, res) => {
   res.send("Hello world");
 })
 
-app.get('/getUsers', function (req, res) {
-
-  db.query('SELECT * FROM users', function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-      //console.log("Result: " + res);
-    }
-  });
-});
 
 
 // Eksporteres til en annen fil etterhvert -odd
@@ -121,3 +110,54 @@ db.query(sql, function (err, result) {
 res.send("Req ble mottat");   //response sent to front-end as pure html
 
 })
+
+
+/*************************************************************************
+ * Function creates new "entry" inn MySql database
+ * 
+ * Values for entry is retrievew from the body of http request
+ * body contains "formData" and its values is found with:
+ * req.body."keyName"
+ * The values from request are put into "sql" string with "query" format
+ * Lastly the generated query is sent to database which creates the entry
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ************************************************************************/
+app.get('/retrievePosts', function(req, res) {
+console.log('Dette er app.post for /retrievePosts på server.js')   //log message available from docker extension->nodejs, right click and "View Logs"
+
+var sql = 'SELECT * FROM posts';
+
+db.query(sql, function (err, result) {
+    if (err) {
+    // res.setHeader("Content-Type", "application/json");
+    // res.writeHead(404);
+   
+   
+   
+    res.status(400).send('Error in database operation.');
+    } else {
+    // res.setHeader("Content-Type", "application/json");
+    // res.writeHead(200);
+    // res.end(JSON.stringify(result));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+    // console.log("Result: " + res.body;
+    }
+  });
+// res.send(result);
+// res.send("Req ble mottat");   //response sent to front-end as pure html
+});
+
+app.get('/getUsers', function (req, res) {
+
+  db.query('SELECT * FROM users', function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      //console.log("Result: " + res);
+    }
+  });
+});
