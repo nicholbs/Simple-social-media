@@ -12,13 +12,7 @@ export class RetrievePosts extends LitElement {
 
     static get properties() {
         return {
-            testObject: Object,
             allPosts: {type: Array},
-            cardTitle: {type: String},
-            cardSubTitle: {type: String},
-            cardText: {type: String},
-            cardLink: {type: String},
-
         };
 
     }
@@ -26,46 +20,29 @@ export class RetrievePosts extends LitElement {
     
     constructor(){
         super();
-        this.allPosts = ["hei", "på", "deg", "nicholas"];
+        this.allPosts = ["hent", "posts", "deg", "nicholas"];
         this.retrieveAllPost();
     }
     
     retrieveAllPost() {
-        fetch(`${window.MyAppGlobals.serverURL}retrievePosts`,
-        {
-        method: 'GET'
-        })
+        fetch(`${window.MyAppGlobals.serverURL}retrievePosts`)
         .then(response => response.json())
         .then(response => 
             {
-            console.log(response);
-            var stringArray = [];
-            
-            stringArray.push(response[0].pid);
-            stringArray.push(response[0].user);
-            stringArray.push(response[0].title);
-            stringArray.push(response[0].content);
-            
-            console.log(stringArray[2]);
-            this.allPosts = stringArray;
-            console.log("haha " + this.allPosts);
+            this.allPosts = Object.values(response)
+            console.log("Halla ");
+            console.log(this.allPosts);
 
-
-
-
-
-
-
-                console.log("length " + response.length);
-                const htmlElement = document.getElementById("container");
-        for(var index=10; index < response.length; index++) {
+        //         console.log("length " + response.length);
+        //         const htmlElement = document.getElementById("container");
+        // for(var index=10; index < response.length; index++) {
             
             
-                let li = document.createElement("register-page");
-                let node = document.createTextNode("PID: " + response[index].pid + " ");
-                 li.appendChild(node);
-                container.appendChild(li);      //Eehhh hvorfor i helvette lar container det bli riktig satt inn i listen. den skal jo egentlig være htmlElement variabelen
-        }	
+        //         let li = document.createElement("register-page");
+        //         let node = document.createTextNode("PID: " + response[index].pid + " ");
+        //          li.appendChild(node);
+        //         container.appendChild(li);      //Eehhh hvorfor i helvette lar container det bli riktig satt inn i listen. den skal jo egentlig være htmlElement variabelen
+        // }	
        
                 // this..appendChild(li);      //Eehhh hvorfor i helvette lar container det bli riktig satt inn i listen. den skal jo egentlig være htmlElement variabelen
         
@@ -80,12 +57,12 @@ export class RetrievePosts extends LitElement {
     return html`
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title" id="title-card">PID: ${this.allPosts[0]}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">USER: ${this.allPosts[1]}</h6>
-                    <p class="card-text">TITLE: ${this.allPosts[2]}</p>
-                    <p class="card-text">CONTENT: ${this.allPosts[3]}</p>
-                    <!-- <a href="#" class="card-link">Content ${this.allPosts[3]}</a> -->
-                    <ul id="container"></ul>
+                    <h5 class="card-title" id="title-card">${this.allPosts[12].title ? html`${this.allPosts[12].title}` : html``}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">USER: ${this.allPosts[1].user}</h6>
+                    <p class="card-text">TITLE: ${this.allPosts[2].title}</p>
+                    <p class="card-text">CONTENT: ${this.allPosts[3].content}</p>
+                    <p class="card-text">${this.allPosts.map(i => html`<post-lit class="card" .post=${i}></post-lit>`)}</p>
+
                 
                 </div>
             </div>
