@@ -5,7 +5,7 @@ import path from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
-import { resourceUsage } from 'process';
+import {person} from './src/components/userClass.js'; //Import av brukerKlassen
 const app = express();
 const PORT = 8081;
 
@@ -39,27 +39,6 @@ app.get('/', (req, res) => {
 
 
 
-// Eksporteres til en annen fil etterhvert -odd
-class person{
-  constructor(){
-    this.email;
-    this.repeatEmail;
-    this.password;
-    this.repeatPassword;
-  }
-  matcingInfo(){
-    //Sjekker at registeringscredentals matcher
-    if((this.email === this.repeatEmail) && this.password === this.repeatPassword){
-      console.log('Match');
-      return true;
-    }
-    else {
-      console.log('noMatch');
-      return false;
-    }
-  }
-}
-var test;
 var upload=multer();
 
 //registrering av ny bruker
@@ -67,19 +46,13 @@ const multerDecode = multer(); //For å mota formData til post request
 app.post('/registerUser',multerDecode.none(),function(req,res){
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
-  var regPers = new person;
-  //Flyttes inn i constructor
-  regPers.email = formData.email;
-  regPers.repeatEmail =formData.repeatEmail;
-  regPers.password = formData.password;
-  regPers.repeatPassword = formData.repeatPassword;
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
-  //
-  db.query(userReg);
-  
+  var regPers = new person(formData);
   regPers.matcingInfo();
-  
-  
+  console.log(regPers.email);
+   
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
+  db.query(userReg);
+    
   
   res.send("MotattReq"); //sender respons til fetch api
 })
