@@ -46,17 +46,36 @@ app.get('/getUsers', function (req, res) {
   });
 });
 
-//Henter alle posts for ett gitt forum
+//Heter properties for gitt forum
 app.get('/f/:forum', function (req, res) {
   var forum = req.params.forum;
-  db.query('SELECT * FROM posts WHERE forum=\'' + forum + '\'', function (err, result) {
+  db.query('SELECT * FROM forums WHERE name=\'' + forum + '\'', function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
-      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(result));
     }
   });
+});
+
+//Henter alle posts for ett gitt forum
+app.get('/p/:forum', function (req, res) {
+  var forum = req.params.forum;
+  db.query(`SELECT title, image, users.email FROM posts
+            INNER JOIN users ON posts.uid = users.uid WHERE posts.forum = '${forum}'`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+  `SELECT title, image, users.email
+FROM posts
+INNER JOIN users
+ON posts.uid = users.uid
+WHERE posts.forum = '${forum}'`
 });
 
 // Eksporteres til en annen fil etterhvert -odd
