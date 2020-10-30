@@ -175,31 +175,10 @@ ON posts.uid = users.uid
 WHERE posts.forum = '${forum}'`
 });
 
-// Eksporteres til en annen fil etterhvert -odd
-class person{
-  constructor(){
-    this.email;
-    this.repeatEmail;
-    this.password;
-    this.repeatPassword;
-  }
-  matcingInfo(){
-    //Sjekker at registeringscredentals matcher
-    if((this.email === this.repeatEmail) && this.password === this.repeatPassword){
-      console.log('Match');
-      return true;
-    }
-    else {
-      console.log('noMatch');
-      return false;
-    }
-  }
-}
+
 var test;
 
 
-//registrering av ny bruker
-const upload = multer(); //For å mota formData til post request
 app.post('/registerUser',upload.none(),function(req,res){
   
   const formData = req.body; //Lagrer unna formdata objekt
