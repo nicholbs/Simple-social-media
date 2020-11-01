@@ -52,6 +52,7 @@ export class RegisterPage extends LitElement {
 
         fetch('http://localhost:8081/registerUser',{
             method:'post',
+            credentials: "include",
             body:newUser
         })
         .then(function(response){

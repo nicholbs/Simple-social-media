@@ -16,7 +16,10 @@ app.listen(PORT, () => {
 app.use(express.static(path.resolve() + '/server'));
 app.use(express.urlencoded());  //parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());  //parse JSON bodies (as sent by API clients)
-app.use(cors()); //Odd Bypass sikkerhetsmekanismer for post YOLO
+app.use(cors({
+  origin: "http://localhost:8080",
+  credentials: true,
+})); //Odd Bypass sikkerhetsmekanismer for post YOLO
 
 
 var db = mysql.createConnection({
