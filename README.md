@@ -28,7 +28,8 @@ Wojciech Kurp
 - cd til servermappe
 - npm install mysql --save //for mysql
 - npm install multer --save //Brukes til formdata på serversiden --Odd
-- npm install cors --save //Brukes for cors autentisering mot express api, pr nå tilattes alle post requests --Odd
+- npm install cors --save //Brukes for cors autentisering mot express api --Odd
+- npm install fs --save //Brukes for filhåndtering --Odd
 
 
 The project runs on localhost:8080   

@@ -5,6 +5,7 @@ import path from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
+import fs from 'fs'; //brukes til filhåndtering
 import {person} from './src/components/userClass.js'; //Import av brukerKlassen
 const app = express();
 const PORT = 8081;
@@ -200,4 +201,17 @@ app.post('/registerUser',upload.none(),function(req,res){
   
   
   res.send("MotattReq"); //sender respons til fetch api
+})
+
+/*
+*Filopplastning
+**/
+var uploadImage = multer(
+  {dest: './src/images/userProfile'}
+)
+var type = uploadImage.single('file')
+
+app.post('/profilePicUpload',type, function(req,res){
+  console.log("hei");
+
 })
