@@ -59,7 +59,17 @@ export class RegisterPage extends LitElement {
             return response.text();
         })
         .then(function (text){
-            console.log(text);
+            //console.log(text);
+            if(text =='ok'){
+                console.log("registrert");
+                alert("Bruker registrert!");
+            } 
+            else if(text=='emailFinnes'){
+                alert("Bruker Finnes fra før");
+            }
+            else if(text =='missMatch'){
+                alert("Feil i brukernavn eller passord under registrering");
+            }
         })
         .catch(function (error){
             console.log(error);

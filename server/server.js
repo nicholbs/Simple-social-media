@@ -45,20 +45,44 @@ app.get('/', (req, res) => {
 
 var upload=multer();
 
+
 //registrering av ny bruker
 const multerDecode = multer(); //For å mota formData til post request
 app.post('/registerUser',multerDecode.none(),function(req,res){
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
-  var regPers = new person(formData);
-  regPers.matcingInfo();
-  console.log(regPers.email);
-   
+  var regPers = new person(formData); //lager en ny person temp
+
   var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
-  db.query(userReg);
-    
+  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
+  var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
+ 
+  //Hvis inpud data frontend matcher
+  if(regPers.matcingInfo()){
+
+   db.query(dbSjekk, function (err, result) {
+      if (err) 
+        throw err;
+        console.log(result[0].numberOfMatch); 
+        //Hvis det er ingen oppforinger i db
+       if(result[0].numberOfMatch ==0) {
+         console.log("ingenMatch")
+         db.query(userReg); //registrer bruker
+         res.send("ok"); //send ok frontend
+       }
+       else {
+         res.send("emailFinnes"); //hvis bruker finnes, send melding frontend
+       }
+      }); 
+      
+  }
+  else{
+    res.send("missMatch"); //hvis inpund data ikke matcher 
+  }
   
-  res.send("MotattReq"); //sender respons til fetch api
+  //TODO passord encryption
+  
+
 })
 
 
@@ -183,7 +207,7 @@ WHERE posts.forum = '${forum}'`
 var test;
 
 
-app.post('/registerUser',upload.none(),function(req,res){
+app.post('/registerUserOLD',upload.none(),function(req,res){
   
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
