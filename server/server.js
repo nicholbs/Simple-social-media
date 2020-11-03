@@ -230,10 +230,43 @@ app.post('/registerUserOLD',upload.none(),function(req,res){
 /*
 *Filopplastning
 **/
+/**
 var uploadImage = multer(
   {dest: './src/images/userProfile'}
 )
 var type = uploadImage.single('file')
+
+app.post('/profilePicUpload',type, function(req,res){
+  console.log("hei");
+
+})
+
+*/
+/**
+var uploadImage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, './src/images/userProfile');
+  },
+
+  // By default, multer removes file extensions so let's add them back
+  filename: function(req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+var type = multer({storage:uploadImage}).single('file')
+
+app.post('/profilePicUpload',type, function(req,res){
+  console.log("hei");
+
+})
+**/
+
+var uploadImage = multer.diskStorage({
+destination: './src/images/userProfile',
+
+
+})
+var type = multer({storage:uploadImage}).single('file')
 
 app.post('/profilePicUpload',type, function(req,res){
   console.log("hei");
