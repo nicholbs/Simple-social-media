@@ -6,6 +6,7 @@ import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
 import fs from 'fs'; //brukes til filhåndtering
+import randomstring from 'randomstring'; //Randomgennerering filnavn
 import {person} from './src/components/userClass.js'; //Import av brukerKlassen
 const app = express();
 const PORT = 8081;
@@ -260,11 +261,12 @@ app.post('/profilePicUpload',type, function(req,res){
 
 })
 **/
-var imageName = 'test';
+var imageName;
 var navn;
 var uploadImage = multer.diskStorage({
 destination: './src/images/userProfile', //Hvor filen skal lagres
 filename: function(req,file,cb){
+  imageName =randomstring.generate(); //Generer et random stringNavn
   cb(null,imageName + path.extname(file.originalname));
   navn = imageName + path.extname(file.originalname);
   console.log(navn);
