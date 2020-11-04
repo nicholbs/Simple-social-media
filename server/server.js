@@ -267,9 +267,8 @@ var uploadImage = multer.diskStorage({
 destination: './src/images/userProfile', //Hvor filen skal lagres
 filename: function(req,file,cb){
   imageName =randomstring.generate(); //Generer et random stringNavn
-  cb(null,imageName + path.extname(file.originalname));
-  navn = imageName + path.extname(file.originalname);
-  console.log(navn);
+  navn = imageName + path.extname(file.originalname); //Appender filextention
+ cb(null,navn); //Setter filnavnet
 }
 
 
@@ -277,6 +276,7 @@ filename: function(req,file,cb){
 var type = multer({storage:uploadImage}).single('file')
 
 app.post('/profilePicUpload',type, function(req,res){
-  console.log("hei");
+  console.log("hei" + navn);
+  console.log(navn);
 
 })
