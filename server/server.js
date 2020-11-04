@@ -228,55 +228,77 @@ app.post('/registerUserOLD',upload.none(),function(req,res){
   res.send("MotattReq"); //sender respons til fetch api
 })
 
-/*
-*Filopplastning
-**/
+
+
+
 /**
-var uploadImage = multer(
-  {dest: './src/images/userProfile'}
-)
-var type = uploadImage.single('file')
+ * Bildeopplastning
+ */
 
-app.post('/profilePicUpload',type, function(req,res){
-  console.log("hei");
-
-})
-
-*/
-/**
-var uploadImage = multer.diskStorage({
-  destination: function(req, file, cb) {
-      cb(null, './src/images/userProfile');
-  },
-
-  // By default, multer removes file extensions so let's add them back
-  filename: function(req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
-var type = multer({storage:uploadImage}).single('file')
-
-app.post('/profilePicUpload',type, function(req,res){
-  console.log("hei");
-
-})
-**/
 var imageName;
-var navn;
 var uploadImage = multer.diskStorage({
 destination: './src/images/userProfile', //Hvor filen skal lagres
 filename: function(req,file,cb){
-  imageName =randomstring.generate(); //Generer et random stringNavn
-  navn = imageName + path.extname(file.originalname); //Appender filextention
- cb(null,navn); //Setter filnavnet
+  let navnTemp; //brueks til a lagre randomstring
+  navnTemp =randomstring.generate(); //Generer et random stringNavn
+  imageName = navnTemp + path.extname(file.originalname); //Appender filextention
+ cb(null,imageName); //Setter filnavnet
 }
 
-
 })
-var type = multer({storage:uploadImage}).single('file')
 
-app.post('/profilePicUpload',type, function(req,res){
-  console.log("hei" + navn);
-  console.log(navn);
+app.post('/profilePicUpload', (req, res) => {
+  //DymmyData for test, når coockes er implementert må det endres litt
+  
 
-})
+
+
+  //Definerer hva multer skal gjøre 
+  let upload = multer({ storage: uploadImage}).single('file');
+
+  upload(req, res, function(err) {
+    console.log( "under oplaod" + imageName);
+    //Errorhandling logic from multer: https://github.com/expressjs/multer
+    if(err instanceof multer.MulterError){
+      res.send("errorMulter")
+      console.log( "under feil" + imageName);
+    }
+    else if(err){
+      res.send("errorUnspecifed")
+      console.log( "under andre feil" + imageName);
+    }
+    else{
+      //Her skal data legges i DB
+      console.log( "riktig     " + imageName);
+     /* Hvis BLOB
+      var nam = fs.readFileSync("./src/images/userProfile/test.png")
+      db.query('UPDATE users SET picture=? WHERE uid = 24',nam), function(err,results){
+        if(err){
+          console.log(err);
+        }
+      }
+      **/
+
+      //Setter inn navn i db, UID må endres nor coocikes er implementert
+     db.query('UPDATE users SET profilepic=? WHERE uid = 24',imageName), function(err,results){
+      if(err){
+        console.log(err);
+      } else{
+        res.send("ok");
+      }
+    }
+
+    }
+});
+
+});
+
+/**
+ * Hente bildet
+ */
+
+app.get('/profilepic', function (req, res) {
+  let uid = 24; //bare for test
+
+  res.sendFile('/server/src/images/userProfile/test.png')
+});
