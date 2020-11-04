@@ -260,9 +260,15 @@ app.post('/profilePicUpload',type, function(req,res){
 
 })
 **/
-
+var imageName = 'test';
+var navn;
 var uploadImage = multer.diskStorage({
-destination: './src/images/userProfile',
+destination: './src/images/userProfile', //Hvor filen skal lagres
+filename: function(req,file,cb){
+  cb(null,imageName + path.extname(file.originalname));
+  navn = imageName + path.extname(file.originalname);
+  console.log(navn);
+}
 
 
 })
