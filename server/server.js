@@ -285,6 +285,7 @@ app.post('/profilePicUpload', (req, res) => {
         console.log(err);
       } else{
         res.send("ok");
+
       }
     }
 
@@ -298,7 +299,28 @@ app.post('/profilePicUpload', (req, res) => {
  */
 
 app.get('/profilepic', function (req, res) {
-  let uid = 24; //bare for test
+  var uid2 = 24; //bare for test
+ console.log("hei fra profile");
+  
+ var dbstring = 'SELECT profilepic FROM users WHERE uid = 24';
+ 
+  
+ db.query(dbstring, function (err, result) {
+  if (err) 
+    throw err;
+    //Hvis det er ingen oppforinger i db
+   else {
+     console.log("inn i db");
+     console.log(result[0].profilepic);
+   }
+  }); 
 
-  res.sendFile('/server/src/images/userProfile/test.png')
+
+
+
+
+
+  console.log("Hei-dette");
+
+ res.sendFile('/server/src/images/userProfile/test.png')
 });
