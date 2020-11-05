@@ -8,6 +8,7 @@ import multer from 'multer'; //For form data til post express API
 import fs from 'fs'; //brukes til filhåndtering
 import randomstring from 'randomstring'; //Randomgennerering filnavn
 import {person} from './src/components/userClass.js'; //Import av brukerKlassen
+import { stringify } from 'querystring';
 const app = express();
 const PORT = 8081;
 
@@ -299,28 +300,18 @@ app.post('/profilePicUpload', (req, res) => {
  */
 
 app.get('/profilepic', function (req, res) {
-  var uid2 = 24; //bare for test
- console.log("hei fra profile");
+  var uid2 = 20; //bare for test må erstates med authentisert uid
+ var tempPath = '/server/src/images/userProfile/' //path to folder
   
- var dbstring = 'SELECT profilepic FROM users WHERE uid = 24';
- 
-  
- db.query(dbstring, function (err, result) {
+ db.query('SELECT profilepic FROM users WHERE uid =?',[uid2], function (err, result) {
   if (err) 
     throw err;
     //Hvis det er ingen oppforinger i db
    else {
-     console.log("inn i db");
-     console.log(result[0].profilepic);
+     tempPath = tempPath.concat(result[0].profilepic); //setter sammen bildetsti
+    console.log(tempPath);
+    res.sendFile(tempPath); //sender bildet frontend
    }
   }); 
 
-
-
-
-
-
-  console.log("Hei-dette");
-
- res.sendFile('/server/src/images/userProfile/test.png')
 });
