@@ -248,6 +248,17 @@ filename: function(req,file,cb){
 
 })
 
+
+const fileFilter2 = (req, file, cb) => {
+  if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+      cb(null, true);
+  } else {
+    req.fileValidationError = "Forbidden extension";
+    return cb(null, false, req.fileValidationError);
+  }
+}
+
+
 app.post('/profilePicUpload', (req, res) => {
   //DymmyData for test, når coockes er implementert må det endres litt
   
@@ -255,7 +266,7 @@ app.post('/profilePicUpload', (req, res) => {
 
 
   //Definerer hva multer skal gjøre 
-  let upload = multer({ storage: uploadImage}).single('file');
+  let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
 
   upload(req, res, function(err) {
     console.log( "under oplaod" + imageName);
@@ -269,6 +280,10 @@ app.post('/profilePicUpload', (req, res) => {
     else if(err){
       res.send("errorUnspecifed")
       console.log( "under andre feil" + imageName);
+    }
+    else if(req.fileValidationError){
+      console.log("Ikke gyldig fil");
+      //res.send("errorFileExt");
     }
     //thing okay with multer then 
     else{
