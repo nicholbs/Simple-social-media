@@ -57,6 +57,7 @@ export class settingsPage extends LitElement {
             else {
                 alert("some other fatal error backend");
             }
+           
         })
         .catch(function (error){
             console.log(error);

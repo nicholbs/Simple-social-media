@@ -260,14 +260,17 @@ app.post('/profilePicUpload', (req, res) => {
   upload(req, res, function(err) {
     console.log( "under oplaod" + imageName);
     //Errorhandling logic from multer: https://github.com/expressjs/multer
+    //specific error in multer
     if(err instanceof multer.MulterError){
       res.send("errorMulter")
       console.log( "under feil" + imageName);
     }
+    //unspecific error
     else if(err){
       res.send("errorUnspecifed")
       console.log( "under andre feil" + imageName);
     }
+    //thing okay with multer then 
     else{
       //Her skal data legges i DB
       console.log( "riktig     " + imageName);
@@ -280,16 +283,20 @@ app.post('/profilePicUpload', (req, res) => {
       }
       **/
 
+
+      /** */
       //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET profilepic=? WHERE uid = 10',imageName), function(err,results){
+     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageName], function(err,results){
       if(err){
         console.log(err);
       } else{
-        res.send("ok");
+        //res.send("ok");  //picture uploded sucefully
+        console.log("fil registrert");
+           res.send("ok");  //picture uploded sucefully
 
       }
-    }
-
+    });
+   // res.send("ok");
     }
   
 });
