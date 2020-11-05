@@ -43,6 +43,8 @@ export class CreatePost extends LitElement {
         method: 'POST',
         body: data
         })
+
+
         .then(res => console.log("tilbake"))        //log message available from docker extension->nodejs, right click and "View Logs"
     }
 

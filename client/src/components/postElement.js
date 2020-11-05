@@ -81,5 +81,6 @@ export class PostLitElement extends LitElement {
     }
 }
 
+
 //Important! DO NOT USE CAPITAL LETTERS IN A LIT-ELEMENT'S NAME
 customElements.define('post-lit', PostLitElement);     //'retrieve-posts' is the lit-element's name, can be seen in "index.html" as <retrieve-posts>
