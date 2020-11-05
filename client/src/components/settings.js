@@ -45,6 +45,18 @@ export class settingsPage extends LitElement {
         })
         .then(function (text){
             console.log(text);
+            //Alt ok 
+            if(text=='ok'){
+                alert("Profilpicture uploaded");
+            }
+            //feil i multer
+            else if(text=='errorMulter'){
+                alert("Fatal error in multer - backend");
+            }
+            //annen uspesifikk feil
+            else {
+                alert("some other fatal error backend");
+            }
         })
         .catch(function (error){
             console.log(error);

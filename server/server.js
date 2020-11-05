@@ -281,7 +281,7 @@ app.post('/profilePicUpload', (req, res) => {
       **/
 
       //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET profilepic=? WHERE uid = 24',imageName), function(err,results){
+     db.query('UPDATE users SET profilepic=? WHERE uid = 10',imageName), function(err,results){
       if(err){
         console.log(err);
       } else{
@@ -291,6 +291,7 @@ app.post('/profilePicUpload', (req, res) => {
     }
 
     }
+  
 });
 
 });
