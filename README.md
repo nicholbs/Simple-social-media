@@ -31,6 +31,7 @@ Wojciech Kurp
 - npm install cors --save //Brukes for cors autentisering mot express api --Odd
 - npm install fs --save //Brukes for filhåndtering --Odd
 - npm install randomstring --save //Brukes for randomisering av filnavn --Odd
+- npm install @vaadin/router --save //Brukes for randomisering av filnavn --Odd
 
 
 The project runs on localhost:8080   
