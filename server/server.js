@@ -340,7 +340,8 @@ app.get('/profilepic', function (req, res) {
 });
 
 /**
- * Bildepublisering lettest måte kan nås via http:8081/images/<navnPåBildet>.extention
- */
+ * Bildepublisering lettest måte kan nås via http://localhost:8081/images/<navnPåBildet>.extention 
+ * eks http://localhost:8081/images/test.png
+ *  */
 
 app.use('/images', express.static('/server/src/images/userProfile/'));
