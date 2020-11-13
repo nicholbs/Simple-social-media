@@ -17,5 +17,16 @@ class person{
         return false;
       }
     }
+    validateInput(){
+      var emailExp = new RegExp("[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$");
+      if(emailExp.test(this.email)){
+        console.log("Epost expression gyldig");
+        return true;
+      }
+      else {
+        console.log("Epost expression ikke gyldig");
+        return false;
+      }
+    }
   }
 export{person}

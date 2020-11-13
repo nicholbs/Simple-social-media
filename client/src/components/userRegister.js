@@ -21,11 +21,11 @@ export class RegisterPage extends LitElement {
         <div class="row mt-2">
             <div class="col">
                 <label for="eMail">E-mail</label>
-                <input type="email" name="email"patter="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="eMail" placeholder="example@domain.com">
+                <input type="email" name="email"pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="eMail" placeholder="example@domain.com" required>
             </div>
             <div class="col">
                 <label for="repeteEMail">Repete E-mail</label>
-                <input type="email" name="repeatEmail" patter="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="repeteEMail" placeholder="example@domain.com">
+                <input type="email" name="repeatEmail" pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="repeteEMail" placeholder="example@domain.com" required>
             </div>
         </div>
         <!--Andre rad-->

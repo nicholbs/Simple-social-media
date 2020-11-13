@@ -60,7 +60,8 @@ app.post('/registerUser',multerDecode.none(),function(req,res){
   var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
  
   //Hvis inpud data frontend matcher
-  if(regPers.matcingInfo()){
+  if(regPers.matcingInfo() && regPers.validateInput()){
+    regPers.validateInput();
 
    db.query(dbSjekk, function (err, result) {
       if (err) 
