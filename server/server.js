@@ -189,7 +189,8 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum', function (req, res) {
   var forum = req.params.forum;
   db.query(`SELECT title, image, users.email FROM posts
-            INNER JOIN users ON posts.uid = users.uid WHERE posts.forum = '${forum}'`, function (err, result) {
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE posts.forum = '${forum}'`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -197,11 +198,21 @@ app.get('/p/:forum', function (req, res) {
       res.end(JSON.stringify(result));
     }
   });
-  `SELECT title, image, users.email
-FROM posts
-INNER JOIN users
-ON posts.uid = users.uid
-WHERE posts.forum = '${forum}'`
+});
+
+//Henter alle posts som matcher søkekriteriet
+app.get('/s/:keyword', function (req, res) {
+  var keyword = req.params.keyword;
+  db.query(`SELECT title, image, users.email FROM posts
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
 });
 
 
@@ -278,5 +289,4 @@ var type = multer({storage:uploadImage}).single('file')
 app.post('/profilePicUpload',type, function(req,res){
   console.log("hei" + navn);
   console.log(navn);
-
 })
