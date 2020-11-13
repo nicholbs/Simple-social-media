@@ -96,7 +96,6 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
     if (result == true) {
       passwordValid = true
     }
-
   }).then(function() {
 
     if (res.locals.foundPassword != null) {
@@ -104,7 +103,7 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
         console.log("Success på matching av hash");
         res.cookie("uid", res.locals.uid);
         res.cookie("userType", res.locals.userType);
-        res.status(200).json({ msg: 'Logged in.'});
+        // res.status(200).json({ msg: 'Logged in.'});
         res.send("Success på matching av hash");
       }
       else {
