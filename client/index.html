@@ -43,7 +43,7 @@
 		
 		<!--Odd-->		
 			<!--userRegister components-->
-			<script type="module" src="./src/components/userRegister.js"></script>
+			
 			<!--Slutt pa odd-->
 			
 		<!-- Nicholas -->
@@ -51,16 +51,25 @@
 			<!-- create-posts lit-element as a component -->
 			<script type="module" src="./src/components/createPost.js"></script>
 
+			<!-- create-posts lit-element as a component -->
+			<script type="module" src="./src/components/login.js"></script>
+
 			<!-- retrieve-posts lit-element as a component -->
 			<script type="module" src="./src/components/retrievePosts.js"></script>
 			
 			<!-- retrieve-posts lit-element as a component -->
 			<script type="module" src="./src/components/postElement.js"></script>
 		<!-- Slutt pa Nicholas -->
+		
+		<!--Router connection-->
+		<script type="module" src="routes.js"></script>
+		</script>
+		<!--end of router-->
 
 	</head>
 
 	<body>
+<<<<<<< HEAD
 
 		<create-posts></create-posts>
 		<br>
@@ -73,8 +82,17 @@
 		<br>
 		<br>
 		
-		
+		<login-page></login-page>
+
+
+		<br>
+		<br>
+		<br>
+		<br>
 		<register-page></register-page>
 		
+=======
+		<main id="outlet"></main> <!--Ikke rør, tilknyttet rutingen, se routes.js-->
+>>>>>>> 831f84f03faeb1c4c6188e8f55cba59c32d3d564
 	</body>
 </html>
