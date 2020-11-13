@@ -32,7 +32,7 @@ Wojciech Kurp
 - npm install fs --save //Brukes for filhåndtering --Odd
 - npm install randomstring --save //Brukes for randomisering av filnavn --Odd
 - npm install express-session --save    //brukes for å lage coocies --Nicholas
-- npm install bcrypt --save     //brukes for hashing av passord --Nicholas
+- npm install bcryptjs --save     //brukes for hashing av passord --Nicholas
 
 ## Client:
 - npm install @vaadin/router --save //Brukes til å sette opp ruter --Odd
