@@ -104,7 +104,7 @@ export class RetrievePosts extends LitElement {
             <div class="container">
                 <div class="row">${this.allPosts.map(i => html`<post-lit class="card" .post=${i}></post-lit>`)}</div>
             </div>
-        
+         
             `;
     }
 
