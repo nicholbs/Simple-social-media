@@ -48,7 +48,9 @@ app.get('/', (req, res) => {
 var upload=multer();
 
 
-//registrering av ny bruker
+/**
+ * Register new user
+ */
 const multerDecode = multer(); //For å mota formData til post request
 app.post('/registerUser',multerDecode.none(),function(req,res){
   const formData = req.body; //Lagrer unna formdata objekt
@@ -209,7 +211,7 @@ WHERE posts.forum = '${forum}'`
 
 
 /**
- * Bildeopplastning
+ * Uploading of pictures
  */
 
 var imageName;
@@ -224,7 +226,6 @@ filename: function(req,file,cb){
 
 })
 
-
 const fileFilter2 = (req, file, cb) => {
   if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
       cb(null, true);
@@ -238,9 +239,6 @@ const fileFilter2 = (req, file, cb) => {
 app.post('/profilePicUpload', (req, res) => {
   //DymmyData for test, når coockes er implementert må det endres litt
   
-
-
-
   //Definerer hva multer skal gjøre 
   let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
 
@@ -295,7 +293,7 @@ app.post('/profilePicUpload', (req, res) => {
 });
 
 /**
- * Hente bildet
+ * Get single picture
  */
 
 app.get('/profilepic', function (req, res) {
@@ -315,7 +313,8 @@ app.get('/profilepic', function (req, res) {
 
 });
 
-/**
+/** 
+ * Get hole pictureFolder
  * Bildepublisering lettest måte kan nås via http://localhost:8081/images/<navnPåBildet>.extention 
  * eks http://localhost:8081/images/test.png
  *  */

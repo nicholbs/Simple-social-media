@@ -7,7 +7,7 @@ class person{
       this.repeatPassword =dataE.repeatPassword;
     }
     matcingInfo(){
-      //Sjekker at registeringscredentals matcher
+      //validating thath input data maches
       if((this.email === this.repeatEmail) && this.password === this.repeatPassword){
         console.log('Match');
         return true;
@@ -17,6 +17,7 @@ class person{
         return false;
       }
     }
+    //input validation in email
     validateInput(){
       var emailExp = new RegExp("[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$");
       if(emailExp.test(this.email)){
