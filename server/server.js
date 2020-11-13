@@ -218,7 +218,8 @@ app.post('/registerUser',multerDecode.none(),function(req,res){
   var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
  
   //Hvis inpud data frontend matcher
-  if(regPers.matcingInfo()){
+  if(regPers.matcingInfo() && regPers.validateInput()){
+    regPers.validateInput();
 
    db.query(dbSjekk, function (err, result) {
       if (err) 
@@ -393,7 +394,7 @@ app.post('/registerUserOLD',upload.none(),function(req,res){
 
 
 /**
- * Bildeopplastning
+ * Uploading of pictures
  */
 
 var imageName;
@@ -408,7 +409,6 @@ filename: function(req,file,cb){
 
 })
 
-
 const fileFilter2 = (req, file, cb) => {
   if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
       cb(null, true);
@@ -422,9 +422,6 @@ const fileFilter2 = (req, file, cb) => {
 app.post('/profilePicUpload', (req, res) => {
   //DymmyData for test, når coockes er implementert må det endres litt
   
-
-
-
   //Definerer hva multer skal gjøre 
   let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
 
@@ -457,11 +454,13 @@ app.post('/profilePicUpload', (req, res) => {
         }
       }
       **/
-
+      var imageurl = 'http://localhost:8081/images/'
+     var imageNamehttp = imageurl.concat(imageName);
+      //bruk imageName bare for navn og ikke sti
 
       /** */
       //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageName], function(err,results){
+     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageNamehttp], function(err,results){
       if(err){
         console.log(err);
       } else{
@@ -479,7 +478,7 @@ app.post('/profilePicUpload', (req, res) => {
 });
 
 /**
- * Hente bildet
+ * Get single picture
  */
 
 app.get('/profilepic', function (req, res) {
@@ -498,3 +497,11 @@ app.get('/profilepic', function (req, res) {
   }); 
 
 });
+
+/** 
+ * Get hole pictureFolder
+ * Bildepublisering lettest måte kan nås via http://localhost:8081/images/<navnPåBildet>.extention 
+ * eks http://localhost:8081/images/test.png
+ *  */
+
+app.use('/images', express.static('/server/src/images/userProfile/'));

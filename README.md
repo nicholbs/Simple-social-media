@@ -32,5 +32,6 @@ Wojciech Kurp
 - npm install fs --save //Brukes for filhåndtering --Odd
 - npm install randomstring --save //Brukes for randomisering av filnavn --Odd
 
-
+## Client:
+- npm install @vaadin/router --save //Brukes til å sette opp ruter --Odd
 The project runs on localhost:8080   
