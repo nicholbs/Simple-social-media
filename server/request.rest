@@ -1,0 +1,38 @@
+
+
+POST http://localhost:8081/registerHashedUser
+Content-Type: application/json
+
+{
+    "email": "nicholasTull@hotmail.com",
+    "repeatEmail": "nicholasTull@hotmail.com",
+    "password": "123",
+    "repeatPassword": "123"
+}
+
+###
+    # "email": "nicholasbs@hotmail.com",
+    # "repeatEmail": "nicholasbs@hotmail.com",
+    # "password": "hello",
+    # "repeatPassword": "hello"
+
+
+    # "email": "nicholas@hotmail.com",
+    # "repeatEmail": "nicholas@hotmail.com",
+    # "password": "helloWorld",
+    # "repeatPassword": "helloWorld"
+
+POST http://localhost:8081/lolol
+Content-Type: application/json
+
+{
+    "email": "nicholasTull@hotmail.com",
+    "repeatEmail": "nicholasTull@hotmail.com",
+    "password": "123",
+    "repeatPassword": "123"
+    
+}
+
+
+# # Du kan sende requests med VS code extension 
+# # "Rest Client" når du bruker en .rest fil

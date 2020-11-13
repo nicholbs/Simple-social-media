@@ -1,7 +1,7 @@
 "use strict";
 
 import express from 'express';
-import path from 'path';
+import path, { resolve } from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
 import multer from 'multer'; //For form data til post express API
@@ -9,8 +9,19 @@ import fs from 'fs'; //brukes til filhåndtering
 import randomstring from 'randomstring'; //Randomgennerering filnavn
 import {person} from './src/components/userClass.js'; //Import av brukerKlassen
 import { stringify } from 'querystring';
+import bcrypt from 'bcryptjs';
+import { rejects } from 'assert';
+import session from 'express-session';
+// import { send } from 'process';
+
+// import pkg from 'bcryptjs';
+
+// const { hash } = pkg;
+
+
 const app = express();
 const PORT = 8081;
+const multerDecode = multer(); //For å mota formData til post request
 
 app.listen(PORT, () => {
   console.log('Running...');
@@ -24,6 +35,19 @@ app.use(cors({
   credentials: true,
 })); //Odd Bypass sikkerhetsmekanismer for post YOLO
 
+app.use(session({
+  name: 'sid',    //custom name 'sid'
+  resave: false,  //dont store sessions if they where never modified during request
+  saveUninitialized: false,   //dont save new sessions that have no data
+  secret: 'ssh!quiet,it\'asecret!',    //dummy string, i believe inside the coockie or whatever is shown in the browser
+  
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 2, //How long the coockie is valid
+    sameSite: true,   //Believe this says changes or anything regarding the coockie has to come from the same domain
+    
+  }
+
+}))
 
 var db = mysql.createConnection({
   host: "db",
@@ -48,14 +72,148 @@ app.get('/', (req, res) => {
 var upload=multer();
 
 
+
+const users = []; //Slett meg
+app.post('/registerHashedUser',multerDecode.none(), async (req,res) => {
+ console.log("Hei du er i registrerHashedUser")
+  try {
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+  
+    const formData = req.body; //Lagrer unna formdata objekt
+    console.log('form data', formData.email); //Skriver ut formdata objekt
+    var regPers = new person(formData); //lager en ny person temp
+
+  
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
+  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
+  var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
+ 
+  
+      //Hvis inpud data frontend matcher
+      if(regPers.matcingInfo()){
+
+      db.query(dbSjekk, function (err, result) {
+          if (err) 
+            throw err;
+            console.log(result[0].numberOfMatch); 
+            //Hvis det er ingen oppforinger i db
+          if(result[0].numberOfMatch ==0) {
+            console.log("ingenMatch")
+            db.query(userReg); //registrer bruker
+       
+            res.send("ok"); //send ok frontend
+          }
+          else {
+            res.send("emailFinnes"); //hvis bruker finnes, send melding frontend
+          }
+          }); 
+          
+      }
+      else{
+        res.send("missMatch"); //hvis inpund data ikke matcher 
+      }
+
+  }
+  catch {
+    res.status(500).send()
+  }
+  
+
+})
+
+
+
+
+
+//Rekkefølgen blir helt feil, prøv å bruke middleware til app.post istedenfor å kalle på firstFunction og så secondFunction
+app.post('/lolol',multerDecode.none(), function (req, res, next) {
+  
+  db.query('SELECT * FROM users', function (err, result) {
+    if (err) {      //If the Sql query fails
+      console.log("Det var en error i query")
+      res.send("SQL did not work")    //Should put a warning in the response instead
+    }
+    else {
+
+      JSON.stringify(result);
+      console.log("------------------------Nytt Sok------------------------")
+
+      var allUsers = Object.values(result);
+      const found = allUsers.find(element => element.email == req.body.email); 
+      
+
+        if (found == null) {
+          console.log("Cannot find user");
+          console.log(req.body.email)
+
+          res.send("Cannot find user " + req.body.email)
+        }
+        else {
+          // console.log("Du er i post sin andre else");
+          console.log("Funnet bruker: " + found.email)
+          // console.log("Found user " + found.password);
+          console.log("bruker hentet fra database: " + found.email)
+          res.locals.foundPassword = found.password;
+          res.locals.uid = found.uid;
+          console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
+          next()
+        }
+
+    }
+  })
+}, async function (req, res) {
+
+  var passwordValid = false;
+  console.log("Du er i async function ")
+  await bcrypt.compare(req.body.password, res.locals.foundPassword).then(function(result) {
+    if (result == true) {
+      passwordValid = true
+    }
+
+  }).then(function() {
+
+    if (res.locals.foundPassword != null) {
+      if (passwordValid == true) {
+        console.log("Success på matching av hash");
+        console.log("Her er foundUserPass i if setningen" + res.locals.foundPassword);
+        req.session.userId = res.locals.uid;
+        res.session.cookie.uid = "testingMe";
+        res.cookie("myCoockie", "testing", {maxAge:3600});
+        res.send("Success på matching av hash");
+      }
+      else {
+        console.log("Failed på matching av hash");
+        res.send("Failed på matching av hash")
+        
+
+      }
+    }
+    else {
+      console.log("foundUserPassword var tom");
+      res.send("Failed, passordet var tomt");
+    }
+
+  })
+  
+  
+
+})
+
+
+
+ 
+
+
 //registrering av ny bruker
-const multerDecode = multer(); //For å mota formData til post request
+
 app.post('/registerUser',multerDecode.none(),function(req,res){
+
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
   var regPers = new person(formData); //lager en ny person temp
 
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+regPers.password+"','user')"; //registrer en bruker
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ regPers.password +"','user')"; //registrer en bruker
   //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
   var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
  
@@ -210,7 +368,9 @@ var test;
 
 
 app.post('/registerUserOLD',upload.none(),function(req,res){
-  
+
+
+
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
   test = new person;
