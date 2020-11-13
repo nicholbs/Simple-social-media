@@ -271,11 +271,13 @@ app.post('/profilePicUpload', (req, res) => {
         }
       }
       **/
-
+      var imageurl = 'http://localhost:8081/images/'
+     var imageNamehttp = imageurl.concat(imageName);
+      //bruk imageName bare for navn og ikke sti
 
       /** */
       //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageName], function(err,results){
+     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageNamehttp], function(err,results){
       if(err){
         console.log(err);
       } else{
