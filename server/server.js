@@ -11,13 +11,7 @@ import {person} from './src/components/userClass.js'; //Import av brukerKlassen
 import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
-import session from 'express-session';
-// import { send } from 'process';
-
-// import pkg from 'bcryptjs';
-
-// const { hash } = pkg;
-
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const PORT = 8081;
@@ -30,24 +24,11 @@ app.listen(PORT, () => {
 app.use(express.static(path.resolve() + '/server'));
 app.use(express.urlencoded());  //parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());  //parse JSON bodies (as sent by API clients)
+app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
 })); //Odd Bypass sikkerhetsmekanismer for post YOLO
-
-app.use(session({
-  name: 'sid',    //custom name 'sid'
-  resave: false,  //dont store sessions if they where never modified during request
-  saveUninitialized: false,   //dont save new sessions that have no data
-  secret: 'ssh!quiet,it\'asecret!',    //dummy string, i believe inside the coockie or whatever is shown in the browser
-  
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 2, //How long the coockie is valid
-    sameSite: true,   //Believe this says changes or anything regarding the coockie has to come from the same domain
-    
-  }
-
-}))
 
 var db = mysql.createConnection({
   host: "db",
@@ -64,71 +45,16 @@ db.connect(function (err) {
 });
 
 app.get('/', (req, res) => {
+  console.log("Hei er dette back-end")
   res.send("Hello world");
 })
-
-
 
 var upload=multer();
 
 
 
-const users = []; //Slett meg
-app.post('/registerHashedUser',multerDecode.none(), async (req,res) => {
- console.log("Hei du er i registrerHashedUser")
-  try {
+app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
-  
-    const formData = req.body; //Lagrer unna formdata objekt
-    console.log('form data', formData.email); //Skriver ut formdata objekt
-    var regPers = new person(formData); //lager en ny person temp
-
-  
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
-  var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
- 
-  
-      //Hvis inpud data frontend matcher
-      if(regPers.matcingInfo()){
-
-      db.query(dbSjekk, function (err, result) {
-          if (err) 
-            throw err;
-            console.log(result[0].numberOfMatch); 
-            //Hvis det er ingen oppforinger i db
-          if(result[0].numberOfMatch ==0) {
-            console.log("ingenMatch")
-            db.query(userReg); //registrer bruker
-       
-            res.send("ok"); //send ok frontend
-          }
-          else {
-            res.send("emailFinnes"); //hvis bruker finnes, send melding frontend
-          }
-          }); 
-          
-      }
-      else{
-        res.send("missMatch"); //hvis inpund data ikke matcher 
-      }
-
-  }
-  catch {
-    res.status(500).send()
-  }
-  
-
-})
-
-
-
-
-
-//Rekkefølgen blir helt feil, prøv å bruke middleware til app.post istedenfor å kalle på firstFunction og så secondFunction
-app.post('/lolol',multerDecode.none(), function (req, res, next) {
-  
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {      //If the Sql query fails
       console.log("Det var en error i query")
@@ -150,16 +76,16 @@ app.post('/lolol',multerDecode.none(), function (req, res, next) {
           res.send("Cannot find user " + req.body.email)
         }
         else {
-          // console.log("Du er i post sin andre else");
           console.log("Funnet bruker: " + found.email)
-          // console.log("Found user " + found.password);
           console.log("bruker hentet fra database: " + found.email)
           res.locals.foundPassword = found.password;
+          console.log("found.uid: " + found.uid)
+          console.log("found.userType: " + found.userType)
           res.locals.uid = found.uid;
+          res.locals.userType = found.userType;
           console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
           next()
         }
-
     }
   })
 }, async function (req, res) {
@@ -176,44 +102,84 @@ app.post('/lolol',multerDecode.none(), function (req, res, next) {
     if (res.locals.foundPassword != null) {
       if (passwordValid == true) {
         console.log("Success på matching av hash");
-        console.log("Her er foundUserPass i if setningen" + res.locals.foundPassword);
-        req.session.userId = res.locals.uid;
-        res.session.cookie.uid = "testingMe";
-        res.cookie("myCoockie", "testing", {maxAge:3600});
+        res.cookie("uid", res.locals.uid);
+        res.cookie("userType", res.locals.userType);
+        res.status(200).json({ msg: 'Logged in.'});
         res.send("Success på matching av hash");
       }
       else {
         console.log("Failed på matching av hash");
         res.send("Failed på matching av hash")
-        
-
       }
     }
     else {
       console.log("foundUserPassword var tom");
       res.send("Failed, passordet var tomt");
     }
-
   })
-  
-  
-
 })
 
 
 
+/*****************************************************
+ * For å sjekke om bruker er logget inn gjør følgende:
+ * 
+ * Gå inn på din nettleser og trykk på inspect->Application->cookies
+ * Så trykker du to ganger på skjema og lager en cookie som heter
+ * "uid" og "userType". Sett disse variablene sine Value til 
+ * den brukeren du ønsker å være sin uid for eks 2
+ * eller userType for eks Admin. 
+ * 
+ * Deretter i dine app.post funksjoner bruk denne funksjonen
+ * som middleware. For eks app.post(.....,validateCookie, function {
+ * 
+ * })
+ * 
+ * Inne i din funksjon kan du ta sjekke med:
+ * 
+ * if (res.locals.uid)
+ *    console.log(res.locals.uid) //for eks får du da '2'
+ *    gjør noe...
+ * if (res.locals.userType) 
+ *    gjør noe....
+ */
+function validateCookie(req, res, next) {
+  const { cookies } = req;
+  if ('uid' in cookies) {
+    console.log("----------------Du er i validate-------------");
+    console.log("Session id exists");
+    res.locals.uid = cookies.uid;
+    console.log("dette er res.locals.uid" + res.locals.uid);
+  } 
+  if ('userType' in cookies) {
+    console.log("----------------Du er i validate-------------");
+    console.log("user type exists");
+    res.locals.userType = cookies.userType;
+    console.log("dette er res.locals.userType " + res.locals.userType);
+  } 
+  next();
+}
  
 
 
 //registrering av ny bruker
 
-app.post('/registerUser',multerDecode.none(),function(req,res){
+app.post('/registerUser',multerDecode.none(), validateCookie, async (req,res) => {
+
+  // if (res.locals.uid)
+  // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
+
+  // if (res.locals.userType)
+  // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
+
+  
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
   var regPers = new person(formData); //lager en ny person temp
 
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ regPers.password +"','user')"; //registrer en bruker
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
   //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
   var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
  

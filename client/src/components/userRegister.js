@@ -12,7 +12,7 @@ export class RegisterPage extends LitElement {
 
     render() {
         return html`
-        <div>Hello from RegisterPage!</div>
+
         <div class="d-flex justify-content-center">
         <!--Selve formen som skal registrere data-->
         <form class="form" id="registerUser">
