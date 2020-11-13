@@ -1,0 +1,145 @@
+/* body */
+body {
+    background-color: darkseagreen;
+}
+
+/* Navigation bar */
+li {
+    display: inline;
+    float: left;
+}
+
+a {
+    display: block;
+    padding: 8px;
+}
+
+ul {
+    background-color: #333;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.active {
+    background-color: #333;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color:  #4CAF50;
+}
+
+/* Slides */
+
+#title1 {
+    position: absolute;
+    top: 40px;
+    left: 50px;
+}
+
+#slides {
+    width: 100%;
+    background-color: dimgray;
+    position: absolute;
+    top: 90px;
+}
+
+#picture1 {
+    width: 300px;
+    height: 200px;
+}
+
+#picture2 {
+    width: 300px;
+    height: 200px;
+}
+
+#picture3 {
+    width: 300px;
+    height: 200px;
+}
+
+
+/* Search tool */
+#searchDiv {
+    background-color: dimgray;
+    position: absolute;
+    top: 300px;
+    width: 900px;
+    height: 150px;
+    left: 100px;
+}
+
+/* Buttons */
+.btn {
+    border: none; /* Remove borders */
+    color: white; /* Add a text color */
+    padding: 14px 28px; /* Add some padding */
+    cursor: pointer; /* Add a pointer cursor on mouse-over */
+}
+
+.hot {background-color: #4CAF50;} /* Green */
+.hot:hover {background-color: #46a049;}
+
+.new {background-color: #2196F3;} /* Blue */
+.new:hover {background: #0b7dda;}
+
+.top {background-color: #ff9800;} /* Orange */
+.top:hover {background: #e68a00;}
+
+.random {background-color: #f44336;} /* Red */
+.random:hover {background: #da190b;}
+
+.funny {background-color: #e7e7e7; color: black;} /* Gray */
+.funny:hover {background: #ddd;}
+
+/* Top forums */
+
+#topForums {
+    background-color: dimgray;
+    position: absolute;
+    right: 100px;
+    top: 300px;
+    width: 350px;
+    height: 400px;
+}
+
+
+/*Top users*/
+#topUsers {
+    background-color: dimgray;
+    position: absolute;
+    right: 100px;
+    top: 750px;
+    width: 350px;
+    height: 400px;
+}
+
+/*Information box*/
+#information {
+    background-color: dimgray;
+    position: absolute;
+    right: 100px;
+    top: 1200px;
+    width: 350px;
+    height: 250px;
+}
+
+/*Posts*/
+#posts {
+    position: absolute;
+    top: 500px;
+    left: 100px;
+}
