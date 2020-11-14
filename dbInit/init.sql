@@ -28,7 +28,8 @@ CREATE TABLE `posts` (
   `image` varchar(200) COLLATE utf8_bin DEFAULT NULL,
   `votes` int(11) DEFAULT 0,
   `blocked` tinyint(1) DEFAULT 0,
-   PRIMARY KEY (`pid`)
+  `date` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `forums` (
