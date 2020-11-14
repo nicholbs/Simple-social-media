@@ -373,8 +373,6 @@ app.post('/deny', multerDecode.none(), function (req, res) {
   });
 });
 
-
-
 //Heter properties for gitt forum
 app.get('/f/:forum', function (req, res) {
   var forum = req.params.forum;
@@ -388,13 +386,11 @@ app.get('/f/:forum', function (req, res) {
   });
 });
 
-
-
 //Henter alle posts for ett gitt forum
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -410,10 +406,9 @@ app.get('/p/:forum/:sort', function (req, res) {
 //Henter alle posts for ett gitt forum
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT title, forum, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, forum, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
-            WHERE pid = '${pid}'`
-            , function (err, result) {
+            WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
@@ -426,9 +421,10 @@ app.get('/p/:pid', function (req, res) {
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
-            WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'`, function (err, result) {
+            WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
+            ORDER BY votes DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -444,11 +440,11 @@ app.get('/post/:post/vote/:updown', function(req, res) {
   var updo = req.params.updown;
   if(updo == 1){
     db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${post}`)
-    .then(res.send("Upvote registered"))
+    .then(res.send("success"))
     .catch(err => res.send(err))
   }else{
     db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${post}`)
-    .then(res.send("Downvote registered"))
+    .then(res.send("success"))
     .catch(err => res.send(err))
   }
 })
