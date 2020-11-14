@@ -587,7 +587,8 @@ const fileFilter2 = (req, file, cb) => {
 
 app.post('/profilePicUpload', (req, res) => {
   //DymmyData for test, når coockes er implementert må det endres litt
-  
+  var userId;
+  userId =1;
   //Definerer hva multer skal gjøre 
   let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
 
@@ -626,7 +627,7 @@ app.post('/profilePicUpload', (req, res) => {
 
       /** */
       //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET profilepic=? WHERE uid = 8',[imageNamehttp], function(err,results){
+     db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
       if(err){
         console.log(err);
       } else{
