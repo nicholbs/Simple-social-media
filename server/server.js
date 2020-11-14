@@ -394,7 +394,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  db.query(`SELECT title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -410,7 +410,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT title, image, users.email FROM posts
+  db.query(`SELECT title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'`, function (err, result) {
     if(err) {

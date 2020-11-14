@@ -12,6 +12,7 @@ import '/src/components/adminComponents/userList.js'
 import '/src/components/adminComponents/userCard.js'
 import '/src/components/adminComponents/requestsList.js'
 import '/src/components/adminComponents/requestCard.js'
+import '/src/components/searchResult.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
@@ -22,7 +23,9 @@ import '/src/components/adminComponents/requestCard.js'
 			  {path: '/settings', component: 'settings-page'},
 			  {path: '/userList', component: 'userlist-page'},
 			  {path: '/forum', component: 'forum-site'},
-			  {path: '/requests', component: 'requests-page'}
+			  {path: '/requests', component: 'requests-page'},
+			  {path: '/administrer', component: 'admin-page'},
+			  {path: '/search', component: 'search-result'},
  
 			]);
 
