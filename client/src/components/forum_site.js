@@ -4,7 +4,7 @@ export class ForumSite extends LitElement {
 
     static get properties() {
         return {
-            fData:     { type: Object },
+            fData : Object,
             allPosts:  { type: Array },
             forum_url: { type: String }
         };
@@ -13,7 +13,7 @@ export class ForumSite extends LitElement {
     constructor() {
     super();
     this.fData = {};
-    this.allPosts = {};
+    this.allPosts = [];
     this.fetch_data();
     }
 
@@ -72,9 +72,7 @@ export class ForumSite extends LitElement {
     }
 
     fetch_data() {
-        const url = this.get_forum_name();
-        this.get_forum_data(url);
-        this.get_posts(url);
+        this.get_forum_data(this.get_forum_name())
     }
 
     get_forum_name() {
@@ -86,19 +84,20 @@ export class ForumSite extends LitElement {
         fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`)
         .then(res => res.json())
         .then(res => {    
-            this.fData = Object.values(res); 
+            this.fData = Object.values(res)[0]; 
             console.log("Forum Data:")
             console.log(this.fData);
         })
-    }
+        .catch(e => console.log(e))
 
-    get_posts(url_forum) {
         fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}`)
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
+            console.log("Forum Posts:")
             console.log(this.allPosts);
         })
+        .catch(e => console.log(e))
     }
 
     render() {
@@ -113,18 +112,18 @@ export class ForumSite extends LitElement {
             <div class="container-fluid">
                 <!-- Forum banner -->
                 <div class="row">
-                    <img id ="forum-banner" src="${this.fData[0].banner}" alt="forum-banner" class="img-banner">
+                    <img id ="forum-banner" src="${this.fData.banner}" alt="forum-banner" class="img-banner">
                 </div>
                 <!-- Forum header -->
                 <div class="row justify-content-center" style="background-color: #1a1a1b;">
                     <div class="col-1">
                         <div class="row justify-content-center">
-                            <img id="forum-icon" src="${this.fData[0].icon}" alt="forum-icon" class="img-forum-icon">
+                            <img id="forum-icon" src="${this.fData.icon}" alt="forum-icon" class="img-forum-icon">
                         </div>
                     </div>
                     <div class="col-5">
-                        <h1 class="display-4" id="forum-title">${this.fData[0].title}</h1>
-                        <h1 class="forum-subtitle" id="forum-address">f/${this.fData[0].name}</h1>
+                        <h1 class="display-4" id="forum-title">${this.fData.title}</h1>
+                        <h1 class="forum-subtitle" id="forum-address">f/${this.fData.name}</h1>
                     </div>
                 </div>
 

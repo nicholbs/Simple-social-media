@@ -313,7 +313,7 @@ app.get('/f/:forum', function (req, res) {
 //Henter alle posts for ett gitt forum
 app.get('/p/:forum', function (req, res) {
   var forum = req.params.forum;
-  db.query(`SELECT title, image, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'`, function (err, result) {
     if(err) {
@@ -340,6 +340,17 @@ app.get('/s/:keyword', function (req, res) {
   });
 });
 
+//Upvote | downvote
+app.get('/post/:post/vote/:updown', function(req, res) {
+  var post = req.params.post;
+  var updo = req.params.updown;
+  if(updo == 1){
+    db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${post}`)
+  }else{
+    db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${post}`)
+  }
+  res.send("Vote registered");
+})
 
 var test;
 

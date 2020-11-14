@@ -5,8 +5,8 @@ import '/src/components/settings.js' //Settings page
 import '/src/components/retrievePosts.js'
 import '/src/components/forum_post.js'
 import '/src/components/forum_site.js'
-import './src/components/mainPage.js'
-import './src/components/login.js'
+import '/src/components/mainPage.js'
+import '/src/components/login.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
