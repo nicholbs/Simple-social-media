@@ -7,9 +7,11 @@ import '/src/components/forum_post.js'
 import '/src/components/forum_site.js'
 import '/src/components/mainPage.js'
 import '/src/components/login.js'
-import '/src/components/adminPage.js'
 import '/src/components/navbar.js'
-import '/src/components/userCard.js'
+import '/src/components/adminComponents/userList.js'
+import '/src/components/adminComponents/userCard.js'
+import '/src/components/adminComponents/requestsList.js'
+import '/src/components/adminComponents/requestCard.js'
 import '/src/components/searchResult.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
@@ -19,8 +21,10 @@ import '/src/components/searchResult.js'
 			  {path: '/login', component: 'login-page'},  
 			  {path: '/register', component: 'register-page'},  
 			  {path: '/settings', component: 'settings-page'},
-			  {path: '/administrer', component: 'admin-page'},
+			  {path: '/userList', component: 'userlist-page'},
 			  {path: '/forum', component: 'forum-site'},
+			  {path: '/requests', component: 'requests-page'},
+			  {path: '/administrer', component: 'admin-page'},
 			  {path: '/search', component: 'search-result'},
  
 			]);

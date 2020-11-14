@@ -97,7 +97,7 @@ export class ForumSite extends LitElement {
             console.log("Forum Posts:")
             console.log(this.allPosts);
         })
-        .catch(e => console.log(e))
+        // .catch(e => console.log(e))
     }
 
     render() {

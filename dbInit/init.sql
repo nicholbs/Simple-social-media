@@ -44,8 +44,13 @@ CREATE TABLE `forums` (
 /* Insert data */
 INSERT INTO `users` (`uid`, `email`, `password`, `userType`, `picture`, `username`) VALUES
 (1, 'bartell.martine@example.com', '40bcc6f6193986153cae1bb1c36668650a3d5f97', 'admin', NULL, ''),
-(2, 'zcrona@example.net', '1f66d81577cd95514cedc8504d65ec8eff9c336a', 'moderator', NULL, ''),
+(2, 'zcrona@example.net', '1f66d81577cd95514cedc8504d65ec8eff9c336a', 'user', NULL, ''),
 (3, 'wgaylord@example.com', '3fcba21eebd2d09681515b4849d2bbeae566451e', 'user', NULL, '');
+
+
+INSERT INTO `requests`(`rid`, `user`, `userType`) VALUES 
+(1,2,"moderator"),
+(2,3,"moderator");
 
 INSERT INTO `forums` (`name`, `title`, `banner`, `icon`) VALUES
 ('Trains', 'Train Appreciation Society', 'https://www.greenbiz.com/sites/default/files/images/articles/featured/highspeedrailsstock.jpg', 'https://images.unsplash.com/photo-1530563639148-3c83980fe6ed?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80'),
@@ -54,6 +59,7 @@ INSERT INTO `forums` (`name`, `title`, `banner`, `icon`) VALUES
 INSERT INTO `posts` (`pid`, `forum`, `uid`, `title`, `content`, `image`, `votes`, `blocked`) VALUES
 (4, 'Trains', 1, 'God I love trains', 'Aren\'t they beautiful', 'https://images.unsplash.com/photo-1505832018823-50331d70d237?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1382&q=80', 0, 0),
 (5, 'Trains', 3, 'Now this is a good-ass train', '', 'https://images.unsplash.com/photo-1555124618-81b95d0e5892?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80', 0, 0);
+
 ALTER TABLE `posts`
   MODIFY `pid` bigint(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
