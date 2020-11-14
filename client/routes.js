@@ -8,6 +8,7 @@ import '/src/components/forum_site.js'
 import '/src/components/mainPage.js'
 import '/src/components/login.js'
 import '/src/components/adminPage.js'
+import '/src/components/userCard.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
@@ -17,7 +18,7 @@ import '/src/components/adminPage.js'
 			  {path: '/register', component: 'register-page'},  
 			  {path: '/settings', component: 'settings-page'},
 			  {path: '/administrer', component: 'admin-page'},
-			  {path: '/forum', component: 'forum-site'},
+			  {path: '/forum', component: 'forum-site'}
  
 			]);
 

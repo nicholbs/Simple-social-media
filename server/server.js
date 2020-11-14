@@ -286,7 +286,7 @@ db.query(sql, function (err, result) {
  * browser->networking->requestName
  ***********************************************************************/
 app.get('/getUsers', function (req, res) {
-
+  console.log("Du er i getUsers");
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
