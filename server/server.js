@@ -163,7 +163,104 @@ function validateCookie(req, res, next) {
 
 //registrering av ny bruker
 
-app.post('/registerUser',multerDecode.none(), validateCookie, async (req,res) => {
+app.post('/registerUser',multerDecode.none(), async (req,res) => {
+
+  // if (res.locals.uid)
+  // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
+
+  // if (res.locals.userType)
+  // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
+
+  
+ // const hashedPassword = await bcrypt.hash(req.body.password, 10)
+
+  const formData = req.body; //Lagrer unna formdata objekt
+  console.log('form data', formData.email); //Skriver ut formdata objekt
+  console.log("Formdata brukernavn " + formData.username);
+  var regPers = new person(formData); //lager en ny person temp
+  console.log("BrukernavnKlasse: " + regPers.username);
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ regPers.password +"','user')"; //registrer en bruker
+  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
+  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
+  var usernameExist = false;
+  var tempUserType = 'bruker';
+  //Hvis inpud data frontend matcher
+  console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
+  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName()){
+    regPers.validateInput();
+    console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
+
+   //Chek if username exist in DB
+   db.query('SELECT COUNT(username) AS numberOfMatch FROM users WHERE username =?',[regPers.username], function (err,result) {
+    if(err){
+      throw err;
+    }
+    console.log("Sjekker brukernavn " + result[0].numberOfMatch);
+    //If username not exist
+    if(result[0].numberOfMatch == 0 ){
+      console.log("Ingen funn av brukernavn")
+      usernameExist = false;
+    }
+    else{
+      //If username exist
+      console.log("Brukernavn finnes")
+      usernameExist = true;
+    }
+   })
+
+   console.log("Bool: " + usernameExist);
+   
+    db.query('SELECT COUNT(email) AS numberOfMatch FROM users WHERE email =?',[regPers.email], function (err, result) {
+      if (err) 
+        throw err;
+        console.log(result[0].numberOfMatch); 
+        //Hvis det er ingen oppforinger i db
+       if(result[0].numberOfMatch ==0 && usernameExist == false) {
+         console.log("ingenMatch")
+         //db.query(userReg); //register a new user
+         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,regPers.password, regPers.username], function (err, result) {
+          if (err)
+          throw err;
+          console.log("User registerd");
+          res.send("ok"); //send respons frontend
+         });
+
+         //res.send("ok"); //send respons frontend
+       }
+       else if(usernameExist == true){
+         res.send("UsernameExist") //If username exist
+       }
+       else {
+         res.send("emailFinnes"); //If emai exist, send message frontend
+       }
+      }); 
+      
+  }
+  else if(regPers.validateInputUserName() == false){
+    console.log("Username characther not valid")
+    res.send("UserNameCharNot");
+  }
+  else{
+    res.send("missMatch"); //hvis inpund data ikke matcher 
+  }
+  
+  //TODO passord encryption
+  
+
+})
+
+
+
+
+
+
+
+
+
+
+//registrering av ny bruker
+
+app.post('/registerUseroldNic',multerDecode.none(), validateCookie, async (req,res) => {
 
   // if (res.locals.uid)
   // console.log("Du er logga inn fortsett: " + res.locals.uid) //2

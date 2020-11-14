@@ -40,6 +40,10 @@ export class RegisterPage extends LitElement {
             </div>
         </div>
         <div class="row mt-2">
+            <label for="username">Username</label>
+            <input type="text" name="username"pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="username" placeholder="mysky" required> 
+        </div>
+        <div class="row mt-2">
         <button @click="${this.registerUser}" class="btn btn-primary">Register User</button>
         </div>
     </form>
@@ -66,9 +70,17 @@ export class RegisterPage extends LitElement {
             } 
             else if(text=='emailFinnes'){
                 alert("Bruker Finnes fra før");
+            
+            }
+            else if(text=='UsernameExist'){
+                alert("Username exist");
+            }
+            else if(text =='UserNameCharNot'){
+                alert("Username characther not valid, can only contain 0-9,A-Z,a-z");
             }
             else if(text =='missMatch'){
-                alert("Feil i brukernavn eller passord under registrering");
+                //alert("Feil i brukernavn eller passord under registrering");
+                alert("input value not vallid username, password missmatch ");
             }
         })
         .catch(function (error){
