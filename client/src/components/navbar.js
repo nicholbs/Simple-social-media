@@ -36,13 +36,13 @@ export class NavBar extends LitElement {
 					  Dropdown
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					  <a class="dropdown-item" href="/login">login</a>
-					  <a class="dropdown-item" href="/register">register</a>
-					  <a class="dropdown-item" href="/settings">settings</a>
-					  <a class="dropdown-item" href="/administrer">administrer</a>
+					  <a class="dropdown-item" href="/login" onclick="setTimeout(location.reload.bind(location), 1)">login</a>
+					  <a class="dropdown-item" href="/register" onclick="setTimeout(location.reload.bind(location), 1)">register</a>
+					  <a class="dropdown-item" href="/settings" onclick="setTimeout(location.reload.bind(location), 1)">settings</a>
 					</div>
 				  </li>
-
+				
+				  
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Forum
@@ -51,7 +51,19 @@ export class NavBar extends LitElement {
 					  <a class="dropdown-item" href="/forum?name=Trains" onclick="setTimeout(location.reload.bind(location), 1)">Trains</a>
 					  <a class="dropdown-item" href="/forum?name=games" onclick="setTimeout(location.reload.bind(location), 1)">Games</a>
 					</div>
-                  </li>
+				  </li>
+				  
+				  <li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					  Dropdown
+					</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					  <a class="dropdown-item" href="/userList" onclick="setTimeout(location.reload.bind(location), 1)">List of users</a>
+					  <a class="dropdown-item" href="/blocked" onclick="setTimeout(location.reload.bind(location), 1)">blocked</a>
+					  <a class="dropdown-item" href="/requests" onclick="setTimeout(location.reload.bind(location), 1)">requests</a>
+					</div>
+				  </li>
+
                   <form class="form-inline my-2 my-lg-0" id="searchPosts">
                     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                     <button @click="${this._searchPosts}" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
