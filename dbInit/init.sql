@@ -54,6 +54,7 @@ INSERT INTO `forums` (`name`, `title`, `banner`, `icon`) VALUES
 INSERT INTO `posts` (`pid`, `forum`, `uid`, `title`, `content`, `image`, `votes`, `blocked`) VALUES
 (4, 'Trains', 1, 'God I love trains', 'Aren\'t they beautiful', 'https://images.unsplash.com/photo-1505832018823-50331d70d237?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1382&q=80', 0, 0),
 (5, 'Trains', 3, 'Now this is a good-ass train', '', 'https://images.unsplash.com/photo-1555124618-81b95d0e5892?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80', 0, 0);
+
 ALTER TABLE `posts`
   MODIFY `pid` bigint(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
