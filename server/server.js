@@ -327,6 +327,22 @@ app.get('/p/:forum/:sort', function (req, res) {
     });
 });
 
+//Henter alle posts for ett gitt forum
+app.get('/p/:pid', function (req, res) {
+  var pid = req.params.pid;
+  db.query(`SELECT title, forum, image, votes, users.email FROM posts
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE pid = '${pid}'`
+            , function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
+});
+
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
@@ -348,10 +364,13 @@ app.get('/post/:post/vote/:updown', function(req, res) {
   var updo = req.params.updown;
   if(updo == 1){
     db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${post}`)
+    .then(res.send("Upvote registered"))
+    .catch(err => res.send(err))
   }else{
     db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${post}`)
+    .then(res.send("Downvote registered"))
+    .catch(err => res.send(err))
   }
-  res.send("Vote registered");
 })
 
 var test;
