@@ -313,8 +313,9 @@ app.get('/f/:forum', function (req, res) {
 //Henter alle posts for ett gitt forum
 app.get('/p/:forum', function (req, res) {
   var forum = req.params.forum;
-  db.query(`SELECT title, image, users.email FROM posts
-            INNER JOIN users ON posts.uid = users.uid WHERE posts.forum = '${forum}'`, function (err, result) {
+  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE posts.forum = '${forum}'`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -322,13 +323,34 @@ app.get('/p/:forum', function (req, res) {
       res.end(JSON.stringify(result));
     }
   });
-  `SELECT title, image, users.email
-FROM posts
-INNER JOIN users
-ON posts.uid = users.uid
-WHERE posts.forum = '${forum}'`
 });
 
+//Henter alle posts som matcher søkekriteriet
+app.get('/s/:keyword', function (req, res) {
+  var keyword = req.params.keyword;
+  db.query(`SELECT title, image, users.email FROM posts
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+//Upvote | downvote
+app.get('/post/:post/vote/:updown', function(req, res) {
+  var post = req.params.post;
+  var updo = req.params.updown;
+  if(updo == 1){
+    db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${post}`)
+  }else{
+    db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${post}`)
+  }
+  res.send("Vote registered");
+})
 
 var test;
 

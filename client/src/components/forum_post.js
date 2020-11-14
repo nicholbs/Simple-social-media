@@ -4,20 +4,17 @@ export class PostPreview extends LitElement {
 
     static get properties() {
         return {
-          myData:   { type: Object },
-          image:    { type: String },
-          title:    { type: String },
-          user:     { type: String }
+            pData : Object,
+            post_id: {type: Number},
+            forum_url: {type: String},
+            shown_vote: {type: Number}
         };
       }
     
-      constructor() {
-        super();
-        this.myData = {};
-        this.image = "";
-        this.title = "title";
-        this.user = "user";
-      }
+    constructor() {
+    super();
+    this.forum_url = "not found";
+    }
 
     static get styles() {
         return [
@@ -73,6 +70,24 @@ export class PostPreview extends LitElement {
         ]
     }
 
+    _voteUp() {
+        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/1`)
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+        this.shown_vote += 1
+    }
+    _voteDown(){
+        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/0`)
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+        this.shown_vote -= 1
+    }
+
+    connectedCallback() {
+        super.connectedCallback()
+        this.shown_vote = this.pData.votes
+    }
+
     render() {
         return html`
             <!-- DIN HTML HER -->
@@ -90,20 +105,20 @@ export class PostPreview extends LitElement {
                                     <!-- Upvote / downvote -->
                                     <div class="col-1">
                                         <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
-                                            <img src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                            <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <h6 class="test">1500</h6>
+                                            <h6 class="test">${this.shown_vote}</h6>
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <img src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                            <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
                                         </div>
                                     </div>
                                     <!-- Post body -->
                                     <div class="col" onclick="location.href='#';" style="cursor: pointer;">
-                                        <h5 class="card-title"> ${this.title} </h5>
-                                        <h6 class="card-subtitle mb-2">Posted by u/${this.user} </h6>
-                                        <img src="${this.image}" class="card-img" alt="post-image">
+                                        <h5 class="card-title"> ${this.pData.title} </h5>
+                                        <h6 class="card-subtitle mb-2">Posted by u/${this.pData.email} </h6>
+                                        <img src="${this.pData.image}" class="card-img" alt="post-image">
                                     </div>
                                 </div>
                             </div>
