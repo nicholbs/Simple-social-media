@@ -311,18 +311,20 @@ app.get('/f/:forum', function (req, res) {
 });
 
 //Henter alle posts for ett gitt forum
-app.get('/p/:forum', function (req, res) {
+app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
+  var sort = req.params.sort;
   db.query(`SELECT pid, title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
-            WHERE posts.forum = '${forum}'`, function (err, result) {
-    if(err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-    }
-  });
+            WHERE posts.forum = '${forum}'
+            ORDER BY ${sort} DESC;`, function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
 });
 
 //Henter alle posts som matcher søkekriteriet

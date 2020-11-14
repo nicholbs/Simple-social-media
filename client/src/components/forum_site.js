@@ -90,7 +90,7 @@ export class ForumSite extends LitElement {
         })
         .catch(e => console.log(e))
 
-        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}`)
+        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/votes`)
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
