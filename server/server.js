@@ -546,31 +546,7 @@ app.get('/post/:post/vote/:updown', function(req, res) {
   }
 })
 
-var test;
-
-
-app.post('/registerUserOLD',upload.none(),function(req,res){
-
-
-
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data', formData.email); //Skriver ut formdata objekt
-  test = new person;
-  dbstring = ''
-  //Flyttes inn i constructor
-  test.email = formData.email;
-  test.repeatEmail =formData.repeatEmail;
-  test.password = formData.password;
-  test.repeatPassword = formData.repeatPassword;
-  //
-  
-  test.matcingInfo();
-  
-  
-  
-  res.send("MotattReq"); //sender respons til fetch api
-})
-
+var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
 
 
 
