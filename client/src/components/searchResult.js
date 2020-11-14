@@ -1,18 +1,19 @@
 import { LitElement, html, css } from 'lit-element';
 
-export class ForumSite extends LitElement {
+export class SearchResult extends LitElement {
 
     static get properties() {
         return {
-            fData : Object,
-            allPosts:  { type: Array },
-            forum_url: { type: String }
+            allPosts: {type: Array},
+            search_query: {type: String},
+            result_amount: {type: Number}
         };
     }
     
     constructor() {
     super();
-    this.fData = {};
+    this.search_query = "";
+    this.result_amount = 0;
     this.allPosts = [];
     this.fetch_data();
     }
@@ -72,32 +73,24 @@ export class ForumSite extends LitElement {
     }
 
     fetch_data() {
-        this.get_forum_data(this.get_forum_name())
+        this.get_search_results(this.get_search_query());
     }
 
-    get_forum_name() {
+    get_search_query() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get("name");
+        return this.search_query = urlParams.get("q");
     }
 
-    get_forum_data(url_forum) {    
-        fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`)
-        .then(res => res.json())
-        .then(res => {    
-            this.fData = Object.values(res)[0]; 
-            console.log("Forum Data:")
-            console.log(this.fData);
-        })
-        .catch(e => console.log(e))
-
-        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/votes`)
+    get_search_results() {
+        fetch(`${window.MyAppGlobals.serverURL}s/${this.search_query}`)
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
-            console.log("Forum Posts:")
+            this.result_amount = this.allPosts.length;
+            console.log("Found Posts:")
             console.log(this.allPosts);
         })
-        // .catch(e => console.log(e))
+        .catch(e => console.log(e))
     }
 
     render() {
@@ -110,20 +103,11 @@ export class ForumSite extends LitElement {
         
             <!-- Main page content -->
             <div class="container-fluid">
-                <!-- Forum banner -->
-                <div class="row">
-                    <img id ="forum-banner" src="${this.fData.banner}" alt="forum-banner" class="img-banner">
-                </div>
                 <!-- Forum header -->
                 <div class="row justify-content-center" style="background-color: #1a1a1b;">
-                    <div class="col-1">
-                        <div class="row justify-content-center">
-                            <img id="forum-icon" src="${this.fData.icon}" alt="forum-icon" class="img-forum-icon">
-                        </div>
-                    </div>
                     <div class="col-5">
-                        <h1 class="display-4" id="forum-title">${this.fData.title}</h1>
-                        <h1 class="forum-subtitle" id="forum-address">f/${this.fData.name}</h1>
+                        <h1 class="display-4" id="forum-title">Results for "${this.search_query}"</h1>
+                        <h1 class="forum-subtitle" id="forum-address">${this.result_amount} matches found!</h1>
                     </div>
                 </div>
 
@@ -135,4 +119,4 @@ export class ForumSite extends LitElement {
         `;
     }
 }
-customElements.define("forum-site", ForumSite);
+customElements.define("search-result", SearchResult);

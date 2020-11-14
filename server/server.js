@@ -383,7 +383,7 @@ db.query(sql, function (err, result) {
  * browser->networking->requestName
  ***********************************************************************/
 app.get('/getUsers', function (req, res) {
-
+  console.log("Du er i getUsers");
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
@@ -393,6 +393,84 @@ app.get('/getUsers', function (req, res) {
     }
   });
 });
+
+
+
+/************************************************************************
+ * 
+ * Notewhorty! Content-Type is specified to be of application/json, this
+ * information can be seen in the response header while inside
+ * browser->networking->requestName
+ ***********************************************************************/
+app.get('/requests', function (req, res) {
+  console.log("Du er i requests");
+  db.query('SELECT * FROM requests', function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+
+/************************************************************************
+ * 
+ * Notewhorty! Content-Type is specified to be of application/json, this
+ * information can be seen in the response header while inside
+ * browser->networking->requestName
+ ***********************************************************************/
+app.post('/accept', multerDecode.none(), function (req, res) {
+  console.log("Du er i accept");
+  
+  console.log("Accept sin userInt " + req.body.userInt);
+  console.log("Accept sin userType " + req.body.userType);
+  var sql = "DELETE FROM `requests` WHERE user=" + req.body.userInt;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      console.log(result);
+    }
+  });
+
+  sql = "UPDATE users SET userType = 'moderator' WHERE uid =" + req.body.userInt;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+
+/************************************************************************
+ * 
+ * Notewhorty! Content-Type is specified to be of application/json, this
+ * information can be seen in the response header while inside
+ * browser->networking->requestName
+ ***********************************************************************/
+app.post('/deny', multerDecode.none(), function (req, res) {
+  console.log("Du er i deny");
+  
+  console.log("deny sin userInt " + req.body.userInt);
+  console.log("deny sin userType " + req.body.userType);
+  var sql = "DELETE FROM `requests` WHERE user=" + req.body.userInt;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+
 
 //Heter properties for gitt forum
 app.get('/f/:forum', function (req, res) {
@@ -407,25 +485,29 @@ app.get('/f/:forum', function (req, res) {
   });
 });
 
+
+
 //Henter alle posts for ett gitt forum
-app.get('/p/:forum', function (req, res) {
+app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  var sort = req.params.sort;
+  db.query(`SELECT title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
-            WHERE posts.forum = '${forum}'`, function (err, result) {
-    if(err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-    }
-  });
+            WHERE posts.forum = '${forum}'
+            ORDER BY ${sort} DESC;`, function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
 });
 
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT title, image, users.email FROM posts
+  db.query(`SELECT title, image, votes, users.email FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'`, function (err, result) {
     if(err) {
