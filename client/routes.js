@@ -10,6 +10,7 @@ import '/src/components/login.js'
 import '/src/components/adminPage.js'
 import '/src/components/navbar.js'
 import '/src/components/userCard.js'
+import '/src/components/searchResult.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
@@ -19,7 +20,8 @@ import '/src/components/userCard.js'
 			  {path: '/register', component: 'register-page'},  
 			  {path: '/settings', component: 'settings-page'},
 			  {path: '/administrer', component: 'admin-page'},
-			  {path: '/forum', component: 'forum-site'}
+			  {path: '/forum', component: 'forum-site'},
+			  {path: '/search', component: 'search-result'},
  
 			]);
 
