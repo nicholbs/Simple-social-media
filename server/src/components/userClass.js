@@ -5,6 +5,7 @@ class person{
       this.repeatEmail = dataE.repeatEmail;
       this.password = dataE.password;
       this.repeatPassword =dataE.repeatPassword;
+      this.username = dataE.username;
     }
     matcingInfo(){
       //validating thath input data maches
@@ -26,6 +27,17 @@ class person{
       }
       else {
         console.log("Epost expression ikke gyldig");
+        return false;
+      }
+    }
+    validateInputUserName(){
+      var userNameExp = new RegExp("[a-z0-9A-Z]{2,63}$");
+      if(userNameExp.test(this.username)){
+        console.log("Username charcther valid");
+        return true;
+      }
+      else{
+        console.log("Username characthers not valid!");
         return false;
       }
     }
