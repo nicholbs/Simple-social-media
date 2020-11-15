@@ -47,11 +47,15 @@ export class settingsPage extends LitElement {
             console.log(text);
             //Alt ok 
             if(text=='ok'){
-                alert("Profilpicture uploaded");
+                alert("Profilpicture uploaded, you wil be redirected to homepage");
+                location.replace("http://localhost:8080/")
             }
             //feil i multer
             else if(text=='errorMulter'){
                 alert("Fatal error in multer - backend");
+            }
+            else if(text=='errorFileExt'){
+                alert("Only jpg and png pictures allowed");
             }
             //annen uspesifikk feil
             else {

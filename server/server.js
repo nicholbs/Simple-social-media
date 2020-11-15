@@ -759,92 +759,6 @@ app.get('/post/:post/vote/:updown', function(req, res) {
 var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
 
 
-
-/**
- * Uploading of pictures
- */
-
-var imageName;
-var uploadImage = multer.diskStorage({
-destination: './src/images/userProfile', //Hvor filen skal lagres
-filename: function(req,file,cb){
-  let navnTemp; //brueks til a lagre randomstring
-  navnTemp =randomstring.generate(); //Generer et random stringNavn
-  imageName = navnTemp + path.extname(file.originalname); //Appender filextention
- cb(null,imageName); //Setter filnavnet
-}
-
-})
-
-const fileFilter2 = (req, file, cb) => {
-  if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-      cb(null, true);
-  } else {
-    req.fileValidationError = "Forbidden extension";
-    return cb(null, false, req.fileValidationError);
-  }
-}
-
-
-app.post('/profilePicUpload', (req, res) => {
-  //DymmyData for test, når coockes er implementert må det endres litt
-  var userId;
-  userId =1;
-  //Definerer hva multer skal gjøre 
-  let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
-
-  upload(req, res, function(err) {
-    console.log( "under oplaod" + imageName);
-    //Errorhandling logic from multer: https://github.com/expressjs/multer
-    //specific error in multer
-    if(err instanceof multer.MulterError){
-      res.send("errorMulter")
-      console.log( "under feil" + imageName);
-    }
-    //unspecific error
-    else if(err){
-      res.send("errorUnspecifed")
-      console.log( "under andre feil" + imageName);
-    }
-    else if(req.fileValidationError){
-      console.log("Ikke gyldig fil");
-      //res.send("errorFileExt");
-    }
-    //thing okay with multer then 
-    else{
-      //Her skal data legges i DB
-      console.log( "riktig     " + imageName);
-     /* Hvis BLOB
-      var nam = fs.readFileSync("./src/images/userProfile/test.png")
-      db.query('UPDATE users SET picture=? WHERE uid = 24',nam), function(err,results){
-        if(err){
-          console.log(err);
-        }
-      }
-      **/
-      var imageurl = 'http://localhost:8081/images/'
-     var imageNamehttp = imageurl.concat(imageName);
-      //bruk imageName bare for navn og ikke sti
-
-      /** */
-      //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
-      if(err){
-        console.log(err);
-      } else{
-        //res.send("ok");  //picture uploded sucefully
-        console.log("fil registrert");
-           res.send("ok");  //picture uploded sucefully
-
-      }
-    });
-   // res.send("ok");
-    }
-  
-});
-
-});
-
 /**
  * Get single picture
  */
@@ -873,3 +787,82 @@ app.get('/profilepic', function (req, res) {
  *  */
 
 app.use('/images', express.static('/server/src/images/userProfile/'));
+
+/**
+ * Uploading of profilepicture
+ */
+
+app.post('/profilePicUpload', (req, res) => {
+  var isAPicture = true; //For response logic
+  var errorPicture = false; // for response logic
+  var imageName;  //Store the imagename 
+  var imageurl = 'http://localhost:8081/images/' //deafult url to picturefolder
+  //Dummy data before coockie is implemented:
+  var userId; //Coneccted to sql string for updating the specific user with the image url, 
+  userId =1; //Before coockie is implemented i have hardcoded the uid of user 1 
+
+  //Define pictureStore
+  var multerStorage =multer.diskStorage({
+    destination: './src/images/userProfile', //path to profilePicture
+    //Create a image name:
+    filename: function(req,file,cb){
+        let nameTemp = randomstring.generate(); //generates a random filestring for random name
+        imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
+        cb(null,imageName); //Return file with filename and extention;
+    }
+  }) //End of storage logick
+
+  //Image filter for filter datatypes backend
+  const pictureFilter = (reg,file,cb) => {
+    //Chek what filetype uploaded
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+        cb(null, true);
+    //If not match the filefilter then:
+    } else {
+      req.fileValidationError = "Forbidden extension";
+      return cb(null, false, req.fileValidationError);
+    }
+  }//end of filefilter for picture
+  
+
+  //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
+  var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
+ // pictureUpload = multer({ storage: multerStorage}).single('file');
+
+  //Here we want to chek for errors and register the name in the database
+  pictureUpload(req, res, function(err) {
+  //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
+    if(err instanceof multer.MulterError){
+      console.log( "Error in pictureUpload of image: " + imageName);
+      errorPicture = true; // Set errorPicture to tru if problem with multer
+    }
+    //If a filetype validation failed
+    else if(req.fileValidationError){
+      console.log("Not valid fileformat only jpg and png allowed ref: " + imageName);
+      res.send("errorFileExt"); //Send message front end
+    }
+    else if(err){
+      console.log("Some unspecifed error when handling of file: " + imageName);
+      errorPicture = true; //set errorPicture to true if some unspecifed eror
+      throw err;
+    }
+    //If it is a picture register the name in DB
+    else if(isAPicture){
+      var imageNamehttp = imageurl.concat(imageName); //Create the full image url
+      //Update the specifed user with imahe url on profilepicture
+      db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
+        if(err){
+          console.log(err);
+          errorPicture = true //Set the bool if problem with register 
+        } else{
+          //picture registed in db
+          console.log("profilepic registerd in db with path: " + imageNamehttp);
+             res.send("ok");  //picture uploded sucefully
+        }
+      });
+
+    }//end of else
+    
+  })
+  
+  });
