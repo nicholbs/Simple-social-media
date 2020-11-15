@@ -549,92 +549,6 @@ app.get('/post/:post/vote/:updown', function(req, res) {
 var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
 
 
-
-/**
- * Uploading of pictures
- */
-
-var imageName;
-var uploadImage = multer.diskStorage({
-destination: './src/images/userProfile', //Hvor filen skal lagres
-filename: function(req,file,cb){
-  let navnTemp; //brueks til a lagre randomstring
-  navnTemp =randomstring.generate(); //Generer et random stringNavn
-  imageName = navnTemp + path.extname(file.originalname); //Appender filextention
- cb(null,imageName); //Setter filnavnet
-}
-
-})
-
-const fileFilter2 = (req, file, cb) => {
-  if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-      cb(null, true);
-  } else {
-    req.fileValidationError = "Forbidden extension";
-    return cb(null, false, req.fileValidationError);
-  }
-}
-
-
-app.post('/profilePicUploadOld', (req, res) => {
-  //DymmyData for test, når coockes er implementert må det endres litt
-  var userId;
-  userId =1;
-  //Definerer hva multer skal gjøre 
-  let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
-
-  upload(req, res, function(err) {
-    console.log( "under oplaod" + imageName);
-    //Errorhandling logic from multer: https://github.com/expressjs/multer
-    //specific error in multer
-    if(err instanceof multer.MulterError){
-      res.send("errorMulter")
-      console.log( "under feil" + imageName);
-    }
-    //unspecific error
-    else if(err){
-      res.send("errorUnspecifed")
-      console.log( "under andre feil" + imageName);
-    }
-    else if(req.fileValidationError){
-      console.log("Ikke gyldig fil");
-      //res.send("errorFileExt");
-    }
-    //thing okay with multer then 
-    else{
-      //Her skal data legges i DB
-      console.log( "riktig     " + imageName);
-     /* Hvis BLOB
-      var nam = fs.readFileSync("./src/images/userProfile/test.png")
-      db.query('UPDATE users SET picture=? WHERE uid = 24',nam), function(err,results){
-        if(err){
-          console.log(err);
-        }
-      }
-      **/
-      var imageurl = 'http://localhost:8081/images/'
-     var imageNamehttp = imageurl.concat(imageName);
-      //bruk imageName bare for navn og ikke sti
-
-      /** */
-      //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
-      if(err){
-        console.log(err);
-      } else{
-        //res.send("ok");  //picture uploded sucefully
-        console.log("fil registrert");
-           res.send("ok");  //picture uploded sucefully
-
-      }
-    });
-   // res.send("ok");
-    }
-  
-});
-
-});
-
 /**
  * Get single picture
  */
@@ -664,13 +578,15 @@ app.get('/profilepic', function (req, res) {
 
 app.use('/images', express.static('/server/src/images/userProfile/'));
 
+/**
+ * Uploading of profilepicture
+ */
 
 app.post('/profilePicUpload', (req, res) => {
   var isAPicture = true; //For response logic
   var errorPicture = false; // for response logic
   var imageName;  //Store the imagename 
   var imageurl = 'http://localhost:8081/images/' //deafult url to picturefolder
-  
   //Dummy data before coockie is implemented:
   var userId; //Coneccted to sql string for updating the specific user with the image url, 
   userId =1; //Before coockie is implemented i have hardcoded the uid of user 1 
