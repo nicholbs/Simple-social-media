@@ -1,6 +1,6 @@
 "use strict";
 
-import express, { json } from 'express';
+import express from 'express';
 import path, { resolve } from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
@@ -12,7 +12,6 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 
 
 const app = express();
