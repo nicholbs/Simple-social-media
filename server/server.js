@@ -680,7 +680,7 @@ app.post('/deny', multerDecode.none(), function (req, res) {
 
 
 //Heter properties for gitt forum
-app.get('/f/:forum', auth, function (req, res) {
+app.get('/f/:forum', function (req, res) {
   var forum = req.params.forum;
   db.query('SELECT * FROM forums WHERE name=\'' + forum + '\'', function (err, result) {
     if(err) {
