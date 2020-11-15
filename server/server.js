@@ -269,7 +269,7 @@ app.post('/registerUseroldNic',multerDecode.none(), validateCookie, async (req,r
   // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
 
   
-  const hashedPassword = await bcrypt.hash(req.body.password, 10)
+ const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
