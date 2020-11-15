@@ -12,6 +12,8 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+
 
 const app = express();
 const PORT = 8081;
