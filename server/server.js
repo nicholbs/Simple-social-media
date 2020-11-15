@@ -791,14 +791,14 @@ app.use('/images', express.static('/server/src/images/userProfile/'));
  * Uploading of profilepicture
  */
 
-app.post('/profilePicUpload', (req, res) => {
+app.post('/profilePicUpload',auth, (req, res) => {
   var isAPicture = true; //For response logic
   var errorPicture = false; // for response logic
   var imageName;  //Store the imagename 
   var imageurl = 'http://localhost:8081/images/' //deafult url to picturefolder
   //Dummy data before coockie is implemented:
   var userId; //Coneccted to sql string for updating the specific user with the image url, 
-  userId =1; //Before coockie is implemented i have hardcoded the uid of user 1 
+  userId = res.locals.uid; //Before coockie is implemented i have hardcoded the uid of user 1 
 
   //Define pictureStore
   var multerStorage =multer.diskStorage({
