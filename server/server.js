@@ -1,6 +1,6 @@
 "use strict";
 
-import express from 'express';
+import express, { json } from 'express';
 import path, { resolve } from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
@@ -17,6 +17,8 @@ const app = express();
 const PORT = 8081;
 const multerDecode = multer(); //For å mota formData til post request
 
+
+
 app.listen(PORT, () => {
   console.log('Running...');
 })
@@ -24,11 +26,18 @@ app.listen(PORT, () => {
 app.use(express.static(path.resolve() + '/server'));
 app.use(express.urlencoded());  //parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());  //parse JSON bodies (as sent by API clients)
-app.use(cookieParser());
+app.use(cookieParser('abcdef-12345'));
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
 })); //Odd Bypass sikkerhetsmekanismer for post YOLO
+// app.use(auth)      //Alle forespørsler til back-end må autentiseres
+// app.use(session({
+//   name:'session-id',
+//   secret:'123456',
+//   saveUninitialized: false,
+//   resave: false
+// }))
 
 var db = mysql.createConnection({
   host: "db",
@@ -51,6 +60,130 @@ app.get('/', (req, res) => {
 
 var upload=multer();
 
+
+/******************************************************** */
+function auth(req, res, next) {
+if(!req.signedCookies.user) {
+
+    var authHeader = req.headers.authorization;
+  console.log("-----------Auth header " + authHeader)
+
+    if (!authHeader) {
+      console.log("------------------------Nå er du i !autheader")
+      var err = new Error("--------You are not authenticated--------");
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      next(err);
+    }
+    
+
+      
+      var auth = new Buffer.from(authHeader.split(" ")[1], "base64")
+      .toString()
+      .split(":");
+      var username = auth[0];
+      var password = auth[1];
+    
+   
+      db.query('SELECT * FROM users', function (err, result) {
+        if (err) {      //If the Sql query fails
+          console.log("Det var en error i query")
+          res.send("SQL did not work")    //Should put a warning in the response instead
+        }
+        else {
+    
+          JSON.stringify(result);
+          console.log("------------------------Nytt Sok------------------------")
+    
+          var allUsers = Object.values(result);
+          const found = allUsers.find(element => element.username == username); 
+          
+    
+            if (found == null) {
+              console.log("Cannot find user with username " + username);
+              res.setHeader("WWW-Authenticate", "Basic");
+              // res.send("Cannot find user " + username)
+              var err = new Error("-------You are not authenticated----------");
+              err.status = 401;
+              next(err);
+            }
+            else {
+              if (username == found.username && password == found.password) {
+                console.log("------------------------Nå er du i if (username == found.username")
+                res.cookie('user', '' + found.userType + ' ' + found.uid, {
+                  signed:true,
+                });
+                res.locals.uid = found.uid;
+                res.locals.userType = found.userType;
+                next();
+              } else {
+                var err = new Error("-------You are not authenticated----------");
+                
+                res.setHeader("WWW-Authenticate", "Basic");
+                err.status = 401;
+                next(err);
+              }    
+            }
+        }
+      })
+
+
+} 
+else {        //Dersom du har en cookie fra før
+
+    var valueFraCookie = req.signedCookies.user;
+    console.log("----------Dette er valueFraCookie " + valueFraCookie)
+    var array =  valueFraCookie.split(" ");
+      var userType = array[0];
+      var uid = array[1];
+      console.log("du er inni siste else, her er username " + userType)
+      console.log("du er inni siste else, her er password " + uid)
+      res.locals.uid = uid;
+      res.locals.userType = userType;
+
+  // db.query('SELECT * FROM users', function (err, result) {
+  //   if (err) {      //If the Sql query fails
+  //     console.log("Det var en error i query")
+  //     res.send("SQL did not work")    //Should put a warning in the response instead
+  //   }
+  //   else {
+
+  //     JSON.stringify(result);
+  //     console.log("------------------------Nytt Sok------------------------")
+
+  //     var allUsers = Object.values(result);
+
+      
+  //     const found = allUsers.find(element => element.username == username); 
+      
+
+  //       if (found == null) {
+
+  //       }
+  //     }
+  //   })
+
+
+  next();
+  // console.log("------------------------Nå er du i siste else")
+  //   if(req.signedCookies.user == 'admin') {
+  //     res.locals.uid = 1;
+  //     res.locals.userType = 'admin';
+  //     console.log("------------------------Nå er du i if (res.signedCookies")
+  //     next();
+  //   } else {
+  //     var err = new Error("------You are not authenticated---------");
+  //     err.status = 401;
+  //     next(err);
+  //   }
+  }
+}
+
+app.get('/secret', auth, (req, res)=> {
+  res.statusCode=200;
+  res.end("******")
+
+})
 
 
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
@@ -83,7 +216,7 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
           console.log("found.userType: " + found.userType)
           res.locals.uid = found.uid;
           res.locals.userType = found.userType;
-          console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
+          // console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
           next()
         }
     }
@@ -96,6 +229,9 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
     if (result == true) {
       passwordValid = true
     }
+    
+    
+
   }).then(function() {
 
     if (res.locals.foundPassword != null) {
@@ -143,7 +279,12 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
  *    gjør noe....
  */
 function validateCookie(req, res, next) {
+  console.log("Du er i validateCookie")
   const { cookies } = req;
+
+  // console.log("Her er req sin cookie: " + req.cookies)
+  console.log('Cookies: ', req.cookies)
+  console.log('Signed Cookies: ', req.signedCookies)
   if ('uid' in cookies) {
     console.log("----------------Du er i validate-------------");
     console.log("Session id exists");
@@ -158,18 +299,45 @@ function validateCookie(req, res, next) {
   } 
   next();
 }
+
+app.post('/checkUserType', validateCookie, function (req,res) {
+  console.log("-------------------" + res.locals.userType)
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  if(res.locals.userType){
+  var answer = JSON.stringify({
+    userInt: res.locals.userInt,
+    userType: res.locals.userType
+  })
+    res.send(answer);
+  }
+  else
+  res.send("error");
+})
+app.get('/checkUserType', validateCookie, function (req,res) {
+  console.log("-------------------" + res.locals.userType)
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  if(res.locals.userType){
+  var answer = JSON.stringify({
+    userInt: res.locals.userInt,
+    userType: res.locals.userType
+  })
+    res.send(answer);
+  }
+  else
+  res.send("error");
+})
  
 
 
 //registrering av ny bruker
 
-app.post('/registerUser',multerDecode.none(), async (req,res) => {
+app.post('/registerUser',multerDecode.none(), function (req,res) {
 
-  // if (res.locals.uid)
-  // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
+  if (res.locals.uid)
+  console.log("---------Du er logga inn fortsett: ----------" + res.locals.uid) //2
 
-  // if (res.locals.userType)
-  // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
+  if (res.locals.userType)
+  console.log("----------Du er ikke logga inn sluittter her----------" + res.locals.userType) //Admin
 
   
  // const hashedPassword = await bcrypt.hash(req.body.password, 10)
@@ -260,7 +428,7 @@ app.post('/registerUser',multerDecode.none(), async (req,res) => {
 
 //registrering av ny bruker
 
-app.post('/registerUseroldNic',multerDecode.none(), validateCookie, async (req,res) => {
+app.post('/registerHashed',multerDecode.none(), async (req,res) => {
 
   // if (res.locals.uid)
   // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
@@ -273,31 +441,69 @@ app.post('/registerUseroldNic',multerDecode.none(), validateCookie, async (req,r
 
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
+  console.log("Formdata brukernavn " + formData.username);
   var regPers = new person(formData); //lager en ny person temp
-
+  console.log("BrukernavnKlasse: " + regPers.username);
   var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
   //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
-  var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
- 
+  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
+  var usernameExist = false;
+  var tempUserType = 'bruker';
   //Hvis inpud data frontend matcher
-  if(regPers.matcingInfo() && regPers.validateInput()){
+  console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
+  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName()){
     regPers.validateInput();
+    console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
 
-   db.query(dbSjekk, function (err, result) {
+   //Chek if username exist in DB
+   db.query('SELECT COUNT(username) AS numberOfMatch FROM users WHERE username =?',[regPers.username], function (err,result) {
+    if(err){
+      throw err;
+    }
+    console.log("Sjekker brukernavn " + result[0].numberOfMatch);
+    //If username not exist
+    if(result[0].numberOfMatch == 0 ){
+      console.log("Ingen funn av brukernavn")
+      usernameExist = false;
+    }
+    else{
+      //If username exist
+      console.log("Brukernavn finnes")
+      usernameExist = true;
+    }
+   })
+
+   console.log("Bool: " + usernameExist);
+   
+    db.query('SELECT COUNT(email) AS numberOfMatch FROM users WHERE email =?',[regPers.email], function (err, result) {
       if (err) 
         throw err;
         console.log(result[0].numberOfMatch); 
         //Hvis det er ingen oppforinger i db
-       if(result[0].numberOfMatch ==0) {
+       if(result[0].numberOfMatch ==0 && usernameExist == false) {
          console.log("ingenMatch")
-         db.query(userReg); //registrer bruker
-         res.send("ok"); //send ok frontend
+         //db.query(userReg); //register a new user
+         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,hashedPassword, regPers.username], function (err, result) {
+          if (err)
+          throw err;
+          console.log("User registerd");
+          res.send("ok"); //send respons frontend
+         });
+
+         //res.send("ok"); //send respons frontend
+       }
+       else if(usernameExist == true){
+         res.send("UsernameExist") //If username exist
        }
        else {
-         res.send("emailFinnes"); //hvis bruker finnes, send melding frontend
+         res.send("emailFinnes"); //If emai exist, send message frontend
        }
       }); 
       
+  }
+  else if(regPers.validateInputUserName() == false){
+    console.log("Username characther not valid")
+    res.send("UserNameCharNot");
   }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
@@ -382,7 +588,7 @@ db.query(sql, function (err, result) {
  * information can be seen in the response header while inside
  * browser->networking->requestName
  ***********************************************************************/
-app.get('/getUsers', function (req, res) {
+app.post('/getUsers', auth, function (req, res) {
   console.log("Du er i getUsers");
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {
@@ -470,8 +676,10 @@ app.post('/deny', multerDecode.none(), function (req, res) {
   });
 });
 
+
+
 //Heter properties for gitt forum
-app.get('/f/:forum', function (req, res) {
+app.get('/f/:forum', auth, function (req, res) {
   var forum = req.params.forum;
   db.query('SELECT * FROM forums WHERE name=\'' + forum + '\'', function (err, result) {
     if(err) {
