@@ -53,6 +53,9 @@ export class settingsPage extends LitElement {
             else if(text=='errorMulter'){
                 alert("Fatal error in multer - backend");
             }
+            else if(text=='errorFileExt'){
+                alert("Only jpg and png pictures allowed");
+            }
             //annen uspesifikk feil
             else {
                 alert("some other fatal error backend");
