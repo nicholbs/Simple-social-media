@@ -9,7 +9,11 @@ export class settingsPage extends LitElement {
         display: block;
     }
     `;
+    constructor() {
+        super();
+        this.validate();
 
+    }
     render() {
         return html`
      
@@ -29,15 +33,61 @@ export class settingsPage extends LitElement {
                 </form>
                      
         </div>
+     </div>
+           <div>
+            <form class="form" id="changeUser">
+                <h1>Change info</h1>
+                <!--Første rad-->
+                <div class="row mt-2">
+                </div>
+                <!--Andre rad-->
+                <div class="d-flex justify-content-center">
+                    <div class="col">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" placeholder="username">
+                    </div>
+                    <div class="col">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="password">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary" @click="${this.changeUserInfo}">Change info</button>
+                </div>
+            </form>
+           </div>
 
-     </div>`;
+     `;
     }
+
+    changeUserInfo(e) {
+        console.log("Du er i changeUser")
+        const userInfo = new FormData(e.target.form);
+        console.log("Her er user info username " + userInfo.username)
+        console.log("Her er user info password " + userInfo.password)
+        console.log("Her er user info " + userInfo)
+        fetch('http://localhost:8081/changeUserInfo',{
+            method: 'post',
+            credentials: "include",
+            body: userInfo,
+        })
+    }
+
+
+    validate(){
+        fetch('http://localhost:8081/secret',{
+            credentials: "include"
+        })
+
+    }
+
     uploadPic(e){
         const userPic = new FormData(e.target.form);
         console.log("event");
 
         fetch('http://localhost:8081/profilePicUpload',{
             method:'post',
+            credentials: "include",
             body:userPic
         })
         .then(function(response){

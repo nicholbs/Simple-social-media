@@ -6,7 +6,8 @@ export class ForumSite extends LitElement {
         return {
             fData : Object,
             allPosts:  { type: Array },
-            forum_url: { type: String }
+            forum_url: { type: String },
+            // userType: {type: String }
         };
     }
     
@@ -15,6 +16,7 @@ export class ForumSite extends LitElement {
     this.fData = {};
     this.allPosts = [];
     this.fetch_data();
+    // this.get_userType();
     }
 
     static get styles() {
@@ -81,7 +83,9 @@ export class ForumSite extends LitElement {
     }
 
     get_forum_data(url_forum) {    
-        fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`)
+        fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`, {
+            credentials: "include"
+        })
         .then(res => res.json())
         .then(res => {    
             this.fData = Object.values(res)[0]; 
@@ -94,11 +98,14 @@ export class ForumSite extends LitElement {
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
+            // console.log("Body type:   " + res.body.userType)
             console.log("Forum Posts:")
             console.log(this.allPosts);
         })
-        // .catch(e => console.log(e))
+        .catch(e => console.log(e))
     }
+
+    
 
     render() {
         return html`
@@ -107,7 +114,7 @@ export class ForumSite extends LitElement {
             <!-- Gi button din property: @click="${this.register}" -->
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-        
+
             <!-- Main page content -->
             <div class="container-fluid">
                 <!-- Forum banner -->
