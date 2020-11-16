@@ -96,7 +96,10 @@ export class adminPage extends LitElement {
      * @author Nicholas Bodvin Sellevaag
      *************************************************************************/
     retrieveAllUsers() {
-        fetch(`${window.MyAppGlobals.serverURL}getUsers`)
+        fetch(`${window.MyAppGlobals.serverURL}getUsers`, {
+            method:'post',
+            credentials: "include",
+        })
         .then(response => response.json())
         .then(response => 
             {

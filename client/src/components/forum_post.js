@@ -7,13 +7,17 @@ export class PostPreview extends LitElement {
             pData : Object,
             post_id: {type: Number},
             forum_url: {type: String},
-            shown_vote: {type: Number}
+            shown_vote: {type: Number},
+            showBlock: {type: Boolean},
+            showDelete: {type: Boolean}
+         
         };
       }
     
     constructor() {
     super();
     this.forum_url = "not found";
+    // this.showButton = true;
     }
 
     static get styles() {
@@ -114,6 +118,11 @@ export class PostPreview extends LitElement {
                                             <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
                                         </div>
                                     </div>
+                                        <div>
+                                            <button @click="${this.get_userType}">Settings</button>
+                                            <h5>${this.showBlock ? html`<button>blocked</button>` : html``}</h5>
+                                            <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
+                                        </div>
                                     <!-- Post body -->
                                     <div class="col" onclick="location.href='#';" style="cursor: pointer;">
                                         <h5 class="card-title"> ${this.pData.title} </h5>
@@ -127,6 +136,37 @@ export class PostPreview extends LitElement {
                 </div>
             </div>
         `;
+    }
+
+    get_userType() {    
+
+        console.log("Du er i forum post, her er post_id: " + this.pData.uid)
+        var uid = this.pData.uid;
+        fetch('http://localhost:8081/checkUserType',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.pData.uid 
+              })
+            
+            
+        }).then(res => res.json())
+        .then(res => {    
+            var data = Object.values(res); 
+
+            if(data[0] == true) {
+                this.showBlock = true;
+                console.log("Du er admin og kan slette + blocke")
+            }
+            if(data[1] == true) {
+                this.showDelete = true;
+                console.log("Du er eieren av post og kan slette")
+            }
+            if(data[1] == false) {
+                console.log("Du må logge inn for å redigere")
+            }
+        })
     }
 }
 customElements.define("post-preview", PostPreview);

@@ -26,6 +26,19 @@ POST http://localhost:8081/lolol
 Content-Type: application/json
 
 {
+    "email": "nicholasbs@hotmail.com",
+    "repeatEmail": "nicholasbs@hotmail.com",
+    "password": "123",
+    "repeatPassword": "123"
+    
+}
+
+####
+
+POST http://localhost:8081/checkUserType
+Content-Type: application/json
+
+{
     "email": "nicholasTull@hotmail.com",
     "repeatEmail": "nicholasTull@hotmail.com",
     "password": "123",

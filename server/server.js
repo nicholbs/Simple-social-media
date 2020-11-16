@@ -137,46 +137,11 @@ else {        //Dersom du har en cookie fra før
     var array =  valueFraCookie.split(" ");
       var userType = array[0];
       var uid = array[1];
-      console.log("du er inni siste else, her er username " + userType)
-      console.log("du er inni siste else, her er password " + uid)
+      console.log("du er inni siste else, her er userType " + userType)
+      console.log("du er inni siste else, her er uid " + uid)
       res.locals.uid = uid;
       res.locals.userType = userType;
-
-  // db.query('SELECT * FROM users', function (err, result) {
-  //   if (err) {      //If the Sql query fails
-  //     console.log("Det var en error i query")
-  //     res.send("SQL did not work")    //Should put a warning in the response instead
-  //   }
-  //   else {
-
-  //     JSON.stringify(result);
-  //     console.log("------------------------Nytt Sok------------------------")
-
-  //     var allUsers = Object.values(result);
-
-      
-  //     const found = allUsers.find(element => element.username == username); 
-      
-
-  //       if (found == null) {
-
-  //       }
-  //     }
-  //   })
-
-
   next();
-  // console.log("------------------------Nå er du i siste else")
-  //   if(req.signedCookies.user == 'admin') {
-  //     res.locals.uid = 1;
-  //     res.locals.userType = 'admin';
-  //     console.log("------------------------Nå er du i if (res.signedCookies")
-  //     next();
-  //   } else {
-  //     var err = new Error("------You are not authenticated---------");
-  //     err.status = 401;
-  //     next(err);
-  //   }
   }
 }
 
@@ -301,33 +266,42 @@ function validateCookie(req, res, next) {
   next();
 }
 
-app.post('/checkUserType', validateCookie, function (req,res) {
-  console.log("-------------------" + res.locals.userType)
+app.post('/checkUserType', auth, function (req,res) {
+  console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
+  console.log("------------------ her er ownerId: " + req.body.ownerId)
   res.writeHead(200, { 'Content-Type': 'application/json' });
-  if(res.locals.userType){
-  var answer = JSON.stringify({
-    userInt: res.locals.userInt,
-    userType: res.locals.userType
-  })
+
+  
+  if(res.locals.userType == "moderator" || res.locals.userType == "admin"){
+    console.log("Du er inni checkuser if")
+    var answer = JSON.stringify({
+      admin: true,
+      user: true
+    })
     res.send(answer);
   }
-  else
-  res.send("error");
-})
-app.get('/checkUserType', validateCookie, function (req,res) {
-  console.log("-------------------" + res.locals.userType)
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  if(res.locals.userType){
-  var answer = JSON.stringify({
-    userInt: res.locals.userInt,
-    userType: res.locals.userType
-  })
-    res.send(answer);
+  else if (res.locals.userId == req.body.ownerId) {
+    console.log("Du er inni checkuser if else")
+    var answer = JSON.stringify({
+      admin: false,
+      user: true
+    }) 
+    res.end(answer);
   }
-  else
-  res.send("error");
-})
- 
+  
+  else {
+    console.log("Du er inni checkuser else")
+    var answer = JSON.stringify({
+    admin: false,
+    user: false
+  })
+  res.end(answer);
+}
+
+});
+
+
+
 
 /**
  * This route creates a new user
@@ -602,6 +576,28 @@ app.get('/requests', function (req, res) {
   });
 });
 
+app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
+  const formData = req.body; //Lagrer unna formdata objekt
+  console.log('form data username ', formData.username); //Skriver ut formdata objekt
+  console.log('form data password', formData.password); //Skriver ut formdata objekt
+  
+
+
+          // UPDATE users SET username = 'hailitla', password = 'hailHitla' WHERE uid =5
+  var sql = "UPDATE users SET username = " + "'" + formData.username + "'" + ", password= " + "'" + formData.password + "'" + " WHERE uid =" + res.locals.uid;
+  console.log("Her er query" + sql)
+  
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      // res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end("Success");
+    }
+  });
+})
+
+
 
 /************************************************************************
  * 
@@ -677,7 +673,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.email, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -693,7 +689,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 //Henter alle posts for ett gitt forum
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, forum, image, votes, users.email, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
@@ -708,7 +704,7 @@ app.get('/p/:pid', function (req, res) {
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.email, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
             ORDER BY votes DESC;`, function (err, result) {
@@ -772,7 +768,9 @@ app.use('/images', express.static('/server/src/images/userProfile/'));
  * Uploading of profilepicture
  */
 
-app.post('/profilePicUpload',auth, (req, res) => {
+
+
+app.post('/profilePicUpload', auth, (req, res) => {
   var isAPicture = true; //For response logic
   var errorPicture = false; // for response logic
   var imageName;  //Store the imagename 
