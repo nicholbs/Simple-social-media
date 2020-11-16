@@ -52,6 +52,7 @@ export class RegisterPage extends LitElement {
     }
     registerUser(e){
         const newUser = new FormData(e.target.form);
+        e.preventDefault();
         console.log("event");
 
         fetch('http://localhost:8081/registerUser',{

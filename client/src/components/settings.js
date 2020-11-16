@@ -34,6 +34,7 @@ export class settingsPage extends LitElement {
     }
     uploadPic(e){
         const userPic = new FormData(e.target.form);
+        e.preventDefault();
         console.log("event");
 
         fetch('http://localhost:8081/profilePicUpload',{

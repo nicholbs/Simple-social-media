@@ -329,72 +329,55 @@ app.get('/checkUserType', validateCookie, function (req,res) {
 })
  
 
-
-//registrering av ny bruker
+/**
+ * This route creates a new user
+ * @see /server/src/components/UserClass - the class of a new user
+ */
 
 app.post('/registerUser',multerDecode.none(), function (req,res) {
-
-  if (res.locals.uid)
-  console.log("---------Du er logga inn fortsett: ----------" + res.locals.uid) //2
-
-  if (res.locals.userType)
-  console.log("----------Du er ikke logga inn sluittter her----------" + res.locals.userType) //Admin
-
+  var usernameExist = false; //Does username exist?
   
- // const hashedPassword = await bcrypt.hash(req.body.password, 10)
-
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data', formData.email); //Skriver ut formdata objekt
-  console.log("Formdata brukernavn " + formData.username);
-  var regPers = new person(formData); //lager en ny person temp
-  console.log("BrukernavnKlasse: " + regPers.username);
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ regPers.password +"','user')"; //registrer en bruker
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
-  var usernameExist = false;
-  var tempUserType = 'bruker';
-  //Hvis inpud data frontend matcher
+  //const hashedPassword = await bcrypt.hash(req.body.password, 10) //- Sjekk om denne kan fjernet med Nicholas
+  var salt = bcrypt.genSaltSync(10); //Generate salt
+  var hashedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
+  
+  var regPers = new person(req.body); //Create a new user based on requests formdata
+  
+  //If the new users information matches the repeted information and the formdata requirements then chek if username exist
   console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
   if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName()){
     regPers.validateInput();
-    console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
+    console.log("All information maching and regex is okay for user: " + regPers.username); //Consoe log out status
 
    //Chek if username exist in DB
    db.query('SELECT COUNT(username) AS numberOfMatch FROM users WHERE username =?',[regPers.username], function (err,result) {
     if(err){
       throw err;
     }
-    console.log("Sjekker brukernavn " + result[0].numberOfMatch);
     //If username not exist
     if(result[0].numberOfMatch == 0 ){
-      console.log("Ingen funn av brukernavn")
+      console.log("The Desired username " + regPers.username +" Does not exit and can be used for user " + regPers.email);
       usernameExist = false;
     }
     else{
       //If username exist
-      console.log("Brukernavn finnes")
+      console.log("Username " + regPers.username + "does exist and cant be used");
       usernameExist = true;
     }
    })
-
-   console.log("Bool: " + usernameExist);
-   
+   //Chek if email exist   and if not register the user
     db.query('SELECT COUNT(email) AS numberOfMatch FROM users WHERE email =?',[regPers.email], function (err, result) {
       if (err) 
         throw err;
-        console.log(result[0].numberOfMatch); 
-        //Hvis det er ingen oppforinger i db
+        //If there is no match of email address in db and the username not exist, then: 
        if(result[0].numberOfMatch ==0 && usernameExist == false) {
-         console.log("ingenMatch")
-         //db.query(userReg); //register a new user
-         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,regPers.password, regPers.username], function (err, result) {
+         //register the new user in the DB:
+         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,hashedPassword, regPers.username], function (err, result) {
           if (err)
           throw err;
-          console.log("User registerd");
-          res.send("ok"); //send respons frontend
+          console.log("User: " +regPers.username + " Succesfully registerd in DB");
+          res.send("ok"); //send respons to frontend
          });
-
-         //res.send("ok"); //send respons frontend
        }
        else if(usernameExist == true){
          res.send("UsernameExist") //If username exist
@@ -405,17 +388,15 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
       }); 
       
   }
+  //else if from the big if statment, if the username have invalid characthers, send respons frontend and DO NOT REGISTER
   else if(regPers.validateInputUserName() == false){
-    console.log("Username characther not valid")
+    console.log("Username characther not valid for user with email: " +regPers.email);
     res.send("UserNameCharNot");
   }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
   }
   
-  //TODO passord encryption
-  
-
 })
 
 
