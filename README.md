@@ -33,6 +33,7 @@ Wojciech Kurp
 - npm install randomstring --save //Brukes for randomisering av filnavn --Odd
 - npm install express-session --save    //brukes for å lage coocies --Nicholas
 - npm install bcryptjs --save     //brukes for hashing av passord --Nicholas
+- npm install cookie-parser --save     //Tror denne er glemlt i dokumentasjon for Coockise, kan du vertifisere Nicolas? - Odd (jeg terengte denne)
 
 ## Client:
 - npm install @vaadin/router --save //Brukes til å sette opp ruter --Odd
