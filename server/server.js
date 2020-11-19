@@ -109,7 +109,8 @@ if(!req.signedCookies.user) {
               next(err);
             }
             else {
-              if (username == found.username && password == found.password) {
+              //if (username == found.username && password == found.password) { 
+              if (username == found.username && bcrypt.compareSync(password,found.password)) {
                 console.log("------------------------Nå er du i if (username == found.username")
                 res.cookie('user', '' + found.userType + ' ' + found.uid, {
                   signed:true,
