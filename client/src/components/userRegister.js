@@ -83,6 +83,9 @@ export class RegisterPage extends LitElement {
                 //alert("Feil i brukernavn eller passord under registrering");
                 alert("input value not vallid username, password missmatch ");
             }
+            else if(text =='pwToChort'){ //If the password is to short
+                alert("Pw to short, must be atleast 8 characther long!");
+            }
         })
         .catch(function (error){
             console.log(error);

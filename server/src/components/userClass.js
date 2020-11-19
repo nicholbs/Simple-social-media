@@ -1,4 +1,6 @@
-
+/**
+ * This class is used when register a new user to the forum
+ */
 class person{
     constructor(dataE){
       this.email = dataE.email;
@@ -41,6 +43,17 @@ class person{
         console.log("Username characthers not valid! for user with email: " + this.email);
         return false;
       }
+    }
+    validatePassword(){
+      if (this.password.length >= 8){ //Chek if the pw is grather than 8 characthers
+        console.log("Pw lengt for user " + this.username + "is okay")
+        return true;
+      }
+      else{ //If the pw iss less than 8 characther
+        console.log("Pw lengt for user " + this.username + " is lower then requerd 8 ");
+        return false;
+      }
+      
     }
   }
 export{person}

@@ -317,10 +317,10 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   var hashedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
   
   var regPers = new person(req.body); //Create a new user based on requests formdata
-  
+ 
   //If the new users information matches the repeted information and the formdata requirements then chek if username exist
   console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
-  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName()){
+  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName() &&regPers.validatePassword()){
     regPers.validateInput();
     console.log("All information maching and regex is okay for user: " + regPers.username); //Consoe log out status
 
@@ -367,6 +367,9 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   else if(regPers.validateInputUserName() == false){
     console.log("Username characther not valid for user with email: " +regPers.email);
     res.send("UserNameCharNot");
+  }
+  else if(!regPers.validatePassword()){ //If the password enterd is to short
+    res.send("pwToChort");
   }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
