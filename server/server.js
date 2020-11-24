@@ -589,21 +589,23 @@ app.post('/getUsers', auth, function (req, res) {
  * information can be seen in the response header while inside
  * browser->networking->requestName
  ***********************************************************************/
-app.get('/requests', function (req, res) {
+app.get('/requests', auth, function (req, res) {
   console.log("Du er i requests");
 
   if (res.locals.userType == "user" || res.locals.userType == "moderator") { 
+    console.log("Du er i request user/moderator")
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify( 
-      {
-        Object: {
-          warning: "You have to be an admin to handle requests"
-        } 
+    res.end(JSON.stringify( {
+      Object: {
+        warning: "You have to be moderator/admin to see requests of users", 
+        hei: "You have to be moderator/admin to see requests of users"
       }
-    ))
+    }
+    ));
   }
-    
+  
   else if (res.locals.userType == "admin") {
+    console.log("Du er i request admin")
     db.query('SELECT * FROM requests', function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
