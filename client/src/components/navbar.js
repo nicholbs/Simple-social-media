@@ -11,7 +11,14 @@ export class NavBar extends LitElement {
     constructor() {
 	super();
 	//this.get_user_data();
-    }
+	
+	}
+
+	retrieveCookie(params) {
+		let cookieArray = document.cookie;
+		
+	}
+
 
     _searchPosts() {
         location.href = '/search?q=' + this.shadowRoot.getElementById("searchKey").value;
@@ -45,7 +52,7 @@ export class NavBar extends LitElement {
 			
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					  Dropdown
+					  User Info
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					  <a class="dropdown-item" href="/login" onclick="setTimeout(location.reload.bind(location), 1)">login</a>
@@ -66,7 +73,7 @@ export class NavBar extends LitElement {
 				  </li>
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					  user-settings
+					  Administer
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					  <a class="dropdown-item" href="/userList" onclick="setTimeout(location.reload.bind(location), 1)">List of users</a>
