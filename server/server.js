@@ -592,7 +592,7 @@ app.post('/getUsers', auth, function (req, res) {
 app.get('/requests', auth, function (req, res) {
   console.log("Du er i requests");
 
-  if (res.locals.userType == "user" || res.locals.userType == "moderator") { 
+  if (res.locals.userType == "user") { 
     console.log("Du er i request user/moderator")
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify( {
@@ -607,6 +607,19 @@ app.get('/requests', auth, function (req, res) {
   else if (res.locals.userType == "admin") {
     console.log("Du er i request admin")
     db.query('SELECT * FROM requests', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+
+    });
+  }
+
+  else if (res.locals.userType == "moderator") {
+    console.log("Du er i request moderator")
+    db.query('SELECT * FROM `requests` WHERE userType="user"', function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
