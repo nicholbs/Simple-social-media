@@ -20,14 +20,14 @@ export class settingsPage extends LitElement {
      <div>
         <div class="d-flex justify-content-center"> 
                 <form class="form" id="uplaodPicture" enctype="multipart/form-data">
-                        <h1>Upload Picture</h1>
+                        <h1>Upload Profile Picture</h1>
                         <div class="row mt-2">
                                 <div class="col">
                                     <label for="photo2">Upload Picture</label>
                                     <input type="file" name="file" class="form-control-file" id="photo2" accept="image/*">
                                 </div>
                                 <div class="row mt-2">
-                                        <button @click="${this.uploadPic}" class="btn btn-primary">set Prfoile Picture</button>
+                                        <button @click="${this.uploadPic}" class="btn btn-primary">Set Profile Picture</button>
                                 </div>
                             </div>  
                 </form>
