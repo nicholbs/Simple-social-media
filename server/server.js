@@ -13,9 +13,12 @@ import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
 
+
 const app = express();
 const PORT = 8081;
 const multerDecode = multer(); //For å mota formData til post request
+
+
 
 app.listen(PORT, () => {
   console.log('Running...');
@@ -24,11 +27,18 @@ app.listen(PORT, () => {
 app.use(express.static(path.resolve() + '/server'));
 app.use(express.urlencoded());  //parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());  //parse JSON bodies (as sent by API clients)
-app.use(cookieParser());
+app.use(cookieParser('abcdef-12345'));
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
 })); //Odd Bypass sikkerhetsmekanismer for post YOLO
+// app.use(auth)      //Alle forespørsler til back-end må autentiseres
+// app.use(session({
+//   name:'session-id',
+//   secret:'123456',
+//   saveUninitialized: false,
+//   resave: false
+// }))
 
 var db = mysql.createConnection({
   host: "db",
@@ -51,6 +61,96 @@ app.get('/', (req, res) => {
 
 var upload=multer();
 
+
+/******************************************************** */
+function auth(req, res, next) {
+if(!req.signedCookies.user) {
+
+    var authHeader = req.headers.authorization;
+  console.log("-----------Auth header " + authHeader)
+
+    if (!authHeader) {
+      console.log("------------------------Nå er du i !autheader")
+      var err = new Error("--------You are not authenticated--------");
+      res.setHeader("WWW-Authenticate", "Basic");
+      err.status = 401;
+      next(err);
+    }
+    
+
+      
+      var auth = new Buffer.from(authHeader.split(" ")[1], "base64")
+      .toString()
+      .split(":");
+      var username = auth[0];
+      var password = auth[1];
+    
+   
+      db.query('SELECT * FROM users', function (err, result) {
+        if (err) {      //If the Sql query fails
+          console.log("Det var en error i query")
+          res.send("SQL did not work")    //Should put a warning in the response instead
+        }
+        else {
+    
+          JSON.stringify(result);
+          console.log("------------------------Nytt Sok------------------------")
+    
+          var allUsers = Object.values(result);
+          const found = allUsers.find(element => element.username == username); 
+          
+    
+            if (found == null) {
+              console.log("Cannot find user with username " + username);
+              res.setHeader("WWW-Authenticate", "Basic");
+              // res.send("Cannot find user " + username)
+              var err = new Error("-------You are not authenticated----------");
+              err.status = 401;
+              next(err);
+            }
+            else {
+              //if (username == found.username && password == found.password) { 
+              if (username == found.username && bcrypt.compareSync(password,found.password)) {
+                console.log("------------------------Nå er du i if (username == found.username")
+                res.cookie('user', '' + found.userType + ' ' + found.uid, {
+                  signed:true,
+                });
+                res.locals.uid = found.uid;
+                res.locals.userType = found.userType;
+                next();
+              } else {
+                var err = new Error("-------You are not authenticated----------");
+                
+                res.setHeader("WWW-Authenticate", "Basic");
+                err.status = 401;
+                next(err);
+              }    
+            }
+        }
+      })
+
+
+} 
+else {        //Dersom du har en cookie fra før
+
+    var valueFraCookie = req.signedCookies.user;
+    console.log("----------Dette er valueFraCookie " + valueFraCookie)
+    var array =  valueFraCookie.split(" ");
+      var userType = array[0];
+      var uid = array[1];
+      console.log("du er inni siste else, her er userType " + userType)
+      console.log("du er inni siste else, her er uid " + uid)
+      res.locals.uid = uid;
+      res.locals.userType = userType;
+  next();
+  }
+}
+
+app.get('/secret', auth, (req, res)=> {
+  res.statusCode=200;
+  res.end("******")
+
+})
 
 
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
@@ -83,7 +183,7 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
           console.log("found.userType: " + found.userType)
           res.locals.uid = found.uid;
           res.locals.userType = found.userType;
-          console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
+          // console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
           next()
         }
     }
@@ -96,6 +196,9 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
     if (result == true) {
       passwordValid = true
     }
+    
+    
+
   }).then(function() {
 
     if (res.locals.foundPassword != null) {
@@ -143,7 +246,12 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
  *    gjør noe....
  */
 function validateCookie(req, res, next) {
+  console.log("Du er i validateCookie")
   const { cookies } = req;
+
+  // console.log("Her er req sin cookie: " + req.cookies)
+  console.log('Cookies: ', req.cookies)
+  console.log('Signed Cookies: ', req.signedCookies)
   if ('uid' in cookies) {
     console.log("----------------Du er i validate-------------");
     console.log("Session id exists");
@@ -158,12 +266,129 @@ function validateCookie(req, res, next) {
   } 
   next();
 }
+
+app.post('/checkUserType', auth, function (req,res) {
+  console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
+  console.log("------------------ her er ownerId: " + req.body.ownerId)
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+
+  
+  if(res.locals.userType == "moderator" || res.locals.userType == "admin"){
+    console.log("Du er inni checkuser if")
+    var answer = JSON.stringify({
+      admin: true,
+      user: true
+    })
+    res.send(answer);
+  }
+  else if (res.locals.userId == req.body.ownerId) {
+    console.log("Du er inni checkuser if else")
+    var answer = JSON.stringify({
+      admin: false,
+      user: true
+    }) 
+    res.end(answer);
+  }
+  
+  else {
+    console.log("Du er inni checkuser else")
+    var answer = JSON.stringify({
+    admin: false,
+    user: false
+  })
+  res.end(answer);
+}
+
+});
+
+
+
+
+/**
+ * This route creates a new user
+ * @see /server/src/components/UserClass - the class of a new user
+ */
+
+app.post('/registerUser',multerDecode.none(), function (req,res) {
+  var usernameExist = false; //Does username exist?
+  
+  //const hashedPassword = await bcrypt.hash(req.body.password, 10) //- Sjekk om denne kan fjernet med Nicholas
+  var salt = bcrypt.genSaltSync(10); //Generate salt
+  var hashedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
+  
+  var regPers = new person(req.body); //Create a new user based on requests formdata
  
+  //If the new users information matches the repeted information and the formdata requirements then chek if username exist
+  console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
+  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName() &&regPers.validatePassword()){
+    regPers.validateInput();
+    console.log("All information maching and regex is okay for user: " + regPers.username); //Consoe log out status
+
+   //Chek if username exist in DB
+   db.query('SELECT COUNT(username) AS numberOfMatch FROM users WHERE username =?',[regPers.username], function (err,result) {
+    if(err){
+      throw err;
+    }
+    //If username not exist
+    if(result[0].numberOfMatch == 0 ){
+      console.log("The Desired username " + regPers.username +" Does not exit and can be used for user " + regPers.email);
+      usernameExist = false;
+    }
+    else{
+      //If username exist
+      console.log("Username " + regPers.username + "does exist and cant be used");
+      usernameExist = true;
+    }
+   })
+   //Chek if email exist   and if not register the user
+    db.query('SELECT COUNT(email) AS numberOfMatch FROM users WHERE email =?',[regPers.email], function (err, result) {
+      if (err) 
+        throw err;
+        //If there is no match of email address in db and the username not exist, then: 
+       if(result[0].numberOfMatch ==0 && usernameExist == false) {
+         //register the new user in the DB:
+         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,hashedPassword, regPers.username], function (err, result) {
+          if (err)
+          throw err;
+          console.log("User: " +regPers.username + " Succesfully registerd in DB");
+          res.send("ok"); //send respons to frontend
+         });
+       }
+       else if(usernameExist == true){
+         res.send("UsernameExist") //If username exist
+       }
+       else {
+         res.send("emailFinnes"); //If emai exist, send message frontend
+       }
+      }); 
+      
+  }
+  //else if from the big if statment, if the username have invalid characthers, send respons frontend and DO NOT REGISTER
+  else if(regPers.validateInputUserName() == false){
+    console.log("Username characther not valid for user with email: " +regPers.email);
+    res.send("UserNameCharNot");
+  }
+  else if(!regPers.validatePassword()){ //If the password enterd is to short
+    res.send("pwToChort");
+  }
+  else{
+    res.send("missMatch"); //hvis inpund data ikke matcher 
+  }
+  
+})
+
+
+
+
+
+
+
+
 
 
 //registrering av ny bruker
 
-app.post('/registerUser',multerDecode.none(), async (req,res) => {
+app.post('/registerHashed',multerDecode.none(), async (req,res) => {
 
   // if (res.locals.uid)
   // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
@@ -172,14 +397,14 @@ app.post('/registerUser',multerDecode.none(), async (req,res) => {
   // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
 
   
- // const hashedPassword = await bcrypt.hash(req.body.password, 10)
+ const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
   const formData = req.body; //Lagrer unna formdata objekt
   console.log('form data', formData.email); //Skriver ut formdata objekt
   console.log("Formdata brukernavn " + formData.username);
   var regPers = new person(formData); //lager en ny person temp
   console.log("BrukernavnKlasse: " + regPers.username);
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ regPers.password +"','user')"; //registrer en bruker
+  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
   //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
   //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
   var usernameExist = false;
@@ -218,7 +443,7 @@ app.post('/registerUser',multerDecode.none(), async (req,res) => {
        if(result[0].numberOfMatch ==0 && usernameExist == false) {
          console.log("ingenMatch")
          //db.query(userReg); //register a new user
-         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,regPers.password, regPers.username], function (err, result) {
+         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,hashedPassword, regPers.username], function (err, result) {
           if (err)
           throw err;
           console.log("User registerd");
@@ -239,65 +464,6 @@ app.post('/registerUser',multerDecode.none(), async (req,res) => {
   else if(regPers.validateInputUserName() == false){
     console.log("Username characther not valid")
     res.send("UserNameCharNot");
-  }
-  else{
-    res.send("missMatch"); //hvis inpund data ikke matcher 
-  }
-  
-  //TODO passord encryption
-  
-
-})
-
-
-
-
-
-
-
-
-
-
-//registrering av ny bruker
-
-app.post('/registerUseroldNic',multerDecode.none(), validateCookie, async (req,res) => {
-
-  // if (res.locals.uid)
-  // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
-
-  // if (res.locals.userType)
-  // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
-
-  
-  const hashedPassword = await bcrypt.hash(req.body.password, 10)
-
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data', formData.email); //Skriver ut formdata objekt
-  var regPers = new person(formData); //lager en ny person temp
-
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
-  var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
- 
-  //Hvis inpud data frontend matcher
-  if(regPers.matcingInfo() && regPers.validateInput()){
-    regPers.validateInput();
-
-   db.query(dbSjekk, function (err, result) {
-      if (err) 
-        throw err;
-        console.log(result[0].numberOfMatch); 
-        //Hvis det er ingen oppforinger i db
-       if(result[0].numberOfMatch ==0) {
-         console.log("ingenMatch")
-         db.query(userReg); //registrer bruker
-         res.send("ok"); //send ok frontend
-       }
-       else {
-         res.send("emailFinnes"); //hvis bruker finnes, send melding frontend
-       }
-      }); 
-      
   }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
@@ -382,7 +548,7 @@ db.query(sql, function (err, result) {
  * information can be seen in the response header while inside
  * browser->networking->requestName
  ***********************************************************************/
-app.get('/getUsers', function (req, res) {
+app.post('/getUsers', auth, function (req, res) {
   console.log("Du er i getUsers");
   db.query('SELECT * FROM users', function (err, result) {
     if (err) {
@@ -413,6 +579,28 @@ app.get('/requests', function (req, res) {
     }
   });
 });
+
+app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
+  const formData = req.body; //Lagrer unna formdata objekt
+  console.log('form data username ', formData.username); //Skriver ut formdata objekt
+  console.log('form data password', formData.password); //Skriver ut formdata objekt
+  
+
+
+          // UPDATE users SET username = 'hailitla', password = 'hailHitla' WHERE uid =5
+  var sql = "UPDATE users SET username = " + "'" + formData.username + "'" + ", password= " + "'" + formData.password + "'" + " WHERE uid =" + res.locals.uid;
+  console.log("Her er query" + sql)
+  
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      // res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end("Success");
+    }
+  });
+})
+
 
 
 /************************************************************************
@@ -469,6 +657,8 @@ app.post('/deny', multerDecode.none(), function (req, res) {
     }
   });
 });
+
+
 
 //Heter properties for gitt forum
 app.get('/f/:forum', function (req, res) {
@@ -562,118 +752,8 @@ app.get('/post/:post/vote/:updown', function(req, res) {
   }
 })
 
-var test;
+var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
 
-
-app.post('/registerUserOLD',upload.none(),function(req,res){
-
-
-
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data', formData.email); //Skriver ut formdata objekt
-  test = new person;
-  dbstring = ''
-  //Flyttes inn i constructor
-  test.email = formData.email;
-  test.repeatEmail =formData.repeatEmail;
-  test.password = formData.password;
-  test.repeatPassword = formData.repeatPassword;
-  //
-  
-  test.matcingInfo();
-  
-  
-  
-  res.send("MotattReq"); //sender respons til fetch api
-})
-
-
-
-
-/**
- * Uploading of pictures
- */
-
-var imageName;
-var uploadImage = multer.diskStorage({
-destination: './src/images/userProfile', //Hvor filen skal lagres
-filename: function(req,file,cb){
-  let navnTemp; //brueks til a lagre randomstring
-  navnTemp =randomstring.generate(); //Generer et random stringNavn
-  imageName = navnTemp + path.extname(file.originalname); //Appender filextention
- cb(null,imageName); //Setter filnavnet
-}
-
-})
-
-const fileFilter2 = (req, file, cb) => {
-  if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-      cb(null, true);
-  } else {
-    req.fileValidationError = "Forbidden extension";
-    return cb(null, false, req.fileValidationError);
-  }
-}
-
-
-app.post('/profilePicUpload', (req, res) => {
-  //DymmyData for test, når coockes er implementert må det endres litt
-  var userId;
-  userId =1;
-  //Definerer hva multer skal gjøre 
-  let upload = multer({ storage: uploadImage, fileFilter:fileFilter2}).single('file');
-
-  upload(req, res, function(err) {
-    console.log( "under oplaod" + imageName);
-    //Errorhandling logic from multer: https://github.com/expressjs/multer
-    //specific error in multer
-    if(err instanceof multer.MulterError){
-      res.send("errorMulter")
-      console.log( "under feil" + imageName);
-    }
-    //unspecific error
-    else if(err){
-      res.send("errorUnspecifed")
-      console.log( "under andre feil" + imageName);
-    }
-    else if(req.fileValidationError){
-      console.log("Ikke gyldig fil");
-      //res.send("errorFileExt");
-    }
-    //thing okay with multer then 
-    else{
-      //Her skal data legges i DB
-      console.log( "riktig     " + imageName);
-     /* Hvis BLOB
-      var nam = fs.readFileSync("./src/images/userProfile/test.png")
-      db.query('UPDATE users SET picture=? WHERE uid = 24',nam), function(err,results){
-        if(err){
-          console.log(err);
-        }
-      }
-      **/
-      var imageurl = 'http://localhost:8081/images/'
-     var imageNamehttp = imageurl.concat(imageName);
-      //bruk imageName bare for navn og ikke sti
-
-      /** */
-      //Setter inn navn i db, UID må endres nor coocikes er implementert
-     db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
-      if(err){
-        console.log(err);
-      } else{
-        //res.send("ok");  //picture uploded sucefully
-        console.log("fil registrert");
-           res.send("ok");  //picture uploded sucefully
-
-      }
-    });
-   // res.send("ok");
-    }
-  
-});
-
-});
 
 /**
  * Get single picture
@@ -703,3 +783,84 @@ app.get('/profilepic', function (req, res) {
  *  */
 
 app.use('/images', express.static('/server/src/images/userProfile/'));
+
+/**
+ * Uploading of profilepicture
+ */
+
+
+
+app.post('/profilePicUpload', auth, (req, res) => {
+  var isAPicture = true; //For response logic
+  var errorPicture = false; // for response logic
+  var imageName;  //Store the imagename 
+  var imageurl = 'http://localhost:8081/images/' //deafult url to picturefolder
+  //Dummy data before coockie is implemented:
+  var userId; //Coneccted to sql string for updating the specific user with the image url, 
+  userId = res.locals.uid; //Before coockie is implemented i have hardcoded the uid of user 1 
+
+  //Define pictureStore
+  var multerStorage =multer.diskStorage({
+    destination: './src/images/userProfile', //path to profilePicture
+    //Create a image name:
+    filename: function(req,file,cb){
+        let nameTemp = randomstring.generate(); //generates a random filestring for random name
+        imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
+        cb(null,imageName); //Return file with filename and extention;
+    }
+  }) //End of storage logick
+
+  //Image filter for filter datatypes backend
+  const pictureFilter = (reg,file,cb) => {
+    //Chek what filetype uploaded
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+        cb(null, true);
+    //If not match the filefilter then:
+    } else {
+      req.fileValidationError = "Forbidden extension";
+      return cb(null, false, req.fileValidationError);
+    }
+  }//end of filefilter for picture
+  
+
+  //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
+  var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
+ // pictureUpload = multer({ storage: multerStorage}).single('file');
+
+  //Here we want to chek for errors and register the name in the database
+  pictureUpload(req, res, function(err) {
+  //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
+    if(err instanceof multer.MulterError){
+      console.log( "Error in pictureUpload of image: " + imageName);
+      errorPicture = true; // Set errorPicture to tru if problem with multer
+    }
+    //If a filetype validation failed
+    else if(req.fileValidationError){
+      console.log("Not valid fileformat only jpg and png allowed ref: " + imageName);
+      res.send("errorFileExt"); //Send message front end
+    }
+    else if(err){
+      console.log("Some unspecifed error when handling of file: " + imageName);
+      errorPicture = true; //set errorPicture to true if some unspecifed eror
+      throw err;
+    }
+    //If it is a picture register the name in DB
+    else if(isAPicture){
+      var imageNamehttp = imageurl.concat(imageName); //Create the full image url
+      //Update the specifed user with imahe url on profilepicture
+      db.query('UPDATE users SET picture=? WHERE uid =?',[imageNamehttp,userId], function(err,results){
+        if(err){
+          console.log(err);
+          errorPicture = true //Set the bool if problem with register 
+        } else{
+          //picture registed in db
+          console.log("profilepic registerd in db with path: " + imageNamehttp);
+             res.send("ok");  //picture uploded sucefully
+        }
+      });
+
+    }//end of else
+    
+  })
+  
+  });

@@ -52,6 +52,7 @@ export class RegisterPage extends LitElement {
     }
     registerUser(e){
         const newUser = new FormData(e.target.form);
+        e.preventDefault();
         console.log("event");
 
         fetch('http://localhost:8081/registerUser',{
@@ -81,6 +82,9 @@ export class RegisterPage extends LitElement {
             else if(text =='missMatch'){
                 //alert("Feil i brukernavn eller passord under registrering");
                 alert("input value not vallid username, password missmatch ");
+            }
+            else if(text =='pwToChort'){ //If the password is to short
+                alert("Pw to short, must be atleast 8 characther long!");
             }
         })
         .catch(function (error){
