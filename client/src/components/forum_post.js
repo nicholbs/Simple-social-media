@@ -109,21 +109,8 @@ export class PostPreview extends LitElement {
                                     <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
                                         <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
                                     </div>
-<<<<<<< HEAD
                                     <div class="d-flex justify-content-center">
                                         <h6 class="test">${this.shown_vote}</h6>
-=======
-                                        <div>
-                                            <button @click="${this.get_userType}">Settings</button>
-                                            <h5>${this.showBlock ? html`<button>blocked</button>` : html``}</h5>
-                                            <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
-                                        </div>
-                                    <!-- Post body -->
-                                    <div class="col" onclick="location.href='#';" style="cursor: pointer;">
-                                        <h5 class="card-title"> ${this.pData.title} </h5>
-                                        <h6 class="card-subtitle mb-2">Posted by u/${this.pData.email} </h6>
-                                        <img src="${this.pData.image}" class="card-img" alt="post-image">
->>>>>>> 504d053c3f1bc14b15f9cc281eed15da671985fb
                                     </div>
                                     <div class="d-flex justify-content-center">
                                         <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
@@ -133,6 +120,11 @@ export class PostPreview extends LitElement {
                                 <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
                                     <h5 class="card-title"> ${this.pData.title} </h5>
                                     <h6 class="card-subtitle mb-2">Posted by u/${this.pData.username} </h6>
+                                </div>
+                                <div class="col-1">
+                                    <button @click="${this.get_userType}">A</button>
+                                    <h5>${this.showBlock ? html`<button>Block</button>` : html``}</h5>
+                                    <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
                                 </div>
                             </div>
                             <!-- Post image -->
