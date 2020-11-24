@@ -100,8 +100,8 @@ export class PostSite extends LitElement {
 
     render() {
         return html`
-            <post-preview .pData=${this.pData}></post-preview>
-
+            <post-preview .pData=${this.pData} .shown_vote=${this.pData.votes}></post-preview>
+            <create-comment .pid=${this.pData.pid} .avatar=${this.pData.picture}></create-comment>
             <!-- Posts -->
             <div id="post-col">
                 ${this.allComments.map(i => html`<post-comment .cData=${i}></post-comment>`)}
