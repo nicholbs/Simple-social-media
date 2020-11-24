@@ -371,6 +371,9 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   else if(!regPers.validatePassword()){ //If the password enterd is to short
     res.send("pwToChort");
   }
+  else if(!regPers.validateInput()){ // if the email charachter is invalid
+    res.send("emailCharNot"); 
+  }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
   }
