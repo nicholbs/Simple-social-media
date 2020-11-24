@@ -617,27 +617,10 @@ app.get('/requests', auth, function (req, res) {
   }
 });
 
-app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data username ', formData.username); //Skriver ut formdata objekt
-  console.log('form data password', formData.password); //Skriver ut formdata objekt
-  
-
-
-          // UPDATE users SET username = 'hailitla', password = 'hailHitla' WHERE uid =5
-  var sql = "UPDATE users SET username = " + "'" + formData.username + "'" + ", password= " + "'" + formData.password + "'" + " WHERE uid =" + res.locals.uid;
-  console.log("Her er query" + sql)
-  
-  db.query(sql, function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      // res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end("Success");
-    }
-  });
-})
-app.post('/changeUserInfo2', auth ,multerDecode.none(), (req, res) => {
+/**
+ * This route change userPassword
+ */
+app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
   if(req.body.password.length >= 8){ //If the password length is 8 ore more
     var salt = bcrypt.genSaltSync(10); //Generate salt
     var hashedChangedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
@@ -650,7 +633,7 @@ app.post('/changeUserInfo2', auth ,multerDecode.none(), (req, res) => {
         res.send("ErrorInPWChange");
         throw err;
       }
-      else{
+      else{ //Password changed ok
         res.send("pwChanged");
         console.log("Passord er endrett");
       }

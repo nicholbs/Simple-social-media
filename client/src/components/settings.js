@@ -33,29 +33,25 @@ export class settingsPage extends LitElement {
                 </form>
                      
         </div>
-     </div>
-           <div>
-            <form class="form" id="changeUser">
-                <h1>Change info</h1>
-                <!--Første rad-->
-                <div class="row mt-2">
-                </div>
-                <!--Andre rad-->
-                <div class="d-flex justify-content-center">
-                    <div class="col">
-                        <label for="username">Username</label>
-                        <input type="text" name="username" id="username" placeholder="username">
-                    </div>
-                    <div class="col">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" placeholder="password">
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button class="btn btn-primary" @click="${this.changeUserInfo}">Change info</button>
-                </div>
-            </form>
-           </div>
+
+        <div>
+        <div class="d-flex justify-content-center"> 
+                <form class="form" id="changeUser">     
+                        <h1>Change Password</h1>
+                        <div class="row mt-10">
+                                <div class="col">
+                                    <label for="password">Password</label>
+                                    <input type="password" name="password" id="password" placeholder=" new password">
+                                </div>
+                                <div class="row ml-2">
+                                    <button class="btn btn-primary" @click="${this.changeUserInfo}">Change Password</button>
+                                </div>
+                            </div>  
+                </form>
+                     
+        </div>
+    
+     
 
      `;
     }
@@ -64,7 +60,7 @@ export class settingsPage extends LitElement {
         console.log("Du er i changeUser")
         const userInfo = new FormData(e.target.form);
         e.preventDefault();
-        fetch('http://localhost:8081/changeUserInfo2',{
+        fetch('http://localhost:8081/changeUserInfo',{
             method: 'post',
             credentials: "include",
             body: userInfo,
