@@ -21,11 +21,11 @@ export class RegisterPage extends LitElement {
         <div class="row mt-2">
             <div class="col">
                 <label for="eMail">E-mail</label>
-                <input type="email" name="email"pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="eMail" placeholder="example@domain.com" required>
+                <input type="email" name="email"pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$" class="form-control" id="eMail" placeholder="example@domain.com" required>
             </div>
             <div class="col">
                 <label for="repeteEMail">Repete E-mail</label>
-                <input type="email" name="repeatEmail" pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="repeteEMail" placeholder="example@domain.com" required>
+                <input type="email" name="repeatEmail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$" class="form-control" id="repeteEMail" placeholder="example@domain.com" required>
             </div>
         </div>
         <!--Andre rad-->
@@ -41,7 +41,7 @@ export class RegisterPage extends LitElement {
         </div>
         <div class="row mt-2">
             <label for="username">Username</label>
-            <input type="text" name="username"pattern="[a-zA-z0-9._]{1,20}+@+[a-zA-z0-9._]" class="form-control" id="username" placeholder="mysky" required> 
+            <input type="text" name="username"pattern="[a-z0-9A-Z]{2,63}$" class="form-control" id="username" placeholder="mysky" required> 
         </div>
         <div class="row mt-2">
         <button @click="${this.registerUser}" class="btn btn-primary">Register User</button>
