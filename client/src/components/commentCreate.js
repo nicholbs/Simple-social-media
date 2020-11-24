@@ -1,21 +1,25 @@
 import { LitElement, html, css } from 'lit-element';
 
-export class PostComment extends LitElement {
+export class CreateComment extends LitElement {
     static get properties() {
         return {
-            cData : Object,
-            shown_vote: {type: Number}
+            avatar: {type: String},
+            pid: {type: Number},
+            uid: {type: Number}
         };
     }
     
     constructor() {
         super();
-        this.shown_vote = 0;
+        this.pid = 0
     }
 
     static get styles() {
         return [
             css`
+            input {
+                width: auto;
+            }
             img {
                 object-fit:cover;
                 max-width:100%;
@@ -71,23 +75,6 @@ export class PostComment extends LitElement {
         ]
     }
 
-    _voteUp() {
-        fetch(`http://localhost:8081/comments/${this.cData.cid}/vote/1`)
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-        this.shown_vote += 1
-    }
-    _voteDown(){
-        fetch(`http://localhost:8081/comments/${this.cData.cid}/vote/0`)
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-        this.shown_vote -= 1
-    }
-
-    firstUpdated() {
-        this.shown_vote = this.cData.votes
-    }
-
     render() {
         return html`
             <div class="row justify-content-center">
@@ -95,27 +82,16 @@ export class PostComment extends LitElement {
                     <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
                         <!-- Card -->
                         <div class="card-body" style="background-color:#1a1a1b;">
+                            <!-- Form -->
                             <div class="row justify-content-left">
-                                <!-- Upvote / downvote -->
-                                <div class="col-1 justify-content-center">
-                                    <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
-                                        <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                        <h6 class="test">${this.shown_vote}</h6>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                        <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
-                                    </div>
-                                </div>
-                                <!-- Profile picture -->
-                                <div class="col-auto">
-                                    <img class="avatar" src="${this.cData.picture}">
-                                </div>
-                                <!-- Comment -->
+                                <!--<div class="col-auto">
+                                    <img class="avatar" src="">
+                                </div>-->
                                 <div class="col">
-                                    <h6 class="card-subtitle mb-2">${this.cData.username}</h6>
-                                    <h5 class="card-title"> ${this.cData.content}</h5>
+                                    <form>
+                                        <div><input id="content"></div>
+                                        <button @click="${this.postComment}" id="postComment">Post comment</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -124,5 +100,30 @@ export class PostComment extends LitElement {
             </div>
         `;
     }
+
+    postComment(e) {
+        //const newComment = new FormData(e.target.form);
+        var eCon = this.shadowRoot.getElementById("content").value;
+        var ePid = this.pid;
+        var newComment = JSON.stringify({con: eCon, pid: ePid})
+        e.preventDefault();
+        console.log("Comment posted")
+
+        fetch('http://localhost:8081/postComment',{
+            method:'post',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: newComment
+        })
+        .then(function(response){
+            return response.text();
+        })
+        .catch(function (error){
+            console.log(error);
+        })
+    }
 }
-customElements.define("post-comment", PostComment);
+customElements.define("create-comment", CreateComment);

@@ -4,17 +4,29 @@ export class NavBar extends LitElement {
 
     static get properties() {
         return {
-            
+            userData : Object
         };
       }
     
     constructor() {
-    super();
+	super();
+	//this.get_user_data();
     }
 
-    _searchPosts(e) {
+    _searchPosts() {
         location.href = '/search?q=' + this.shadowRoot.getElementById("searchKey").value;
     }
+
+	get_user_data() {
+		fetch(`${window.MyAppGlobals.serverURL}getUserData`)
+		.then(res => res.json())
+        .then(res => {    
+            this.userData = Object.values(res)[0]; 
+            console.log("User Data:")
+            console.log(this.userData);
+        })
+        .catch(e => console.log(e))
+	}
 
     render() {
         return html`

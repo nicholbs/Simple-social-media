@@ -96,7 +96,10 @@ export class requests extends LitElement {
      * @author Nicholas Bodvin Sellevaag
      *************************************************************************/
     retrieveAllRequests() {
-        fetch(`${window.MyAppGlobals.serverURL}requests`)
+        fetch(`${window.MyAppGlobals.serverURL}requests`, {
+            method:'get',
+            credentials: "include",
+        })
         .then(response => response.json())
         .then(response => 
             {
