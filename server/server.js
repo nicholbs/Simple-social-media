@@ -1,6 +1,6 @@
 "use strict";
 
-import express from 'express';
+import express, { json } from 'express';
 import path, { resolve } from 'path';
 import mysql from 'mysql';
 import cors from 'cors'; //bypass authentisering på post request
@@ -148,7 +148,7 @@ else {        //Dersom du har en cookie fra før
 
 app.get('/secret', auth, (req, res)=> {
   res.statusCode=200;
-  res.end("******")
+  res.send("ok")
 
 })
 
@@ -371,6 +371,9 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   else if(!regPers.validatePassword()){ //If the password enterd is to short
     res.send("pwToChort");
   }
+  else if(!regPers.validateInput()){ // if the email charachter is invalid
+    res.send("emailCharNot"); 
+  }
   else{
     res.send("missMatch"); //hvis inpund data ikke matcher 
   }
@@ -549,16 +552,34 @@ db.query(sql, function (err, result) {
  * browser->networking->requestName
  ***********************************************************************/
 app.post('/getUsers', auth, function (req, res) {
-  console.log("Du er i getUsers");
-  db.query('SELECT * FROM users', function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
+  console.log("Du er i getUsers her er userType" + res.locals.userType)
+  if (res.locals.userType == "user" || res.locals.userType == "moderator") {
+    console.log("Du er i getUser og er en user")
+    
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify( {
+      Object: {
+        warning: "You have to be moderator/admin to see list of users", 
+        hei: "You have to be moderator/admin to see list of users"
+      }
     }
+    ));
+  }
+  else if (res.locals.userType == "admin") {
+    console.log("Du er i getUsers");
+    db.query('SELECT * FROM users', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
+  }
+    
+
+  
   });
-});
 
 
 
@@ -570,14 +591,28 @@ app.post('/getUsers', auth, function (req, res) {
  ***********************************************************************/
 app.get('/requests', function (req, res) {
   console.log("Du er i requests");
-  db.query('SELECT * FROM requests', function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-    }
-  });
+
+  if (res.locals.userType == "user" || res.locals.userType == "moderator") { 
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify( 
+      {
+        Object: {
+          warning: "You have to be an admin to handle requests"
+        } 
+      }
+    ))
+  }
+    
+  else if (res.locals.userType == "admin") {
+    db.query('SELECT * FROM requests', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
+  }
 });
 
 app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {

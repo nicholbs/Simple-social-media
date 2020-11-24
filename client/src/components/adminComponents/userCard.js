@@ -71,8 +71,9 @@ export class userCard extends LitElement {
     return html`
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5>${this.post.username ? html`${this.post.username}` : html`Mangler "username" i post`}</h5>
-                    <h5>${this.post.userType ? html`${this.post.userType}` : html`Mangler "userType" i post`}</h5>
+                    <h5>${this.post.username ? html`${this.post.username}` : html``}</h5>
+                    <h5>${this.post.userType ? html`${this.post.userType}` : html``}</h5>
+                    <h5>${this.post.warning ? html`${this.post.warning}` : html``}</h5>
                 </div>
             </div>
             `;
