@@ -63,14 +63,27 @@ export class settingsPage extends LitElement {
     changeUserInfo(e) {
         console.log("Du er i changeUser")
         const userInfo = new FormData(e.target.form);
-        console.log("Her er user info username " + userInfo.username)
-        console.log("Her er user info password " + userInfo.password)
-        console.log("Her er user info " + userInfo)
-        fetch('http://localhost:8081/changeUserInfo',{
+        e.preventDefault();
+        fetch('http://localhost:8081/changeUserInfo2',{
             method: 'post',
             credentials: "include",
             body: userInfo,
         })
+        .then(function(response){
+            return response.text();
+        })
+        .then(function (text){
+        if(text=='pwChanged'){ //If the password updated sucesfully
+            alert("Password has been changed");
+            location.reload();// reloader page
+        }
+        else if(text == 'ErrorInPWChange'){ //If the password dident change sucefully
+            alert("Problem with changing password");
+        }
+        else if(text=='pwToChort'){
+            alert("Password to chort");
+        }
+    })
     }
 
 

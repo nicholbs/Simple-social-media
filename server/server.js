@@ -635,6 +635,32 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
     }
   });
 })
+app.post('/changeUserInfo2', auth ,multerDecode.none(), (req, res) => {
+  if(req.body.password.length >= 8){ //If the password length is 8 ore more
+    var salt = bcrypt.genSaltSync(10); //Generate salt
+    var hashedChangedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
+    console.log("pw endret");
+  
+  
+  
+    db.query('UPDATE users SET password=? WHERE uid =?',[hashedChangedPassword,res.locals.uid], function (err, result) {
+      if (err){
+        res.send("ErrorInPWChange");
+        throw err;
+      }
+      else{
+        res.send("pwChanged");
+        console.log("Passord er endrett");
+      }
+    })
+
+  }
+  else if(req.body.password.length <8){
+    res.send("pwToChort"); //If the password is to short
+  }
+})
+
+
 
 
 
