@@ -84,7 +84,9 @@ export class CreateComment extends LitElement {
                         <div class="card-body" style="background-color:#1a1a1b;">
                             <!-- Form -->
                             <div class="row justify-content-left">
-                                
+                                <!--<div class="col-auto">
+                                    <img class="avatar" src="">
+                                </div>-->
                                 <div class="col">
                                     <form>
                                         <div><input id="content"></div>
@@ -105,6 +107,7 @@ export class CreateComment extends LitElement {
         var ePid = this.pid;
         var newComment = JSON.stringify({con: eCon, pid: ePid})
         e.preventDefault();
+        console.log("Comment posted")
 
         fetch('http://localhost:8081/postComment',{
             method:'post',
