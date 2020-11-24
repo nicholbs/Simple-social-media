@@ -696,8 +696,19 @@ app.post('/deny', multerDecode.none(), function (req, res) {
 });
 
 
+// Fetches data of active user
+app.get('getUserData', auth, function (req, res) {
+  db.query(`SELECT * FROM users WHERE uid=${res.locals.uid}`, function (err, result) {
+    if(err) {
+      res.status(400).send("Error getting user information");
+    }else{
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  })
+})
 
-//Heter properties for gitt forum
+// Fetches properties for a single forum
 app.get('/f/:forum', function (req, res) {
   var forum = req.params.forum;
   db.query('SELECT * FROM forums WHERE name=\'' + forum + '\'', function (err, result) {
@@ -710,7 +721,7 @@ app.get('/f/:forum', function (req, res) {
   });
 });
 
-//Henter alle posts for ett gitt forum
+// Fetches all posts for specified forum
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
@@ -727,10 +738,10 @@ app.get('/p/:forum/:sort', function (req, res) {
     });
 });
 
-//Henter alle posts for en gitt post
+// Fetches properties for a single post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, content, votes, users.username FROM posts
+  db.query(`SELECT pid, title, forum, image, content, votes, users.picture FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
@@ -742,7 +753,7 @@ app.get('/p/:pid', function (req, res) {
     });
 });
 
-//Henter alle posts som matcher søkekriteriet
+// Fetches all posts that match search criteria
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
   db.query(`SELECT pid, title, image, votes, users.username FROM posts
@@ -758,10 +769,10 @@ app.get('/s/:keyword', function (req, res) {
   });
 });
 
-//Henter alle kommentarer til en post
+// Fetches all comments for a specific post
 app.get('/c/:post', function (req, res) {
   var post = req.params.post;
-  db.query(`SELECT cid, comments.uid, content, votes, date, users.username FROM comments
+  db.query(`SELECT cid, comments.uid, content, votes, date, users.username, users.picture FROM comments
             INNER JOIN users ON comments.uid = users.uid 
             WHERE pid = ${post}
             ORDER BY votes DESC;`, function (err, result) {
@@ -774,20 +785,52 @@ app.get('/c/:post', function (req, res) {
   });
 });
 
+// Inserts a new comment to database
+app.post('/postComment', auth, function(req, res) {
+  var uid = res.locals.uid;
+  var pid = req.body.pid;
+  var con = req.body.con;
+  //console.log("uid: " + uid + "\npid: " + pid + "\ncon: " + con);
+
+  db.query(`INSERT INTO comments (pid, uid, content) 
+            VALUES (${pid}, ${uid}, "${con}"); `,  function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  })
+})
+
 //Upvote | downvote
-app.get('/post/:post/vote/:updown', function(req, res) {
-  var post = req.params.post;
+app.get('/:type/:id/vote/:updown', function(req, res) {
+  var type = req.params.type;
+  var id = req.params.id;
   var updo = req.params.updown;
-  if(updo == 1){
-    db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${post}`)
-    .then(res.send("success"))
-    .catch(err => res.send(err))
+  if(type == "posts"){
+    if(updo == 1){
+      db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${id}`)
+      .then(res.send("success"))
+      .catch(err => res.send(err))
+    }else{
+      db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${id}`)
+      .then(res.send("success"))
+      .catch(err => res.send(err))
+    }
   }else{
-    db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${post}`)
-    .then(res.send("success"))
-    .catch(err => res.send(err))
+    if(updo == 1){
+      db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${id}`)
+      .then(res.send("success"))
+      .catch(err => res.send(err))
+    }else{
+      db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${id}`)
+      .then(res.send("success"))
+      .catch(err => res.send(err))
+    }
   }
 })
+
 
 var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
 

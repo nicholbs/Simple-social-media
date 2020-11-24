@@ -5,7 +5,6 @@ export class PostPreview extends LitElement {
     static get properties() {
         return {
             pData : Object,
-            post_id: {type: Number},
             shown_vote: {type: Number},
             showBlock: {type: Boolean},
             showDelete: {type: Boolean}
@@ -74,20 +73,22 @@ export class PostPreview extends LitElement {
     }
 
     _voteUp() {
-        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/1`)
+        fetch(`http://localhost:8081/posts/${this.pData.pid}/vote/1`)
         .then(res => console.log(res))
         .catch(err => console.log(err))
         this.shown_vote += 1
     }
     _voteDown(){
-        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/0`)
+        fetch(`http://localhost:8081/posts/${this.pData.pid}/vote/0`)
         .then(res => console.log(res))
         .catch(err => console.log(err))
         this.shown_vote -= 1
     }
 
-    firstUpdated() {
-        this.shown_vote = this.pData.votes
+    connectedCallback() {
+        super.connectedCallback()
+        if(this.pData.votes != null)
+            this.shown_vote = this.pData.votes
     }
 
     render() {
@@ -119,7 +120,7 @@ export class PostPreview extends LitElement {
                                 <!-- Post title -->
                                 <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
                                     <h5 class="card-title"> ${this.pData.title} </h5>
-                                    <h6 class="card-subtitle mb-2">Posted by u/${this.pData.username} </h6>
+                                    <h6 class="card-subtitle mb-2">Posted by ${this.pData.username} </h6>
                                 </div>
                                 <div class="col-1">
                                     <button @click="${this.get_userType}">A</button>
@@ -142,7 +143,7 @@ export class PostPreview extends LitElement {
 
     get_userType() {    
 
-        console.log("Du er i forum post, her er post_id: " + this.pData.uid)
+        console.log("Du er i forum post, her er post_id: " + this.pData.pid)
         var uid = this.pData.uid;
         fetch('http://localhost:8081/checkUserType',{
             method:'post',
