@@ -26,6 +26,7 @@
     "port": "8080"
   },
   "dependencies": {
+    "@vaadin/router": "^1.7.2",
     "@webcomponents/webcomponentsjs": "^2.4.4",
     "lit-element": "^2.4.0"
   },
