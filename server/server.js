@@ -31,7 +31,7 @@ app.use(cookieParser('abcdef-12345'));
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
-})); //Odd Bypass sikkerhetsmekanismer for post YOLO
+})); //Using cors for authentication 
 // app.use(auth)      //Alle forespørsler til back-end må autentiseres
 // app.use(session({
 //   name:'session-id',
