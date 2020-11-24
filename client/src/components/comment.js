@@ -1,13 +1,12 @@
 import { LitElement, html, css } from 'lit-element';
 
-export class PostPreview extends LitElement {
-
+export class PostComment extends LitElement {
     static get properties() {
         return {
-            pData : Object,
-            shown_vote: {type: Number}
+            cData : Object,
+            shownVote: {type: Number}
         };
-      }
+    }
     
     constructor() {
         super();
@@ -68,31 +67,12 @@ export class PostPreview extends LitElement {
         ]
     }
 
-    _voteUp() {
-        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/1`)
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-        this.shown_vote += 1
-    }
-    _voteDown(){
-        fetch(`http://localhost:8081/post/${this.pData.pid}/vote/0`)
-        .then(res => console.log(res))
-        .catch(err => console.log(err))
-        this.shown_vote -= 1
-    }
-
     firstUpdated() {
-        this.shown_vote = this.pData.votes
+        this.shown_vote = this.cData.votes
     }
 
     render() {
         return html`
-            <!-- DIN HTML HER -->
-            <!-- Action: i HTML-formen er ikke nødvendig så lenge du bruker: -->
-            <!-- Gi button din property: @click="${this.register}" -->
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-            
             <div class="row justify-content-center">
                 <div class="col-6">
                     <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
@@ -111,16 +91,10 @@ export class PostPreview extends LitElement {
                                         <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
                                     </div>
                                 </div>
-                                <!-- Post title -->
-                                <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
-                                    <h5 class="card-title"> ${this.pData.title} </h5>
-                                    <h6 class="card-subtitle mb-2">Posted by u/${this.pData.username} </h6>
-                                </div>
-                            </div>
-                            <!-- Post image -->
-                            <div class="row justify-content-center">
-                                <div class="d-flex justify-content-center">
-                                    <img src="${this.pData.image}" class="card-img" alt="post-image">
+                                <!-- Comment -->
+                                <div class="col">
+                                    <h6 class="card-subtitle mb-2">${this.cData.content}</h6>
+                                    <h5 class="card-title"> ${this.cData.username}</h5>
                                 </div>
                             </div>
                         </div>
@@ -130,4 +104,4 @@ export class PostPreview extends LitElement {
         `;
     }
 }
-customElements.define("post-preview", PostPreview);
+customElements.define("post-comment", PostComment);

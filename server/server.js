@@ -487,7 +487,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.username FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -500,10 +500,10 @@ app.get('/p/:forum/:sort', function (req, res) {
     });
 });
 
-//Henter alle posts for ett gitt forum
+//Henter alle posts for en gitt post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, forum, image, content, votes, users.username FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
@@ -518,9 +518,25 @@ app.get('/p/:pid', function (req, res) {
 //Henter alle posts som matcher søkekriteriet
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT pid, title, image, votes, users.email FROM posts
+  db.query(`SELECT pid, title, image, votes, users.username FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
+            ORDER BY votes DESC;`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+//Henter alle kommentarer til en post
+app.get('/c/:post', function (req, res) {
+  var post = req.params.post;
+  db.query(`SELECT cid, comments.uid, content, votes, date, users.username FROM comments
+            INNER JOIN users ON comments.uid = users.uid 
+            WHERE pid = ${post}
             ORDER BY votes DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
