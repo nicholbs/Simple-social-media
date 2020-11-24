@@ -630,30 +630,6 @@ app.get('/requests', auth, function (req, res) {
   }
 });
 
-<<<<<<< HEAD
-
-
-app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data username ', formData.username); //Skriver ut formdata objekt
-  console.log('form data password', formData.password); //Skriver ut formdata objekt
-  
-
-
-          // UPDATE users SET username = 'hailitla', password = 'hailHitla' WHERE uid =5
-  var sql = "UPDATE users SET username = " + "'" + formData.username + "'" + ", password= " + "'" + formData.password + "'" + " WHERE uid =" + res.locals.uid;
-  console.log("Her er query" + sql)
-  
-  db.query(sql, function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      // res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end("Success");
-    }
-  });
-})
-=======
 /**
  * This route change userPassword
  */
@@ -683,7 +659,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
->>>>>>> 02c78677d0eed7931d80bb80bfaea60e31c4cc90
 
 
 
