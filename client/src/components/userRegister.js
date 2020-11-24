@@ -67,7 +67,7 @@ export class RegisterPage extends LitElement {
             //console.log(text);
             if(text =='ok'){
                 console.log("registrert");
-                alert("Bruker registrert!");
+                alert("User Registered!");
             } 
             else if(text=='emailFinnes'){
                 alert("Bruker Finnes fra før");
@@ -85,6 +85,9 @@ export class RegisterPage extends LitElement {
             }
             else if(text =='pwToChort'){ //If the password is to short
                 alert("Pw to short, must be atleast 8 characther long!");
+            }
+            else if(text=='emailCharNot'){ //if email characthers is invalid
+                alert("Invalid charachters in Email");
             }
         })
         .catch(function (error){
