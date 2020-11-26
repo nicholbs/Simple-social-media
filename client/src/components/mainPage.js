@@ -71,7 +71,7 @@ export class mainPage extends LitElement {
     async getForums() {
         await fetch('http://localhost:8081/retrieveForums',{
             method:'get',
-            // credentials: "include",
+            credentials: "include",
         }).then(res => res.json())
         .then(res => { 
             this.allForums = Object.values(res);

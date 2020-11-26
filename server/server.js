@@ -147,6 +147,31 @@ app.get('/secret', auth, (req, res)=> {
 
 })
 
+
+
+app.get('/blockedPosts', auth, (req, res)=> {
+  console.log("Du er i blockedPosts");
+  db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  })
+})
+app.get('/blockedComments', auth, (req, res)=> {
+  console.log("Du er i blockedComments");
+   db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  })
+})
+
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
 
   db.query('SELECT * FROM users', function (err, result) {
