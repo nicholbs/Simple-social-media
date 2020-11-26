@@ -637,7 +637,7 @@ app.get('/requests', auth, function (req, res) {
     console.log("Du er i request moderator")
     db.query(`SELECT requests.*, users.username FROM requests
               INNER JOIN users ON requests.user = users.uid 
-              WHERE userType="user"`, function (err, result) {
+              WHERE requests.userType="user"`, function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
