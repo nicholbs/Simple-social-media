@@ -3,7 +3,7 @@
 import express, { json } from 'express';
 import path, { resolve } from 'path';
 import mysql from 'mysql';
-import cors from 'cors'; //bypass authentisering på post request
+import cors from 'cors'; //Authentication to serverbackend from API requests
 import multer from 'multer'; //For form data til post express API
 import fs from 'fs'; //brukes til filhåndtering
 import randomstring from 'randomstring'; //Randomgennerering filnavn
@@ -747,7 +747,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
-<<<<<<< HEAD
 
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
@@ -783,8 +782,6 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     }
     })
   });
-=======
->>>>>>> a4823c20fb1064fc61874e172e3071bbad10ade4
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
@@ -1073,7 +1070,7 @@ app.post('/profilePicUpload', auth, (req, res) => {
   var imageurl = 'http://localhost:8081/images/' //deafult url to picturefolder
   //Dummy data before coockie is implemented:
   var userId; //Coneccted to sql string for updating the specific user with the image url, 
-  userId = res.locals.uid; //Before coockie is implemented i have hardcoded the uid of user 1 
+  userId = res.locals.uid; //Sets the current user sessions uid
 
   //Define pictureStore
   var multerStorage =multer.diskStorage({
