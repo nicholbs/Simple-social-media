@@ -21,6 +21,9 @@ export class PostPreview extends LitElement {
     static get styles() {
         return [
             css`
+            .card-text {
+                color:white;
+            }
             img {
                 object-fit:cover;
                 max-width:100%;
@@ -129,15 +132,9 @@ export class PostPreview extends LitElement {
                                         <h5>${this.showDelete ? html`<button @click="${this.deletePost} " onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
                                     </div>
                                 </div>
-                                <!-- Post image -->
-                                <div class="row justify-content-center">
-                                    <div class="d-flex justify-content-center">
-                                        <img src="${this.pData.image}" class="card-img" alt="post-image">
-                                    </div>
-                                </div>
                                 <!-- Post content -->
                                 <div id="postContent" class="row justify-content-center">
-                                    ${this.pData.content}
+                                    <h6 class ="card-text">${this.pData.content}</h6>
                                 </div>
                             </div>
                         </div>

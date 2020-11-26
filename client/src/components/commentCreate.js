@@ -107,7 +107,7 @@ export class CreateComment extends LitElement {
         var ePid = this.pid;
         var newComment = JSON.stringify({con: eCon, pid: ePid})
         e.preventDefault();
-        console.log("Comment posted")
+        console.log("Comment posted: \"" + eCon + "\"")
 
         fetch('http://localhost:8081/postComment',{
             method:'post',

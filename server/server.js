@@ -919,7 +919,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, blocked, users.username, users.uid FROM posts
+  db.query(`SELECT pid, title, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -935,7 +935,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 // Fetches properties for a single post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username, users.uid FROM posts
+  db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
@@ -950,7 +950,7 @@ app.get('/p/:pid', function (req, res) {
 // Fetches all posts that match search criteria
 app.get('/s/:keyword', function (req, res) {
   var keyword = req.params.keyword;
-  db.query(`SELECT pid, title, image, votes, users.username FROM posts
+  db.query(`SELECT pid, title, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
             ORDER BY votes DESC;`, function (err, result) {
@@ -963,15 +963,10 @@ app.get('/s/:keyword', function (req, res) {
   });
 });
 
-
-
-
-
-//---------------------------------------------post comments---------- bruk comments.uid
 // Fetches all comments for a specific post
 app.get('/c/:post', function (req, res) {
   var post = req.params.post;
-  db.query(`SELECT cid, comments.uid, content, votes, date, users.username, users.picture FROM comments
+  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
             INNER JOIN users ON comments.uid = users.uid 
             WHERE pid = ${post}
             ORDER BY votes DESC;`, function (err, result) {
@@ -984,10 +979,22 @@ app.get('/c/:post', function (req, res) {
   });
 });
 
-app.post('/createPost', auth, function(req, res) {
-  var uid = res.locals.uid;
-  var title = req.body.title;
-  console.log(uid + " " + title);
+// Creates new post
+app.post('/createPost', auth, multerDecode.none(), function(req, res) {
+  var p = req.body;
+  //console.log(p);
+
+  //console.log(`INSERT INTO posts (forum, uid, title, content) VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`);
+  db.query(`INSERT INTO posts (forum, uid, title, content) 
+            VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`,
+    function(err, result) {
+      if(err) {
+        res.status(400).send("Error in post creation");
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+  })
 })
 
 // Inserts a new comment to database
