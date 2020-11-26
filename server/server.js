@@ -1223,3 +1223,13 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     
     });
   
+app.get('/logout', (req,res) =>{
+  
+  console.log("I logout");
+  console.log("Inne i logout: " + req.signedCookies.user);
+  res.clearCookie('user');
+  
+  
+  res.send("ok");
+
+})
