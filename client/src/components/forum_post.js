@@ -92,53 +92,61 @@ export class PostPreview extends LitElement {
     }
 
     render() {
-        return html`
-            <!-- DIN HTML HER -->
-            <!-- Action: i HTML-formen er ikke nødvendig så lenge du bruker: -->
-            <!-- Gi button din property: @click="${this.register}" -->
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-            
-            <div class="row justify-content-center">
-                <div class="col-6">
-                    <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
-                        <!-- Card -->
-                        <div class="card-body" style="background-color:#1a1a1b;">
-                            <div class="row justify-content-left">
-                                <!-- Upvote / downvote -->
-                                <div class="col-1 justify-content-center">
-                                    <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
-                                        <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+        if(!this.pData.blocked) {
+            return html`
+                <!-- DIN HTML HER -->
+                <!-- Action: i HTML-formen er ikke nødvendig så lenge du bruker: -->
+                <!-- Gi button din property: @click="${this.register}" -->
+                <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+                
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
+                            <!-- Card -->
+                            <div class="card-body" style="background-color:#1a1a1b;">
+                                <div class="row justify-content-left">
+                                    <!-- Upvote / downvote -->
+                                    <div class="col-1 justify-content-center">
+                                        <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
+                                            <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <h6 class="test">${this.shown_vote}</h6>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                        </div>
                                     </div>
+                                    <!-- Post title -->
+                                    <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
+                                        <h5 class="card-title"> ${this.pData.title} </h5>
+                                        <h6 class="card-subtitle mb-2">Posted by ${this.pData.username} </h6>
+                                    </div>
+                                    <div class="col-1">
+                                        <button @click="${this.get_userType}">A</button>
+                                        <h5>${this.showBlock ? html`<button>Block</button>` : html``}</h5>
+                                        <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
+                                    </div>
+                                </div>
+                                <!-- Post image -->
+                                <div class="row justify-content-center">
                                     <div class="d-flex justify-content-center">
-                                        <h6 class="test">${this.shown_vote}</h6>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                        <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                        <img src="${this.pData.image}" class="card-img" alt="post-image">
                                     </div>
                                 </div>
-                                <!-- Post title -->
-                                <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
-                                    <h5 class="card-title"> ${this.pData.title} </h5>
-                                    <h6 class="card-subtitle mb-2">Posted by ${this.pData.username} </h6>
-                                </div>
-                                <div class="col-1">
-                                    <button @click="${this.get_userType}">A</button>
-                                    <h5>${this.showBlock ? html`<button>Block</button>` : html``}</h5>
-                                    <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
-                                </div>
-                            </div>
-                            <!-- Post image -->
-                            <div class="row justify-content-center">
-                                <div class="d-flex justify-content-center">
-                                    <img src="${this.pData.image}" class="card-img" alt="post-image">
+                                <!-- Post content -->
+                                <div class="row justify-content-center">
+                                    ${this.pData.content}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }else{
+            return html`<div><h5>This post is blocked</h5></div>`;
+        }
     }
 
     get_userType() {    
