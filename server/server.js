@@ -838,7 +838,9 @@ app.post('/accept', multerDecode.none(), function (req, res) {
   console.log("Accept sin userType " + req.body.userType);
   var sql = "DELETE FROM `requests` WHERE user=" + req.body.userInt;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
-  db.query(sql, function (err, result) {
+ 
+ /**
+            db.query(sql, function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -846,6 +848,34 @@ app.post('/accept', multerDecode.none(), function (req, res) {
       res.end(JSON.stringify(result));
     }
   });
+**/
+  db.query('DELETE FROM `requests` WHERE user=?',[req.body.userInt], function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      
+      db.query("UPDATE users SET userType = 'moderator' WHERE uid =?",[req.body.userInt], function (err, result) {
+        if (err) {
+          res.status(400).send('Error in database operation.');
+        } else {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(result));
+        }
+      }); 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      //res.writeHead(200, { 'Content-Type': 'application/json' });
+      //res.end(JSON.stringify(result));
+    }
+  });
+
 });
 
 
