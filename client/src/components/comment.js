@@ -120,8 +120,8 @@ export class PostComment extends LitElement {
 
                                 <div class="col-1">
                                     <button @click="${this.get_userType}">A</button>
-                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}">Block</button>` : html``}</h5>
-                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}">Delete</button>` : html``}</h5>
+                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
+                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}" onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
                                 </div>
 
                             </div>
@@ -138,7 +138,7 @@ export class PostComment extends LitElement {
             credentials: "include",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
-                ownerId: this.pData.cid 
+                ownerId: this.cData.cid 
             })
         })
     }
@@ -149,7 +149,7 @@ export class PostComment extends LitElement {
                 credentials: "include",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({
-                    ownerId: this.pData.cid 
+                    ownerId: this.cData.cid 
                 })
     })
 }
