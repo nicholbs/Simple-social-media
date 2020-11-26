@@ -4,7 +4,9 @@ export class PostComment extends LitElement {
     static get properties() {
         return {
             cData : Object,
-            shown_vote: {type: Number}
+            shown_vote: {type: Number},
+            showBlock: {type: Boolean},
+            showDelete: {type: Boolean}
         };
     }
     
@@ -120,8 +122,8 @@ export class PostComment extends LitElement {
 
                                 <div class="col-1">
                                     <button @click="${this.get_userType}">A</button>
-                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}">Block</button>` : html``}</h5>
-                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}">Delete</button>` : html``}</h5>
+                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
+                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}" onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
                                 </div>
 
                             </div>
@@ -133,23 +135,25 @@ export class PostComment extends LitElement {
     }
 
     blockComment(e) {
+        console.log("block cid: " + this.cData.cid)
         fetch('http://localhost:8081/blockComment',{
             method:'post',
             credentials: "include",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
-                ownerId: this.pData.cid 
+                cid: this.cData.cid 
             })
         })
     }
-
+    
     deleteComment(e) {
+        console.log("delete cid: " + this.cData.cid)
     fetch('http://localhost:8081/deleteComment',{
                 method:'post',
                 credentials: "include",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({
-                    ownerId: this.pData.cid 
+                    cid: this.cData.cid 
                 })
     })
 }

@@ -12,6 +12,8 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+
 
 
 const app = express();
@@ -125,7 +127,7 @@ function auth(req, res, next) {
 
 
   } 
-  else {        //Dersom du har en cookie fra før
+  else {        //Dersom du har en cookie fra før         kanskje else if????
 
     var valueFraCookie = req.signedCookies.user;
     console.log("----------Dette er valueFraCookie " + valueFraCookie)
@@ -266,6 +268,8 @@ function validateCookie(req, res, next) {
 app.post('/checkUserType', auth, function (req,res) {
   console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
   console.log("------------------ her er ownerId: " + req.body.ownerId)
+  console.log("uid: " + res.locals.uid)
+  console.log("ownerId" + req.body.ownerId)
   res.writeHead(200, { 'Content-Type': 'application/json' });
 
   
@@ -275,10 +279,12 @@ app.post('/checkUserType', auth, function (req,res) {
       admin: true,
       user: true
     })
-    res.send(answer);
+    res.end(answer);
   }
-  else if (res.locals.userId == req.body.ownerId) {
-    console.log("Du er inni checkuser if else")
+  else if (res.locals.uid == req.body.ownerId) {
+    console.log("Du er inni checkuser else if")
+    
+    console.log(req.body.ownerId)
     var answer = JSON.stringify({
       admin: false,
       user: true
@@ -373,6 +379,17 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   }
   
 })
+
+
+
+
+
+
+
+
+
+
+
 
 //registrering av ny bruker
 app.post('/registerHashed',multerDecode.none(), async (req,res) => {
@@ -476,21 +493,6 @@ app.post('/registerHashed',multerDecode.none(), async (req,res) => {
  * @var result - result from database query
  * @author Nicholas Bodvin Sellevaag
  ******************************************************************************/
-app.post('/createPost', upload.none(), function(req, res) {
-console.log('Dette er app.post for /createPost på server.js')   //log message available from docker extension->nodejs, right click and "View Logs"
-
-var sql = "INSERT INTO posts (user, title, content) VALUES ('2', '" + req.body.postName + "', '" + req.body.postContent + "')";
-
-db.query(sql, function (err, result) {
-    if (err) 
-      throw err;
-      console.log("Number of records inserted: " + result.affectedRows);
-    });
-
-res.send("Req ble mottat");   //response sent to front-end as pure html
-
-})
-
 
 /*************************************************************************
  * Function creates new "entry" inn MySql database
@@ -746,14 +748,12 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
   }
 })
 
-
-
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
   
   console.log("block sin pid " + req.body.pid);
 
-  var sql = "UPDATE `posts` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE pid=" + req.body.pid;
+  var sql = "UPDATE `posts` SET `blocked`=1 WHERE pid=" + req.body.pid;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
@@ -771,7 +771,7 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
   
   console.log("blockComment sin cid " + req.body.cid);
 
-  var sql = "UPDATE `comments` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE cid=" + req.body.cid;
+  var sql = "UPDATE `comments` SET `blocked`=1 WHERE cid=" + req.body.cid;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
@@ -913,7 +913,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, blocked, users.username FROM posts
+  db.query(`SELECT pid, title, image, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -929,7 +929,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 // Fetches properties for a single post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username FROM posts
+  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
@@ -977,6 +977,12 @@ app.get('/c/:post', function (req, res) {
     }
   });
 });
+
+app.post('/createPost', auth, function(req, res) {
+  var uid = res.locals.uid;
+  var title = req.body.title;
+  console.log(uid + " " + title);
+})
 
 // Inserts a new comment to database
 app.post('/postComment', auth, function(req, res) {

@@ -101,6 +101,7 @@ export class ForumSite extends LitElement {
             // console.log("Body type:   " + res.body.userType)
             console.log("Forum Posts:")
             console.log(this.allPosts);
+
         })
         .catch(e => console.log(e))
     }
