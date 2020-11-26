@@ -37,9 +37,8 @@ export class mainPage extends LitElement {
 
     constructor() {
         super();
+        this.allForums = [];
         this.getForums();
-
-
     }
 
     render() {
@@ -73,7 +72,7 @@ export class mainPage extends LitElement {
                             <br>
                             <br>
                             <div class="row justify-content-center">
-                            <h5 id="mainPageTittel">This is the homepage for our web-application</h5>
+                            <h5>Forum list</h5>
                             </div>
                                     ${this.allForums.map(i => html`<forum-link .forumLink=${i}></forum-link>`)}     
                            
@@ -90,8 +89,8 @@ export class mainPage extends LitElement {
             `;
     }
     
-    getForums() {
-        fetch('http://localhost:8081/retrieveForums',{
+    async getForums() {
+        await fetch('http://localhost:8081/retrieveForums',{
             method:'get',
             // credentials: "include",
         }).then(res => res.json())
