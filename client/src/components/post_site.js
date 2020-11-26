@@ -69,7 +69,7 @@ export class PostSite extends LitElement {
         ]
     }
 
-    fetch_data() {
+    async fetch_data() {
         this.get_post_data(this.get_post_id(), this.get_sort())
     }
 
