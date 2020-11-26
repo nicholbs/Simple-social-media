@@ -67,7 +67,8 @@ export class RegisterPage extends LitElement {
             //console.log(text);
             if(text =='ok'){
                 console.log("registrert");
-                alert("User Registered!");
+                alert("User Registered! You will be redirected to home");
+                location.replace("http://localhost:8080/");
             } 
             else if(text=='emailFinnes'){
                 alert("Bruker Finnes fra før");

@@ -49,3 +49,13 @@ Content-Type: application/json
 
 # # Du kan sende requests med VS code extension 
 # # "Rest Client" når du bruker en .rest fil
+
+####
+
+POST https://api.avatarsdk.com/o/token/
+Content-Type: application/json
+
+{
+    "grant_type": "client_credentials"
+
+}

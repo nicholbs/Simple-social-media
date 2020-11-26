@@ -31,7 +31,7 @@ app.use(cookieParser('abcdef-12345'));
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
-})); //Odd Bypass sikkerhetsmekanismer for post YOLO
+})); //Using cors for authentication 
 // app.use(auth)      //Alle forespørsler til back-end må autentiseres
 // app.use(session({
 //   name:'session-id',
@@ -536,7 +536,7 @@ db.query(sql, function (err, result) {
  ***********************************************************************/
 app.post('/getUsers', auth, function (req, res) {
   console.log("Du er i getUsers her er userType" + res.locals.userType)
-  if (res.locals.userType == "user" || res.locals.userType == "moderator") {
+  if (res.locals.userType == "user") {
     console.log("Du er i getUser og er en user")
     
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -559,10 +559,95 @@ app.post('/getUsers', auth, function (req, res) {
       }
     });
   }
+
+  else if (res.locals.userType == "moderator") {
+    console.log("Du er i getUsers");
+    db.query("SELECT * FROM `users` WHERE userType='user'", function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    });
+
+  }
     
 
   
   });
+
+  app.post('/requestDup', auth, function (req, res) {
+    console.log("Du er i requestDup");
+            var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
+    db.query(sql, function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+        console.log("Her er det error " + err)
+      } 
+      else {
+        var allUsers = Object.values(result);
+        const found = allUsers.find(element => element.uid == res.locals.uid);
+        console.log(found) 
+        if (found != null)
+        {
+          res.end(JSON.stringify( {
+            answer: "duplicate",
+            me: "mortal"
+          }));
+        }
+        else {
+          res.end(JSON.stringify( {
+            answer: "noDuplicate",
+            me: "mortal"
+          }));
+
+        }
+
+      }
+    }
+  )
+  })
+
+  
+
+
+//   else 
+//       {
+//         
+//         console.log(found);
+//           if (found != null)
+//           {
+//             console.log("Du er i if found !=null")
+//             res.writeHead(200, { 'Content-Type': 'application/json' });
+//             res.end(JSON.stringify(result));
+//           }
+//           else {
+//             console.log("Du er i else")
+//             res.writeHead(200, { 'Content-Type': 'application/json' });
+//             var answer = JSON.stringify({
+//               ok: "true"
+//             });
+//             res.send(answer);
+//           }
+//       }
+//     })
+// });
+
+// app.post('/requestMod', auth, function (req, res) {
+//   db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
+//     if (err) {
+//       res.status(400).send('Error in database operation.');
+//     } else {
+//       var answer = JSON.stringify({
+//         ok: true
+//       });
+//       res.send(answer);
+//     }
+//   })
+// });
+      
+
 
 
 
@@ -572,22 +657,37 @@ app.post('/getUsers', auth, function (req, res) {
  * information can be seen in the response header while inside
  * browser->networking->requestName
  ***********************************************************************/
-app.get('/requests', function (req, res) {
+app.get('/requests', auth, function (req, res) {
   console.log("Du er i requests");
 
-  if (res.locals.userType == "user" || res.locals.userType == "moderator") { 
+  if (res.locals.userType == "user") { 
+    console.log("Du er i request user/moderator")
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify( 
-      {
-        Object: {
-          warning: "You have to be an admin to handle requests"
-        } 
+    res.end(JSON.stringify( {
+      Object: {
+        warning: "You have to be moderator/admin to see requests of users", 
+        ok: "ok"
       }
-    ))
+    }
+    ));
   }
-    
+  
   else if (res.locals.userType == "admin") {
+    console.log("Du er i request admin")
     db.query('SELECT * FROM requests', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+
+    });
+  }
+
+  else if (res.locals.userType == "moderator") {
+    console.log("Du er i request moderator")
+    db.query('SELECT * FROM `requests` WHERE userType="user"', function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
@@ -598,28 +698,71 @@ app.get('/requests', function (req, res) {
   }
 });
 
-app.post('/changeUserInfo', auth ,multerDecode.none(), function(req, res) {
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data username ', formData.username); //Skriver ut formdata objekt
-  console.log('form data password', formData.password); //Skriver ut formdata objekt
+/**
+ * This route change userPassword
+ */
+app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
+  if(req.body.password.length >= 8){ //If the password length is 8 ore more
+    var salt = bcrypt.genSaltSync(10); //Generate salt
+    var hashedChangedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
+    console.log("pw endret");
   
+  
+  
+    db.query('UPDATE users SET password=? WHERE uid =?',[hashedChangedPassword,res.locals.uid], function (err, result) {
+      if (err){
+        res.send("ErrorInPWChange");
+        throw err;
+      }
+      else{ //Password changed ok
+        res.send("pwChanged");
+        console.log("Passord er endrett");
+      }
+    })
+
+  }
+  else if(req.body.password.length <8){
+    res.send("pwToChort"); //If the password is to short
+  }
+})
 
 
-          // UPDATE users SET username = 'hailitla', password = 'hailHitla' WHERE uid =5
-  var sql = "UPDATE users SET username = " + "'" + formData.username + "'" + ", password= " + "'" + formData.password + "'" + " WHERE uid =" + res.locals.uid;
-  console.log("Her er query" + sql)
+
+
+app.post('/deletePost', multerDecode.none(), function (req, res) {
+  console.log("Du er i deletePost");
   
+  console.log("Delete sin pid " + req.body.pid);
+
+  var sql = "DELETE FROM `posts` WHERE pid=" + req.body.pid;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
     } else {
-      // res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end("Success");
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
     }
+    })
   });
-})
 
+  // -----------------------------------------Her må kanskje sql variabel endres ettersom navn på table til comments blir laget---------
+app.post('/deleteComment', multerDecode.none(), function (req, res) {
+  console.log("Du er i deleteComment");
+  
+  console.log("DeleteComment sin cid " + req.body.cid);
 
+  var sql = "DELETE FROM `comments` WHERE cid=" + req.body.cid;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+    })
+  });
 
 /************************************************************************
  * 
@@ -634,15 +777,6 @@ app.post('/accept', multerDecode.none(), function (req, res) {
   console.log("Accept sin userType " + req.body.userType);
   var sql = "DELETE FROM `requests` WHERE user=" + req.body.userInt;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
-  db.query(sql, function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      console.log(result);
-    }
-  });
-
-  sql = "UPDATE users SET userType = 'moderator' WHERE uid =" + req.body.userInt;
   db.query(sql, function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
@@ -768,6 +902,11 @@ app.get('/s/:keyword', function (req, res) {
   });
 });
 
+
+
+
+
+//---------------------------------------------post comments---------- bruk comments.uid
 // Fetches all comments for a specific post
 app.get('/c/:post', function (req, res) {
   var post = req.params.post;

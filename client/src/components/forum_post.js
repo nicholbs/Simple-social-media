@@ -149,6 +149,32 @@ export class PostPreview extends LitElement {
         }
     }
 
+    blockPost(e) {
+        fetch('http://localhost:8081/blockPost',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.pData.pid 
+            })
+})
+
+    }
+    deletePost(e) {
+    fetch('http://localhost:8081/deletePost',{
+                method:'post',
+                credentials: "include",
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({
+                    ownerId: this.pData.pid 
+                })
+    })
+}
+
+
+
+
+
     get_userType() {    
 
         console.log("Du er i forum post, her er post_id: " + this.pData.pid)
