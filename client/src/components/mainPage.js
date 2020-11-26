@@ -52,6 +52,11 @@ export class mainPage extends LitElement {
                             <div class="row  justify-content-center">
                                 <a href="/login">Secondly you can log into your account!</a>
                             </div>
+
+
+                            <div class="row  justify-content-center">
+                                <a href="/logout">Thirdly you can logout your account!</a>
+                            </div>
                             
                         </div>
                     </div>

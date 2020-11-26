@@ -25,6 +25,7 @@ CREATE TABLE `comments` (
   `uid` bigint(8) NOT NULL,
   `content` varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `votes` int(11) DEFAULT 0,
+  `blocked` tinyint(1) DEFAULT 0,
   `date` datetime DEFAULT current_timestamp(),
    PRIMARY KEY (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -63,7 +64,7 @@ INSERT INTO `requests`(`rid`, `user`, `userType`) VALUES
 
 INSERT INTO `forums` (`name`, `title`, `banner`, `icon`) VALUES
 ('Trains', 'Train Appreciation Society', 'https://www.greenbiz.com/sites/default/files/images/articles/featured/highspeedrailsstock.jpg', 'https://images.unsplash.com/photo-1530563639148-3c83980fe6ed?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80'),
-('games', 'The Game Station', 'https://www.ubp.com/files/live/sites/ubp/files/banner_newsroom/200124_Vignette_Web_Detail.jpg', 'https://media.wired.com/photos/5926c126af95806129f50868/master/w_1334,c_limit/SuperMarioRunTA.jpg');
+('games', 'The Game Station', 'https://specials-images.forbesimg.com/imageserve/5f37e9a0a040c1461e6da898/960x0.jpg?cropX1=0&cropX2=1024&cropY1=221&cropY2=797', 'https://media.wired.com/photos/5926c126af95806129f50868/master/w_1334,c_limit/SuperMarioRunTA.jpg');
 
 INSERT INTO `posts` (`pid`, `forum`, `uid`, `title`, `content`, `image`, `votes`, `blocked`) VALUES
 (1, 'Trains', 1, 'God I love trains', 'Aren\'t they beautiful', 'https://images.unsplash.com/photo-1505832018823-50331d70d237?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1382&q=80', 0, 0),

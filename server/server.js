@@ -14,6 +14,7 @@ import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
 
 
+
 const app = express();
 const PORT = 8081;
 const multerDecode = multer(); //For å mota formData til post request
@@ -60,6 +61,12 @@ app.get('/', (req, res) => {
 })
 
 var upload=multer();
+
+
+
+
+
+
 
 
 /******************************************************** */
@@ -125,7 +132,7 @@ function auth(req, res, next) {
 
 
   } 
-  else {        //Dersom du har en cookie fra før
+  else {        //Dersom du har en cookie fra før         kanskje else if????
 
     var valueFraCookie = req.signedCookies.user;
     console.log("----------Dette er valueFraCookie " + valueFraCookie)
@@ -266,6 +273,8 @@ function validateCookie(req, res, next) {
 app.post('/checkUserType', auth, function (req,res) {
   console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
   console.log("------------------ her er ownerId: " + req.body.ownerId)
+  console.log("uid: " + res.locals.uid)
+  console.log("ownerId" + req.body.ownerId)
   res.writeHead(200, { 'Content-Type': 'application/json' });
 
   
@@ -277,8 +286,10 @@ app.post('/checkUserType', auth, function (req,res) {
     })
     res.end(answer);
   }
-  else if (res.locals.userId == req.body.ownerId) {
+  else if (res.locals.uid == req.body.ownerId) {
     console.log("Du er inni checkuser else if")
+    
+    console.log(req.body.ownerId)
     var answer = JSON.stringify({
       admin: false,
       user: true
@@ -373,6 +384,17 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   }
   
 })
+
+
+
+
+
+
+
+
+
+
+
 
 //registrering av ny bruker
 app.post('/registerHashed',multerDecode.none(), async (req,res) => {
@@ -1218,4 +1240,3 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     })
     
     });
-  

@@ -16,6 +16,7 @@ import '/src/components/adminComponents/userCard.js'
 import '/src/components/adminComponents/requestsList.js'
 import '/src/components/adminComponents/requestCard.js'
 import '/src/components/searchResult.js'
+import '/src/components/logout.js'
 import '/src/components/postCreate.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
@@ -31,7 +32,10 @@ import '/src/components/postCreate.js'
 			  {path: '/requests', component: 'requests-page'},
 			  {path: '/administrer', component: 'admin-page'},
 			  {path: '/search', component: 'search-result'},
+			  {path: '/logout', component: 'logout-page'},
+ 
 			  {path: '/createPost', component: 'create-post'},
 			]);
 
+			
 			

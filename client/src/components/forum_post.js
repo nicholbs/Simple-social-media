@@ -171,7 +171,6 @@ export class PostPreview extends LitElement {
 
         console.log("Du er i get_userType, her er post_pid: " + this.pData.pid)
         console.log("Du er i get_userType, her er post_uid: " + this.pData.uid)
-        var uid = this.pData.uid;
         fetch('http://localhost:8081/checkUserType',{
             method:'post',
             credentials: "include",
