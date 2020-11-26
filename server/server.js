@@ -63,13 +63,6 @@ app.get('/', (req, res) => {
 
 var upload=multer();
 
-
-
-
-
-
-
-
 /******************************************************** */
 function auth(req, res, next) {
   if(!req.signedCookies.user) {
@@ -154,9 +147,6 @@ app.get('/secret', auth, (req, res)=> {
 
 })
 
-
-
-
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
 
   db.query('SELECT * FROM users', function (err, result) {
@@ -224,7 +214,6 @@ app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next)
     }
   })
 })
-
 
 
 /*****************************************************
@@ -386,17 +375,6 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   
 })
 
-
-
-
-
-
-
-
-
-
-
-
 //registrering av ny bruker
 app.post('/registerHashed',multerDecode.none(), async (req,res) => {
 
@@ -406,7 +384,6 @@ app.post('/registerHashed',multerDecode.none(), async (req,res) => {
   // if (res.locals.userType)
   // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
 
-  
  const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
   const formData = req.body; //Lagrer unna formdata objekt
@@ -521,11 +498,11 @@ app.post('/registerHashed',multerDecode.none(), async (req,res) => {
  * @author Nicholas Bodvin Sellevaag
  ************************************************************************/
 app.get('/retrievePosts', function(req, res) {
-console.log('Dette er app.post for /retrievePosts på server.js')   //log message available from docker extension->nodejs, right click and "View Logs"
+  console.log('Dette er app.post for /retrievePosts på server.js')   //log message available from docker extension->nodejs, right click and "View Logs"
 
-var sql = 'SELECT * FROM posts';
+  var sql = 'SELECT * FROM posts';
 
-db.query(sql, function (err, result) {
+  db.query(sql, function (err, result) {
     if (err) {
     res.status(400).send('Error in database operation.');
     } else {
@@ -585,99 +562,44 @@ app.post('/getUsers', auth, function (req, res) {
   
   });
 
-  app.post('/requestDup', auth, function (req, res, next) {
-    console.log("Du er i requestDup");
-            var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
-    db.query(sql, function (err, result) {
-      if (err) {
-        res.status(400).send('Error in database operation.');
-        console.log("Her er det error " + err)
-      } 
-      else {
-        
-        console.log("requestDup sin else ")
-        var allUsers = Object.values(result); //Denne ser ikke riktig ut
-        console.log("allUsers: " + allUsers);
-        console.log("allUsers length: " + allUsers.length);
-        console.log("allUsers uid: " + allUsers.user);
-
-
-            
-        if (allUsers.length != 0) {
-            console.log("requestDup sin if if ")
-            {
-              res.end(JSON.stringify( {
-                answer: "duplicate"
-              }));
-            }
-        } else {
-              console.log("requestDup sin if else ")
-              
-              db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
-                if (err) {
-                  console.log("query sin if ")
-                  res.status(400).send('Error in database operation.');
-                } else {
-                  console.log("query sin else ")
-                  var answer = JSON.stringify({
-                    answer: "ok"
-                  });
-                  res.send(answer);
-                }
-              })
+app.post('/requestDup', auth, function (req, res, next) {
+  console.log("Du er i requestDup");
+          var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+      console.log("Her er det error " + err)
+    } else {
+      console.log("requestDup sin else ")
+      var allUsers = Object.values(result); //Denne ser ikke riktig ut
+      console.log("allUsers: " + allUsers);
+      console.log("allUsers length: " + allUsers.length);
+      console.log("allUsers uid: " + allUsers.user);   
+      if (allUsers.length != 0) {
+          console.log("requestDup sin if if ")
+          {
+            res.end(JSON.stringify( {
+              answer: "duplicate"
+            }));
           }
+      } else {
+        console.log("requestDup sin if else ")
+        db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
+          if (err) {
+            console.log("query sin if ")
+            res.status(400).send('Error in database operation.');
+          } else {
+            console.log("query sin else ")
+            var answer = JSON.stringify({
+              answer: "ok"
+            });
+            res.send(answer);
+          }
+        })
       }
     }
-
-
-
-
-
-
-  )
   })
-
-  
-
-
-//   else 
-//       {
-//         
-//         console.log(found);
-//           if (found != null)
-//           {
-//             console.log("Du er i if found !=null")
-//             res.writeHead(200, { 'Content-Type': 'application/json' });
-//             res.end(JSON.stringify(result));
-//           }
-//           else {
-//             console.log("Du er i else")
-//             res.writeHead(200, { 'Content-Type': 'application/json' });
-//             var answer = JSON.stringify({
-//               ok: "true"
-//             });
-//             res.send(answer);
-//           }
-//       }
-//     })
-// });
-
-// app.post('/requestMod', auth, function (req, res) {
-//   db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
-//     if (err) {
-//       res.status(400).send('Error in database operation.');
-//     } else {
-//       var answer = JSON.stringify({
-//         ok: true
-//       });
-//       res.send(answer);
-//     }
-//   })
-// });
-      
-
-
-
+})
 
 /************************************************************************
  * 
@@ -696,10 +618,8 @@ app.get('/requests', auth, function (req, res) {
         warning: "You have to be moderator/admin to see requests of users", 
         ok: "ok"
       }
-    }
-    ));
-  }
-  
+    }));
+  } 
   else if (res.locals.userType == "admin") {
     console.log("Du er i request admin")
     db.query('SELECT * FROM requests', function (err, result) {
@@ -709,7 +629,6 @@ app.get('/requests', auth, function (req, res) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(result));
       }
-
     });
   }
 
@@ -734,8 +653,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
     var salt = bcrypt.genSaltSync(10); //Generate salt
     var hashedChangedPassword = bcrypt.hashSync(req.body.password, salt); //Hasshing the userPassword
     console.log("pw endret");
-  
-  
   
     db.query('UPDATE users SET password=? WHERE uid =?',[hashedChangedPassword,res.locals.uid], function (err, result) {
       if (err){
@@ -871,7 +788,6 @@ app.post('/deny', multerDecode.none(), function (req, res) {
   });
 });
 
-
 app.get('/userLogin', function(req, res) {
   console.log("Funker");
   console.log("Server username: " + req.body.username);
@@ -902,7 +818,7 @@ app.get('/getUserData', auth, function (req, res) {
   })
 })
 
-// Fetches properties for a single forum
+// Fetches forum properties
 app.get('/f/:forum', function (req, res) {
   var forum = req.params.forum;
   db.query('SELECT * FROM forums WHERE name=\'' + forum + '\'', function (err, result) {
@@ -932,7 +848,7 @@ app.get('/p/:forum/:sort', auth, function (req, res) {
     });
 });
 
-// Fetches properties for a single post
+// Fetches post properties
 app.get('/p/:pid', auth, function (req, res) {
   var pid = req.params.pid;
   db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
@@ -947,7 +863,7 @@ app.get('/p/:pid', auth, function (req, res) {
     });
 });
 
-// Fetches all posts that match search criteria
+// Fetches all posts matching search criteria
 app.get('/s/:keyword/:sort', function (req, res) {
   var keyword = req.params.keyword;
   var sort = req.params.sort;
@@ -986,16 +902,14 @@ app.post('/createPost', auth, multerDecode.none(), function(req, res) {
   var p = req.body;
   //console.log(p);
 
-  //console.log(`INSERT INTO posts (forum, uid, title, content) VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`);
   db.query(`INSERT INTO posts (forum, uid, title, content) 
-            VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`,
-    function(err, result) {
-      if(err) {
-        res.status(400).send("Error in post creation");
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(result));
-      }
+            VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`, function(err, result) {
+    if(err) {
+      res.status(400).send("Error in post creation");
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
   })
 })
 
@@ -1045,10 +959,6 @@ app.get('/:type/:id/vote/:updown', function(req, res) {
   }
 })
 
-
-var test; //Litt usikker om denne kan slettes, var noe som lå over userregisterOld
-
-
 /**
  * Get single picture
  */
@@ -1067,7 +977,6 @@ app.get('/profilepic', function (req, res) {
     res.sendFile(tempPath); //sender bildet frontend
    }
   }); 
-
 });
 
 /** 
@@ -1081,9 +990,6 @@ app.use('/images', express.static('/server/src/images/userProfile/'));
 /**
  * Uploading of profilepicture
  */
-
-
-
 app.post('/profilePicUpload', auth, (req, res) => {
   var isAPicture = true; //For response logic
   var errorPicture = false; // for response logic
@@ -1158,13 +1064,11 @@ app.post('/profilePicUpload', auth, (req, res) => {
   })
   
   });
-
-  
+ 
 /** 
  * Get access to the Post image folder, Publishing under http://localhost:8081/postimages/
  * 
  *  */
-
 app.use('/postimages', express.static('/server/src/images/postPictures/'));
 
    /**
