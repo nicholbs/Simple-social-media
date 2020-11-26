@@ -9,7 +9,8 @@ export class CreatePost extends LitElement {
     
     constructor() {
         super();
-        this.forum = "games"
+        const params = new URLSearchParams(window.location.search);
+        this.forum = params.get("forum");
     }
 
     static get styles() {
@@ -113,7 +114,7 @@ export class CreatePost extends LitElement {
     createPost(e) {
         let newPost = new FormData(e.target.form);
         e.preventDefault();
-        newPost.append("forum", "Trains");  //Hardkoda for nå
+        newPost.append("forum", this.forum);  //Hardkoda for nå
         console.log("Creating post...");
 
         fetch('http://localhost:8081/createPost', {

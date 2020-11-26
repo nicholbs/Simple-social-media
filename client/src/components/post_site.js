@@ -70,7 +70,7 @@ export class PostSite extends LitElement {
     }
 
     fetch_data() {
-        this.get_post_data(this.get_post_id())
+        this.get_post_data(this.get_post_id(), this.get_sort())
     }
 
     get_post_id() {
@@ -78,7 +78,7 @@ export class PostSite extends LitElement {
         return urlParams.get("id");
     }
 
-    get_post_data(pid) {    
+    get_post_data(pid, sort) {    
         fetch(`${window.MyAppGlobals.serverURL}p/${pid}`)
         .then(res => res.json())
         .then(res => {    
@@ -88,7 +88,7 @@ export class PostSite extends LitElement {
         })
         .catch(e => console.log(e))
 
-        fetch(`${window.MyAppGlobals.serverURL}c/${pid}`)
+        fetch(`${window.MyAppGlobals.serverURL}c/${pid}/${sort}`)
         .then(res => res.json())
         .then(res => {    
             this.allComments = Object.values(res); 
@@ -96,6 +96,11 @@ export class PostSite extends LitElement {
             console.log(this.allComments);
         })
         .catch(e => console.log(e))
+    }
+
+    get_sort() {
+        const c = document.cookie;
+        return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];
     }
 
     render() {

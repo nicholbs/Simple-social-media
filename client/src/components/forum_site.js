@@ -74,7 +74,7 @@ export class ForumSite extends LitElement {
     }
 
     fetch_data() {
-        this.get_forum_data(this.get_forum_name())
+        this.get_forum_data(this.get_forum_name(), this.get_sort())
     }
 
     get_forum_name() {
@@ -82,7 +82,8 @@ export class ForumSite extends LitElement {
         return urlParams.get("name");
     }
 
-    get_forum_data(url_forum) {    
+    get_forum_data(url_forum, sort) {  
+        //Fetch forum data  
         fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`, {
             credentials: "include"
         })
@@ -94,7 +95,8 @@ export class ForumSite extends LitElement {
         })
         .catch(e => console.log(e))
 
-        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/votes`)
+        //Fetch forum posts
+        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/${sort}`)
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
@@ -106,7 +108,10 @@ export class ForumSite extends LitElement {
         .catch(e => console.log(e))
     }
 
-    
+    get_sort() {
+        const c = document.cookie;
+        return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];
+    }
 
     render() {
         return html`
@@ -132,6 +137,7 @@ export class ForumSite extends LitElement {
                     <div class="col-5">
                         <h1 class="display-4" id="forum-title">${this.fData.title}</h1>
                         <h1 class="forum-subtitle" id="forum-address">f/${this.fData.name}</h1>
+                        <button class="btn btn-primary" onclick="location.href='/createPost?forum=${this.fData.name}'">Create post</button>
                     </div>
                 </div>
 

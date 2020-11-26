@@ -84,9 +84,6 @@ export class CreateComment extends LitElement {
                         <div class="card-body" style="background-color:#1a1a1b;">
                             <!-- Form -->
                             <div class="row justify-content-left">
-                                <!--<div class="col-auto">
-                                    <img class="avatar" src="">
-                                </div>-->
                                 <div class="col">
                                     <form>
                                         <div><input id="content"></div>
@@ -101,7 +98,7 @@ export class CreateComment extends LitElement {
         `;
     }
 
-    postComment(e) {
+    async postComment(e) {
         //const newComment = new FormData(e.target.form);
         var eCon = this.shadowRoot.getElementById("content").value;
         var ePid = this.pid;
@@ -109,7 +106,7 @@ export class CreateComment extends LitElement {
         e.preventDefault();
         console.log("Comment posted: \"" + eCon + "\"")
 
-        fetch('http://localhost:8081/postComment',{
+        var a = await fetch('http://localhost:8081/postComment',{
             method:'post',
             credentials: "include",
             headers: {
@@ -124,6 +121,8 @@ export class CreateComment extends LitElement {
         .catch(function (error){
             console.log(error);
         })
+        if(a)
+            setTimeout(location.reload.bind(location), 1);
     }
 }
 customElements.define("create-comment", CreateComment);

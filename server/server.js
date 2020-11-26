@@ -947,12 +947,13 @@ app.get('/p/:pid', function (req, res) {
 });
 
 // Fetches all posts that match search criteria
-app.get('/s/:keyword', function (req, res) {
+app.get('/s/:keyword/:sort', function (req, res) {
   var keyword = req.params.keyword;
+  var sort = req.params.sort;
   db.query(`SELECT pid, title, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE title LIKE '%${keyword}%' OR content LIKE '%${keyword}%'
-            ORDER BY votes DESC;`, function (err, result) {
+            ORDER BY ${sort} DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -963,12 +964,13 @@ app.get('/s/:keyword', function (req, res) {
 });
 
 // Fetches all comments for a specific post
-app.get('/c/:post', function (req, res) {
+app.get('/c/:post/:sort', function (req, res) {
   var post = req.params.post;
+  var sort = req.params.sort;
   db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
             INNER JOIN users ON comments.uid = users.uid 
             WHERE pid = ${post}
-            ORDER BY votes DESC;`, function (err, result) {
+            ORDER BY ${sort} DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
