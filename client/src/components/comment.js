@@ -138,7 +138,7 @@ export class PostComment extends LitElement {
             credentials: "include",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
-                ownerId: this.pData.cid 
+                ownerId: this.cData.cid 
             })
         })
     }
@@ -149,7 +149,7 @@ export class PostComment extends LitElement {
                 credentials: "include",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({
-                    ownerId: this.pData.cid 
+                    ownerId: this.cData.cid 
                 })
     })
 }
