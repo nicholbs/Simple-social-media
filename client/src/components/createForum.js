@@ -57,6 +57,9 @@ export class CreateForum extends LitElement {
             else if(text == 'invalidChar'){
                 alert("Title ore name characther not valid, can only contain 0-9,A-Z,a-z");
             }
+            else if(text=='nameExist'){
+                alert("Forum name alredy exist, plese chose anotherone!");
+            }
             
         })
         .catch(function (error){
