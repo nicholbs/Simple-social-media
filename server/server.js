@@ -12,6 +12,8 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+
 
 
 const app = express();
@@ -125,7 +127,7 @@ function auth(req, res, next) {
 
 
   } 
-  else {        //Dersom du har en cookie fra før
+  else {        //Dersom du har en cookie fra før         kanskje else if????
 
     var valueFraCookie = req.signedCookies.user;
     console.log("----------Dette er valueFraCookie " + valueFraCookie)
@@ -266,6 +268,8 @@ function validateCookie(req, res, next) {
 app.post('/checkUserType', auth, function (req,res) {
   console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
   console.log("------------------ her er ownerId: " + req.body.ownerId)
+  console.log("uid: " + res.locals.uid)
+  console.log("ownerId" + req.body.ownerId)
   res.writeHead(200, { 'Content-Type': 'application/json' });
 
   
@@ -277,8 +281,10 @@ app.post('/checkUserType', auth, function (req,res) {
     })
     res.end(answer);
   }
-  else if (res.locals.userId == req.body.ownerId) {
+  else if (res.locals.uid == req.body.ownerId) {
     console.log("Du er inni checkuser else if")
+    
+    console.log(req.body.ownerId)
     var answer = JSON.stringify({
       admin: false,
       user: true
@@ -373,6 +379,17 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   }
   
 })
+
+
+
+
+
+
+
+
+
+
+
 
 //registrering av ny bruker
 app.post('/registerHashed',multerDecode.none(), async (req,res) => {
@@ -896,7 +913,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, blocked, users.username FROM posts
+  db.query(`SELECT pid, title, image, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {

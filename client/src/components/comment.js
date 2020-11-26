@@ -4,7 +4,9 @@ export class PostComment extends LitElement {
     static get properties() {
         return {
             cData : Object,
-            shown_vote: {type: Number}
+            shown_vote: {type: Number},
+            showBlock: {type: Boolean},
+            showDelete: {type: Boolean}
         };
     }
     
@@ -133,23 +135,25 @@ export class PostComment extends LitElement {
     }
 
     blockComment(e) {
+        console.log("block cid: " + this.cData.cid)
         fetch('http://localhost:8081/blockComment',{
             method:'post',
             credentials: "include",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
-                ownerId: this.cData.cid 
+                cid: this.cData.cid 
             })
         })
     }
-
+    
     deleteComment(e) {
+        console.log("delete cid: " + this.cData.cid)
     fetch('http://localhost:8081/deleteComment',{
                 method:'post',
                 credentials: "include",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({
-                    ownerId: this.cData.cid 
+                    cid: this.cData.cid 
                 })
     })
 }
