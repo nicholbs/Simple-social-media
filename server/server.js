@@ -64,10 +64,10 @@ var upload=multer();
 
 /******************************************************** */
 function auth(req, res, next) {
-if(!req.signedCookies.user) {
+  if(!req.signedCookies.user) {
 
     var authHeader = req.headers.authorization;
-  console.log("-----------Auth header " + authHeader)
+    console.log("-----------Auth header " + authHeader)
 
     if (!authHeader) {
       console.log("------------------------Nå er du i !autheader")
@@ -77,29 +77,23 @@ if(!req.signedCookies.user) {
       next(err);
     }
     
-
+    var auth = new Buffer.from(authHeader.split(" ")[1], "base64")
+    .toString()
+    .split(":");
+    var username = auth[0];
+    var password = auth[1];
+    
+        db.query('SELECT * FROM users', function (err, result) {
+          if (err) {      //If the Sql query fails
+            console.log("Det var en error i query")
+            res.send("SQL did not work")    //Should put a warning in the response instead
+          } else {
+            JSON.stringify(result);
+            console.log("------------------------Nytt Sok------------------------")
       
-      var auth = new Buffer.from(authHeader.split(" ")[1], "base64")
-      .toString()
-      .split(":");
-      var username = auth[0];
-      var password = auth[1];
-    
-   
-      db.query('SELECT * FROM users', function (err, result) {
-        if (err) {      //If the Sql query fails
-          console.log("Det var en error i query")
-          res.send("SQL did not work")    //Should put a warning in the response instead
-        }
-        else {
-    
-          JSON.stringify(result);
-          console.log("------------------------Nytt Sok------------------------")
-    
-          var allUsers = Object.values(result);
-          const found = allUsers.find(element => element.username == username); 
-          
-    
+            var allUsers = Object.values(result);
+            const found = allUsers.find(element => element.username == username); 
+            
             if (found == null) {
               console.log("Cannot find user with username " + username);
               res.setHeader("WWW-Authenticate", "Basic");
@@ -130,8 +124,8 @@ if(!req.signedCookies.user) {
       })
 
 
-} 
-else {        //Dersom du har en cookie fra før
+  } 
+  else {        //Dersom du har en cookie fra før
 
     var valueFraCookie = req.signedCookies.user;
     console.log("----------Dette er valueFraCookie " + valueFraCookie)
@@ -151,6 +145,8 @@ app.get('/secret', auth, (req, res)=> {
   res.send("ok")
 
 })
+
+
 
 
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
@@ -302,8 +298,6 @@ app.post('/checkUserType', auth, function (req,res) {
 });
 
 
-
-
 /**
  * This route creates a new user
  * @see /server/src/components/UserClass - the class of a new user
@@ -380,17 +374,7 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   
 })
 
-
-
-
-
-
-
-
-
-
 //registrering av ny bruker
-
 app.post('/registerHashed',multerDecode.none(), async (req,res) => {
 
   // if (res.locals.uid)
@@ -476,7 +460,6 @@ app.post('/registerHashed',multerDecode.none(), async (req,res) => {
   
 
 })
-
 
 /*******************************************************************************
  * Function creates new "entry" inn MySql database
@@ -764,6 +747,7 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
+<<<<<<< HEAD
 
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
@@ -799,6 +783,8 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     }
     })
   });
+=======
+>>>>>>> a4823c20fb1064fc61874e172e3071bbad10ade4
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
@@ -883,9 +869,27 @@ app.post('/deny', multerDecode.none(), function (req, res) {
 });
 
 
+app.get('/userLogin', function(req, res) {
+  console.log("Funker");
+  console.log("Server username: " + req.body.username);
+  var username = req.body.username;
+  console.log("Server password: " + req.body.password);
+  var password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10));  
+
+  console.log("B");
+  db.query(`SELECT password, uid, userType, picture FROM users WHERE username='${username}' AND password='${password}';`), function (err, result) {
+    if(err) {
+      res.status(400).send(err);
+    }else{
+      res.status(200).send("Valid login");
+    }
+  }
+})
+
 // Fetches data of active user
-app.get('getUserData', auth, function (req, res) {
-  db.query(`SELECT * FROM users WHERE uid=${res.locals.uid}`, function (err, result) {
+app.get('/getUserData', auth, function (req, res) {
+  console.log(`SELECT username, picture FROM users WHERE uid=${res.locals.uid}`)
+  db.query(`SELECT username, picture FROM users WHERE uid=${res.locals.uid}`, function (err, result) {
     if(err) {
       res.status(400).send("Error getting user information");
     }else{
@@ -912,7 +916,7 @@ app.get('/f/:forum', function (req, res) {
 app.get('/p/:forum/:sort', function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, image, votes, users.username FROM posts
+  db.query(`SELECT pid, title, image, votes, blocked, users.username FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.forum = '${forum}'
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -928,7 +932,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 // Fetches properties for a single post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, content, votes, users.picture FROM posts
+  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
