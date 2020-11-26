@@ -21,9 +21,26 @@ export class mainPage extends LitElement {
         color: white;
 
     }
+    h4 {
+        color: white;
+
+    }
 
 
     `;
+
+    static get properties() {
+        return {
+            allForums :  { type: Array },
+        };
+    }
+
+    constructor() {
+        super();
+        this.getForums();
+
+
+    }
 
     render() {
         return html`
@@ -35,7 +52,7 @@ export class mainPage extends LitElement {
                 <br>
                 <br>
         
-            <h5 id="mainPageTittel">This is the homepage for our web-application</h5>
+            <h4 id="mainPageTittel">This is the homepage for our web-application</h4>
             
                   </div class="row">
                     <div class="d-flex justify-content-center">
@@ -53,11 +70,14 @@ export class mainPage extends LitElement {
                                 <a href="/login">Secondly you can log into your account!</a>
                             </div>
 
-
-                            <div class="row  justify-content-center">
-                                <a href="/logout">Thirdly you can logout your account!</a>
+                            <br>
+                            <br>
+                            <div class="row justify-content-center">
+                            <h5 id="mainPageTittel">This is the homepage for our web-application</h5>
                             </div>
-                            
+                                    ${this.allForums.map(i => html`<forum-link .forumLink=${i}></forum-link>`)}     
+                           
+
                         </div>
                     </div>
                     </div>
@@ -70,5 +90,19 @@ export class mainPage extends LitElement {
             `;
     }
     
+    getForums() {
+        fetch('http://localhost:8081/retrieveForums',{
+            method:'get',
+            // credentials: "include",
+        }).then(res => res.json())
+        .then(res => { 
+            this.allForums = Object.values(res);
+            
+        }) 
+
+    }
+
+
+
 }
 customElements.define('main-page', mainPage);

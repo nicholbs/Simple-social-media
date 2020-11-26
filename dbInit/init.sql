@@ -80,8 +80,9 @@ ALTER TABLE `posts`
 ALTER TABLE `comments`
   ADD KEY `FK_CommentUser` (`uid`),
   ADD KEY `FK_CommentPost` (`pid`),
-  ADD CONSTRAINT `FK_CommentPost` FOREIGN KEY (`pid`) REFERENCES `posts` (`pid`),
-  ADD CONSTRAINT `FK_CommentUser` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`);
+  ADD CONSTRAINT `FK_CommentPost` FOREIGN KEY (`pid`) REFERENCES `posts` (`pid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_CommentUser` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
   
 COMMIT;
+
