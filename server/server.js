@@ -647,7 +647,8 @@ app.get('/requests', auth, function (req, res) {
   } 
   else if (res.locals.userType == "admin") {
     console.log("Du er i request admin")
-    db.query('SELECT * FROM requests', function (err, result) {
+    db.query(`SELECT requests.*, users.username FROM requests
+              INNER JOIN users ON requests.user = users.uid`, function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
@@ -659,7 +660,9 @@ app.get('/requests', auth, function (req, res) {
 
   else if (res.locals.userType == "moderator") {
     console.log("Du er i request moderator")
-    db.query('SELECT * FROM `requests` WHERE userType="user"', function (err, result) {
+    db.query(`SELECT requests.*, users.username FROM requests
+              INNER JOIN users ON requests.user = users.uid 
+              WHERE requests.userType="user"`, function (err, result) {
       if (err) {
         res.status(400).send('Error in database operation.');
       } else {
@@ -952,6 +955,39 @@ app.get('/c/:post/:sort', function (req, res) {
   });
 });
 
+// Fetches all comments for a specific user
+app.get('/user/c/:sort', auth, function (req, res) {
+  var uid = res.locals.uid;
+  var sort = req.params.sort;
+  db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
+            INNER JOIN users ON posts.uid = users.uid 
+            WHERE posts.uid = '${uid}'`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
+// Fetches all posts for a specific user
+app.get('/user/p/:sort', auth, function (req, res) {
+  var uid = res.locals.uid;
+  var sort = req.params.sort;
+  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
+            INNER JOIN users ON comments.uid = users.uid 
+            WHERE pid = ${post}
+            ORDER BY ${sort} DESC;`, function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  });
+});
+
 // Creates new post
 app.post('/createPost', auth, multerDecode.none(), function(req, res) {
   var p = req.body;
@@ -995,13 +1031,7 @@ app.get('/retrieveForums', function(req, res) {
       res.end(JSON.stringify(result));
     }
   })
-
-
 })
-
-
-
-
 
 //Upvote | downvote
 app.get('/:type/:id/vote/:updown', function(req, res) {
