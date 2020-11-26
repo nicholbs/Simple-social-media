@@ -12,6 +12,7 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
+import { timingSafeEqual } from 'crypto';
 
 
 
@@ -1233,3 +1234,23 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     })
     
     });
+
+
+    /**
+     * Create a Forum
+     */
+    app.post('/createforum', auth ,multerDecode.none(), (req, res) => {
+    console.log(req.body.ForumTitle);
+    var forumTitle = req.body.ForumTitle;
+    var forumName = req.body.ForumName;
+    
+    var forumExp = new RegExp("[a-z0-9A-Z]{2,63}$"); //what we axept of valid characthers of a Forume name
+    
+    if(forumExp.test(forumTitle) && forumExp.test(forumName)){
+      console.log("Valid charachters for new forum: " + forumTitle);
+    }
+
+      
+      
+        
+    })
