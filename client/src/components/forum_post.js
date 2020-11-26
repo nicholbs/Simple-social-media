@@ -136,7 +136,7 @@ export class PostPreview extends LitElement {
                                     </div>
                                 </div>
                                 <!-- Post content -->
-                                <div class="row justify-content-center">
+                                <div id="postContent" class="row justify-content-center">
                                     ${this.pData.content}
                                 </div>
                             </div>
@@ -144,8 +144,6 @@ export class PostPreview extends LitElement {
                     </div>
                 </div>
             `;
-        }else{
-            return html`<div><h5>This post is blocked</h5></div>`;
         }
     }
 
@@ -157,23 +155,19 @@ export class PostPreview extends LitElement {
             body: JSON.stringify({
                 ownerId: this.pData.pid 
             })
-})
-
+        })
     }
+
     deletePost(e) {
-    fetch('http://localhost:8081/deletePost',{
-                method:'post',
-                credentials: "include",
-                headers: { 'Content-type': 'application/json' },
-                body: JSON.stringify({
-                    ownerId: this.pData.pid 
-                })
-    })
-}
-
-
-
-
+        fetch('http://localhost:8081/deletePost',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.pData.pid 
+            })
+        })
+    }
 
     get_userType() {    
 

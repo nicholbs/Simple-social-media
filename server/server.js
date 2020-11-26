@@ -476,21 +476,6 @@ app.post('/registerHashed',multerDecode.none(), async (req,res) => {
  * @var result - result from database query
  * @author Nicholas Bodvin Sellevaag
  ******************************************************************************/
-app.post('/createPost', upload.none(), function(req, res) {
-console.log('Dette er app.post for /createPost på server.js')   //log message available from docker extension->nodejs, right click and "View Logs"
-
-var sql = "INSERT INTO posts (user, title, content) VALUES ('2', '" + req.body.postName + "', '" + req.body.postContent + "')";
-
-db.query(sql, function (err, result) {
-    if (err) 
-      throw err;
-      console.log("Number of records inserted: " + result.affectedRows);
-    });
-
-res.send("Req ble mottat");   //response sent to front-end as pure html
-
-})
-
 
 /*************************************************************************
  * Function creates new "entry" inn MySql database
@@ -922,6 +907,12 @@ app.get('/c/:post', function (req, res) {
     }
   });
 });
+
+app.post('/createPost', auth, function(req, res) {
+  var uid = res.locals.uid;
+  var title = req.body.title;
+  console.log(uid + " " + title);
+})
 
 // Inserts a new comment to database
 app.post('/postComment', auth, function(req, res) {

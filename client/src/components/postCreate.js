@@ -1,13 +1,15 @@
 import { LitElement, html, css } from 'lit-element';
 
-export class CreateComment extends LitElement {
+export class CreatePost extends LitElement {
     static get properties() {
         return {
+            forum: {type: String},
         };
     }
     
     constructor() {
         super();
+        this.forum = "games"
     }
 
     static get styles() {
@@ -80,14 +82,30 @@ export class CreateComment extends LitElement {
                         <div class="card-body" style="background-color:#1a1a1b;">
                             <!-- Form -->
                             <div class="row justify-content-left">
-                                <div class="col">
-                                    <form>
-                                        <div><input id="title"></div>
-                                        <div><input id="content"></div>
-                                        <div><input id=""></div>
-                                        <button @click="${this.createPost}" id="postComment">Post comment</button>
-                                    </form>
-                                </div>
+                                <form class="form" id="createPost">
+                                    <h1>Register to forum</h1>
+                                    <!--Første rad-->
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <label for="title">Title</label>
+                                            <input name="title" class="form-control" id="title" placeholder="Post title..." required>
+                                        </div>
+                                    </div>
+                                    <!--Andre rad-->
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <label for="content">Content</label>
+                                            <input name="content" class="form-control" id="content" placeholder="Post content..." required>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <label for="image">Image</label>
+                                        <input type="file" name="image" class="form-control" id="image"> 
+                                    </div>
+                                    <div class="row mt-2">
+                                    <button type="button" @click="${this.createPost}" class="btn btn-primary">Create Post</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -97,7 +115,16 @@ export class CreateComment extends LitElement {
     }
 
     createPost(e) {
-
+        const newPost = new FormData(e.target.form);
+        e.preventDefault();
+        console.log("Creating post...");
+        fetch('http://localhost:8081/createPost', {
+            method: 'post',
+            credentials: 'include',
+            body: newPost
+        })
+        .then(res => console.log(res))
+        .catch(e => console.log(e))
     }
 
     postComment(e) {
@@ -125,4 +152,4 @@ export class CreateComment extends LitElement {
         })
     }
 }
-customElements.define("create-comment", CreateComment);
+customElements.define("create-post", CreatePost);
