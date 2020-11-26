@@ -577,7 +577,7 @@ app.post('/getUsers', auth, function (req, res) {
   
   });
 
-  app.post('/requestDup', auth, function (req, res) {
+  app.post('/requestDup', auth, function (req, res, next) {
     console.log("Du er i requestDup");
             var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
     db.query(sql, function (err, result) {
@@ -586,26 +586,46 @@ app.post('/getUsers', auth, function (req, res) {
         console.log("Her er det error " + err)
       } 
       else {
-        var allUsers = Object.values(result);
-        const found = allUsers.find(element => element.uid == res.locals.uid);
-        console.log(found) 
-        if (found != null)
-        {
-          res.end(JSON.stringify( {
-            answer: "duplicate",
-            me: "mortal"
-          }));
-        }
-        else {
-          res.end(JSON.stringify( {
-            answer: "noDuplicate",
-            me: "mortal"
-          }));
+        
+        console.log("requestDup sin else ")
+        var allUsers = Object.values(result); //Denne ser ikke riktig ut
+        console.log("allUsers: " + allUsers);
+        console.log("allUsers length: " + allUsers.length);
+        console.log("allUsers uid: " + allUsers.user);
 
-        }
 
+            
+        if (allUsers.length != 0) {
+            console.log("requestDup sin if if ")
+            {
+              res.end(JSON.stringify( {
+                answer: "duplicate"
+              }));
+            }
+        } else {
+              console.log("requestDup sin if else ")
+              
+              db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
+                if (err) {
+                  console.log("query sin if ")
+                  res.status(400).send('Error in database operation.');
+                } else {
+                  console.log("query sin else ")
+                  var answer = JSON.stringify({
+                    answer: "ok"
+                  });
+                  res.send(answer);
+                }
+              })
+          }
       }
     }
+
+
+
+
+
+
   )
   })
 
@@ -727,6 +747,44 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
+<<<<<<< HEAD
+
+app.post('/blockPost', multerDecode.none(), function (req, res) {
+  console.log("Du er i blockPost");
+  
+  console.log("block sin pid " + req.body.pid);
+
+  var sql = "UPDATE `posts` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE pid=" + req.body.pid;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+    })
+  });
+
+    // -----------------------------------------Her må kanskje sql variabel endres ettersom navn på table til comments blir laget---------
+app.post('/blockComment', multerDecode.none(), function (req, res) {
+  console.log("Du er i blocComment");
+  
+  console.log("blockComment sin cid " + req.body.cid);
+
+  var sql = "UPDATE `comments` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE cid=" + req.body.cid;
+            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
+  db.query(sql, function (err, result) {
+    if (err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+    })
+  });
+=======
+>>>>>>> a4823c20fb1064fc61874e172e3071bbad10ade4
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
