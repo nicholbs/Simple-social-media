@@ -731,20 +731,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
   }
 })
 
-
-<<<<<<< HEAD
-
-
-
-// function whoIsUser(req, res, next) {
-
-
-// }
-
-
-=======
->>>>>>> 4c079759dcfb2416834d4e423500ab5b57a768f6
-
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
   
