@@ -14,7 +14,7 @@ export class CreateForum extends LitElement {
         <div class="d-flex justify-content-center">
         <!--Selve formen som skal registrere data-->
         <form class="form" id="registerForum">
-        <h1>Register new forum</h1>
+        <h1>Create new forum</h1>
         <!--Første rad-->
         <div class="row mt-2">
             <div class="col">
@@ -29,7 +29,7 @@ export class CreateForum extends LitElement {
             </div>
         </div>      
         <div class="row mt-2">
-        <button @click="${this.registerForum}" class="btn btn-primary">Register Forum</button>
+        <button @click="${this.registerForum}" class="btn btn-primary">Create Forum</button>
         </div>
     </form>
     </div>
