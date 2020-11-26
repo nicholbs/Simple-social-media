@@ -125,8 +125,8 @@ export class PostPreview extends LitElement {
                                     </div>
                                     <div class="col-1">
                                         <button @click="${this.get_userType}">A</button>
-                                        <h5>${this.showBlock ? html`<button>Block</button>` : html``}</h5>
-                                        <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
+                                        <h5>${this.showBlock ? html`<button @click="${this.blockPost}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
+                                        <h5>${this.showDelete ? html`<button @click="${this.deletePost} " onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
                                     </div>
                                 </div>
                                 <!-- Post image -->
@@ -150,13 +150,14 @@ export class PostPreview extends LitElement {
     }
 
     blockPost(e) {
+        console.log("pid: " +this.pData.pid);
         fetch('http://localhost:8081/blockPost',{
             method:'post',
             credentials: "include",
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
-                ownerId: this.pData.pid 
-            })
+                pid: this.pData.pid 
+            })  
 })
 
     }
@@ -166,7 +167,7 @@ export class PostPreview extends LitElement {
                 credentials: "include",
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({
-                    ownerId: this.pData.pid 
+                    pid: this.pData.pid 
                 })
     })
 }
@@ -177,7 +178,8 @@ export class PostPreview extends LitElement {
 
     get_userType() {    
 
-        console.log("Du er i forum post, her er post_id: " + this.pData.pid)
+        console.log("Du er i get_userType, her er post_pid: " + this.pData.pid)
+        console.log("Du er i get_userType, her er post_uid: " + this.pData.uid)
         var uid = this.pData.uid;
         fetch('http://localhost:8081/checkUserType',{
             method:'post',
@@ -194,14 +196,12 @@ export class PostPreview extends LitElement {
 
             if(data[0] == true) {
                 this.showBlock = true;
-                console.log("Du er admin og kan slette + blocke")
             }
             if(data[1] == true) {
                 this.showDelete = true;
-                console.log("Du er eieren av post og kan slette")
             }
             if(data[1] == false) {
-                console.log("Du må logge inn for å redigere")
+                alert("You are not the post's user or a server admin/moderator and can therefore not delete this post")
             }
         })
     }

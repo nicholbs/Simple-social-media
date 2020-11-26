@@ -275,10 +275,10 @@ app.post('/checkUserType', auth, function (req,res) {
       admin: true,
       user: true
     })
-    res.send(answer);
+    res.end(answer);
   }
   else if (res.locals.userId == req.body.ownerId) {
-    console.log("Du er inni checkuser if else")
+    console.log("Du er inni checkuser else if")
     var answer = JSON.stringify({
       admin: false,
       user: true
@@ -747,14 +747,22 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
-<<<<<<< HEAD
+
+
+
+// function whoIsUser(req, res, next) {
+
+
+// }
+
+
 
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
   
   console.log("block sin pid " + req.body.pid);
 
-  var sql = "UPDATE `posts` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE pid=" + req.body.pid;
+  var sql = "UPDATE `posts` SET `blocked`=1 WHERE pid=" + req.body.pid;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
@@ -772,7 +780,7 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
   
   console.log("blockComment sin cid " + req.body.cid);
 
-  var sql = "UPDATE `comments` SET `title`=' ',`content`=' ',`image`=' ',`votes`=0,`blocked`=1 WHERE cid=" + req.body.cid;
+  var sql = "UPDATE `comments` SET `blocked`=1 WHERE cid=" + req.body.cid;
             //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
@@ -783,8 +791,6 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     }
     })
   });
-=======
->>>>>>> a4823c20fb1064fc61874e172e3071bbad10ade4
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
@@ -932,7 +938,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 // Fetches properties for a single post
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
-  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username FROM posts
+  db.query(`SELECT pid, title, forum, image, content, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
             WHERE posts.pid = '${pid}'`, function (err, result) {
       if (err) {
