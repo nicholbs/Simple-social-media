@@ -69,7 +69,7 @@ export class PostSite extends LitElement {
         ]
     }
 
-    fetch_data() {
+    async fetch_data() {
         this.get_post_data(this.get_post_id(), this.get_sort())
     }
 
@@ -79,7 +79,9 @@ export class PostSite extends LitElement {
     }
 
     get_post_data(pid, sort) {    
-        fetch(`${window.MyAppGlobals.serverURL}p/${pid}`)
+        fetch(`${window.MyAppGlobals.serverURL}p/${pid}`, {
+            credentials: "include"
+        })
         .then(res => res.json())
         .then(res => {    
             this.pData = Object.values(res)[0]; 
@@ -88,7 +90,9 @@ export class PostSite extends LitElement {
         })
         .catch(e => console.log(e))
 
-        fetch(`${window.MyAppGlobals.serverURL}c/${pid}/${sort}`)
+        fetch(`${window.MyAppGlobals.serverURL}c/${pid}/${sort}`, {
+            credentials: "include"
+        })
         .then(res => res.json())
         .then(res => {    
             this.allComments = Object.values(res); 

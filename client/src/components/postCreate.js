@@ -84,7 +84,7 @@ export class CreatePost extends LitElement {
                             <!-- Form -->
                             <div class="row justify-content-left">
                                 <form class="form" id="createPost">
-                                    <h1 style="color: white">Register to forum</h1>
+                                    <h1 style="color: white">Create Post</h1>
                                     <!--Første rad-->
                                     <div class="row mt-2">
                                         <div class="col">
@@ -111,19 +111,21 @@ export class CreatePost extends LitElement {
         `;
     }
 
-    createPost(e) {
+    async createPost(e) {
         let newPost = new FormData(e.target.form);
         e.preventDefault();
-        newPost.append("forum", this.forum);  //Hardkoda for nå
+        newPost.append("forum", this.forum);
         console.log("Creating post...");
 
-        fetch('http://localhost:8081/createPost', {
+        var a = await fetch('http://localhost:8081/createPost', {
             method: 'post',
             credentials: 'include',
             body: newPost
         })
         .then(res => console.log(res))
         .catch(e => console.log(e))
+        if(a)
+            location.replace(`http://localhost:8080/f/${this.forum}`);
     }
 }
 customElements.define("create-post", CreatePost);

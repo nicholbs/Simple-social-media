@@ -134,7 +134,7 @@ export class PostPreview extends LitElement {
                                 </div>
                                 <!-- Post content -->
                                 <div id="postContent" class="row justify-content-center">
-                                    <h6 class ="card-text">${this.pData.content}</h6>
+                                    <div class="col-10"><h6 class ="card-text">${this.pData.content}</h6></div>
                                 </div>
                             </div>
                         </div>

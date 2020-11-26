@@ -22,14 +22,13 @@ export class NavBar extends LitElement {
 			  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			  </button>
-			
 			  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav mr-auto">
+				  <!-- Home -->
 				  <li class="nav-item active">
 					<a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
 				  </li>
-				  
-			
+				  <!-- User Info -->
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  User Info
@@ -40,18 +39,16 @@ export class NavBar extends LitElement {
 					  <a class="dropdown-item" href="/settings" onclick="setTimeout(location.reload.bind(location), 1)">settings</a>
 					</div>
 				  </li>
-				
-				  
+				  <!-- Forum -->
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Forum
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					  <a class="dropdown-item" href="/createForum" onclick="setTimeout(location.reload.bind(location), 1)">Create forum</a>
-					  <a class="dropdown-item" href="/forum?name=Trains" onclick="setTimeout(location.reload.bind(location), 1)">Trains</a>
-					  <a class="dropdown-item" href="/forum?name=games" onclick="setTimeout(location.reload.bind(location), 1)">Games</a>
 					</div>
 				  </li>
+				  <!-- Administer -->
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Administer
@@ -62,10 +59,12 @@ export class NavBar extends LitElement {
 					  <a class="dropdown-item" href="/requests" onclick="setTimeout(location.reload.bind(location), 1)">requests</a>
 					</div>
 				  </li>
+				  <!-- Search -->
                   <form class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" id="searchKey" type="search" placeholder="Search" aria-label="Search">
                     <button @click="${this._searchPosts}" id="searchBtn" class="btn btn-outline-success my-2 my-sm-0" type="button">Search</button>
                   </form>
+				  <!-- Sort -->
 				  <li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					  Sort
@@ -87,10 +86,7 @@ export class NavBar extends LitElement {
 	iniSort() {
 		const c = document.cookie;
 		if(!c.split("; ").find(row => row.startsWith('sort'))){
-			document.cookie = "sort=vote" + this.cookieProperty;
-			console.log("Initiated cookie");
-		}else{
-			console.log("Cookie already initiated");
+			document.cookie = "sort=votes" + this.cookieProperty;
 		}
 	}
 	_setSortDate() {
