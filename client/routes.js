@@ -19,6 +19,9 @@ import '/src/components/searchResult.js'
 import '/src/components/logout.js'
 import '/src/components/postCreate.js'
 import '/src/components/createForum.js'
+import '/src/components/forumLink.js'
+
+
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);

@@ -48,8 +48,6 @@ export class NavBar extends LitElement {
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 					  <a class="dropdown-item" href="/createForum" onclick="setTimeout(location.reload.bind(location), 1)">Create forum</a>
-					  <a class="dropdown-item" href="/forum?name=Trains" onclick="setTimeout(location.reload.bind(location), 1)">Trains</a>
-					  <a class="dropdown-item" href="/forum?name=games" onclick="setTimeout(location.reload.bind(location), 1)">Games</a>
 					</div>
 				  </li>
 				  <li class="nav-item dropdown">

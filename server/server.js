@@ -931,6 +931,23 @@ app.post('/postComment', auth, function(req, res) {
   })
 })
 
+app.get('/retrieveForums', function(req, res) {
+  db.query("SELECT name, title FROM `forums`",  function (err, result) {
+    if(err) {
+      res.status(400).send('Error in database operation.');
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+    }
+  })
+
+
+})
+
+
+
+
+
 //Upvote | downvote
 app.get('/:type/:id/vote/:updown', function(req, res) {
   var type = req.params.type;
