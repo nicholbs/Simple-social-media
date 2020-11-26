@@ -93,9 +93,10 @@ export class ForumSite extends LitElement {
             console.log("Forum Data:")
             console.log(this.fData);
         })
+        .then(res => {
+            this.get_posts(url_forum) 
+        })
         .catch(e => console.log(e))
-        this.get_posts(url_forum)
-        
     }
 
     get_posts(url_forum) {
