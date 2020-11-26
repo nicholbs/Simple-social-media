@@ -1255,6 +1255,15 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     
     if(forumExp.test(forumTitle) && forumExp.test(forumName)){
       console.log("Valid charachters for new forum: " + forumTitle);
+
+    
+
+
+
+
+    }
+    else if(!forumExp.test(forumTitle) || !forumExp.test(forumName)){
+      res.send("invalidChar") //If there som ileagel characthers in name ore title
     }
 
       

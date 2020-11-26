@@ -53,7 +53,10 @@ export class CreateForum extends LitElement {
             if(text =='ok'){
                 console.log("registrert");
                 alert("Forum registerd");
-            } 
+            }
+            else if(text == 'invalidChar'){
+                alert("Title ore name characther not valid, can only contain 0-9,A-Z,a-z");
+            }
             
         })
         .catch(function (error){
