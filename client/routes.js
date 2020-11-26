@@ -20,6 +20,7 @@ import '/src/components/logout.js'
 import '/src/components/postCreate.js'
 import '/src/components/createForum.js'
 import '/src/components/forumLink.js'
+import '/src/components/userActivity.js'
 
 
 
@@ -37,7 +38,7 @@ import '/src/components/forumLink.js'
 			  {path: '/administrer', component: 'admin-page'},
 			  {path: '/search', component: 'search-result'},
 			  {path: '/logout', component: 'logout-page'},
- 
+			  {path: '/user', component: 'user-activity'},
 			  {path: '/createPost', component: 'create-post'},
 			  {path: '/createForum', component: 'CreateForum-page'},
 			]);
