@@ -16,11 +16,8 @@ import '/src/components/adminComponents/userCard.js'
 import '/src/components/adminComponents/requestsList.js'
 import '/src/components/adminComponents/requestCard.js'
 import '/src/components/searchResult.js'
-<<<<<<< HEAD
 import '/src/components/logout.js'
-=======
 import '/src/components/postCreate.js'
->>>>>>> 0b8c738d034cbee8dcb12e6b9466114379781dfa
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
@@ -35,12 +32,9 @@ import '/src/components/postCreate.js'
 			  {path: '/requests', component: 'requests-page'},
 			  {path: '/administrer', component: 'admin-page'},
 			  {path: '/search', component: 'search-result'},
-<<<<<<< HEAD
 			  {path: '/logout', component: 'logout-page'},
  
-=======
 			  {path: '/createPost', component: 'create-post'},
->>>>>>> 0b8c738d034cbee8dcb12e6b9466114379781dfa
 			]);
 
 			

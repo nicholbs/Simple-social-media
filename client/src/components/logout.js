@@ -31,8 +31,11 @@ export class logout extends LitElement {
             method:'get',
             credentials: "include",
         }).then(res =>  {
-            if (res == "ok") {
-                alert("You are authenticated!");
+            // location.replace("http://localhost:8080/alla");
+            
+            if (res.ok == true) {
+                alert("You are logged out!");
+                console.log("response var ok");
             }
 
         }) 

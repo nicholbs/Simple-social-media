@@ -12,7 +12,6 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 
 
 
@@ -62,6 +61,26 @@ app.get('/', (req, res) => {
 })
 
 var upload=multer();
+
+
+
+app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}))
+
+// Access the session as req.session
+app.get('/', function(req, res, next) {
+  if (req.session.views) {
+    req.session.views++
+    res.setHeader('Content-Type', 'text/html')
+    res.write('<p>views: ' + req.session.views + '</p>')
+    res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+    res.end()
+  } else {
+    req.session.views = 1
+    res.end('welcome to the session demo. refresh!')
+  }
+})
+
+
 
 
 /******************************************************** */
@@ -1228,14 +1247,3 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     })
     
     });
-  
-app.get('/logout', (req,res) =>{
-  
-  console.log("I logout");
-  console.log("Inne i logout: " + req.signedCookies.user);
-  res.clearCookie('user');
-  
-  
-  res.send("ok");
-
-})
