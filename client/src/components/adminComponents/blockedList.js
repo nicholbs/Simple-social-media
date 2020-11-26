@@ -129,6 +129,8 @@ export class blocked extends LitElement {
             this.allBlockedPosts = Object.values(response)
             
         
+            console.log("retrieve content warning " + this.allBlockedPosts[0].warning)
+            console.log("retrieve content hei " + this.allBlockedPosts[0].hei)
             console.log("retrieve content uid " + this.allBlockedPosts[0].uid)
         })
     }

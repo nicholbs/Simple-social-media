@@ -151,25 +151,99 @@ app.get('/secret', auth, (req, res)=> {
 
 app.get('/blockedPosts', auth, (req, res)=> {
   console.log("Du er i blockedPosts");
-  db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
+  if (res.locals.userType == "user") {
+    console.log("Du er i getUser og er en user")
+    
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify( {
+      Object: {
+        warning: "You have to be moderator/admin to see list of blocked posts", 
+        hei: "You have to be moderator/admin to see list of blocked posts"
+      }
     }
-  })
+    ));
+  }
+  else if (res.locals.userType == "admin") {
+    console.log("Du er i getUsers");
+    db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    })
+  }
+
+  else if (res.locals.userType == "moderator") {
+    console.log("Du er i getUsers");
+    db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    })
+
+  }
+  // db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
+  //   if (err) {
+  //     res.status(400).send('Error in database operation.');
+  //   } else {
+  //     res.writeHead(200, { 'Content-Type': 'application/json' });
+  //     res.end(JSON.stringify(result));
+  //   }
+  // })
 })
+
+
 app.get('/blockedComments', auth, (req, res)=> {
   console.log("Du er i blockedComments");
-   db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
+  if (res.locals.userType == "user") {
+    console.log("Du er i getUser og er en user")
+    
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify( {
+      Object: {
+        warning: "You have to be moderator/admin to see list of blocked comments", 
+        hei: "You have to be moderator/admin to see blocked comments"
+      }
     }
-  })
+    ));
+  }
+  else if (res.locals.userType == "admin") {
+    console.log("Du er i getUsers");
+    db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    })
+  }
+
+  else if (res.locals.userType == "moderator") {
+    console.log("Du er i getUsers");
+    db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
+      if (err) {
+        res.status(400).send('Error in database operation.');
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(result));
+      }
+    })
+  }
+
+  //  db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
+  //   if (err) {
+  //     res.status(400).send('Error in database operation.');
+  //   } else {
+  //     res.writeHead(200, { 'Content-Type': 'application/json' });
+  //     res.end(JSON.stringify(result));
+  //   }
+  // })
 })
 
 app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {

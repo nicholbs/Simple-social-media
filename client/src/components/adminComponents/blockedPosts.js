@@ -88,9 +88,11 @@ export class blockedComment extends LitElement {
     return html`
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5> ${this.blockedPost ? html`<p>ID of user: </p>${this.blockedPost.uid}` : html``}</h5>
-                    <h5>${this.blockedPost ? html`<p>Title of post: </p>${this.blockedPost.title}` : html``}</h5>
-                    <h5>${this.blockedPost ? html`<p>Content of post: </p>${this.blockedPost.content}` : html``}</h5>
+                    <h5> ${this.blockedPost.uid ? html`<p>ID of user: </p>${this.blockedPost.uid}` : html``}</h5>
+                    <h5>${this.blockedPost.title ? html`<p>Title of post: </p>${this.blockedPost.title}` : html``}</h5>
+                    <h5>${this.blockedPost.content ? html`<p>Content of post: </p>${this.blockedPost.content}` : html``}</h5>
+                    <h5>${this.blockedPost.warning ? html`<p></p>${this.blockedPost.warning}` : html``}</h5>
+                    
                 </div>
             </div>
             `;
