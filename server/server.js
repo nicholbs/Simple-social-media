@@ -1082,3 +1082,89 @@ app.post('/profilePicUpload', auth, (req, res) => {
   })
   
   });
+
+  
+/** 
+ * Get access to the Post image folder, Publishing under http://localhost:8081/postimages/
+ * 
+ *  */
+
+app.use('/postimages', express.static('/server/src/images/postPictures/'));
+
+   /**
+   * Upload a post picture
+   */
+  app.post('/postPicUpload', auth, (req, res) => {
+    var isAPicture = true; //For response logic
+    var errorPicture = false; // for response logic
+    var imageName;  //Store the imagename 
+    var imageurl = 'http://localhost:8081/postimages/' //deafult url to pictureshare
+    var postPid; //Coneccted to sql string for updating the specific user with the image url, 
+    postPid = 2; //Put the postid here to identify post picture
+  
+    //Define pictureStore
+    var multerStorage =multer.diskStorage({
+      destination: './src/images/postPictures', //path to post pictures
+      //Create a image name:
+      filename: function(req,file,cb){
+          let nameTemp = randomstring.generate(); //generates a random filestring for random name
+          imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
+          cb(null,imageName); //Return file with filename and extention;
+      }
+    }) //End of storage logick
+  
+    //Image filter for filter datatypes backend
+    const pictureFilter = (reg,file,cb) => {
+      //Chek what filetype uploaded
+      if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+          cb(null, true);
+      //If not match the filefilter then:
+      } else {
+        req.fileValidationError = "Forbidden extension";
+        return cb(null, false, req.fileValidationError);
+      }
+    }//end of filefilter for picture
+    
+  
+    //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
+    var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
+   // pictureUpload = multer({ storage: multerStorage}).single('file');
+  
+    //Here we want to chek for errors and register the name in the database
+    pictureUpload(req, res, function(err) {
+    //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
+      if(err instanceof multer.MulterError){
+        console.log( "Error in Post-pictureUpload of image: " + imageName);
+        errorPicture = true; // Set errorPicture to tru if problem with multer
+      }
+      //If a filetype validation failed
+      else if(req.fileValidationError){
+        console.log("Post-Not valid fileformat only jpg and png allowed ref: " + imageName);
+        res.send("errorFileExt"); //Send message front end
+      }
+      else if(err){
+        console.log("Post-Some unspecifed error when handling of file: " + imageName);
+        errorPicture = true; //set errorPicture to true if some unspecifed eror
+        throw err;
+      }
+      //If it is a picture register the name in DB
+      else if(isAPicture){
+        var imageNamehttp = imageurl.concat(imageName); //Create the full image url
+        //Update the specifed user with imahe url on profilepicture
+        db.query('UPDATE posts SET image=? WHERE pid =?',[imageNamehttp,postPid], function(err,results){
+          if(err){
+            console.log(err);
+            errorPicture = true //Set the bool if problem with register 
+          } else{
+            //picture registed in db
+            console.log("postPic registerd in db with path: " + imageNamehttp);
+               res.send("ok");  //picture uploded sucefully
+          }
+        });
+  
+      }//end of else
+      
+    })
+    
+    });
+  
