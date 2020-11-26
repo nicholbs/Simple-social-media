@@ -915,7 +915,7 @@ app.get('/f/:forum', function (req, res) {
 });
 
 // Fetches all posts for specified forum
-app.get('/p/:forum/:sort', function (req, res) {
+app.get('/p/:forum/:sort', auth, function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
   db.query(`SELECT pid, title, votes, blocked, users.username, users.uid FROM posts
@@ -932,7 +932,7 @@ app.get('/p/:forum/:sort', function (req, res) {
 });
 
 // Fetches properties for a single post
-app.get('/p/:pid', function (req, res) {
+app.get('/p/:pid', auth, function (req, res) {
   var pid = req.params.pid;
   db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
             INNER JOIN users ON posts.uid = users.uid 
