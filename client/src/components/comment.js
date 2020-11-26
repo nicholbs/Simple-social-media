@@ -89,47 +89,49 @@ export class PostComment extends LitElement {
     }
 
     render() {
-        return html`
-            <div class="row justify-content-center">
-                <div class="col-6">
-                    <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
-                        <!-- Card -->
-                        <div class="card-body" style="background-color:#1a1a1b;">
-                            <div class="row justify-content-left">
-                                <!-- Upvote / downvote -->
-                                <div class="col-1 justify-content-center">
-                                    <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
-                                        <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+        if(!this.cData.blocked) {
+            return html`
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <div class="card" style="border-color:#343536; border-width: 2px; margin-top: 20px;">
+                            <!-- Card -->
+                            <div class="card-body" style="background-color:#1a1a1b;">
+                                <div class="row justify-content-left">
+                                    <!-- Upvote / downvote -->
+                                    <div class="col-1 justify-content-center">
+                                        <div class="d-flex justify-content-center" style="transform: rotate(180deg)">
+                                            <input type="image" @click="${this._voteUp}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <h6 class="test">${this.shown_vote}</h6>
+                                        </div>
+                                        <div class="d-flex justify-content-center">
+                                            <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                        </div>
                                     </div>
-                                    <div class="d-flex justify-content-center">
-                                        <h6 class="test">${this.shown_vote}</h6>
+                                    <!-- Profile picture -->
+                                    <div class="col-auto">
+                                        <img class="avatar" src="${this.cData.picture}">
                                     </div>
-                                    <div class="d-flex justify-content-center">
-                                        <input type="image" @click="${this._voteDown}" src="https://www.flaticon.com/svg/static/icons/svg/60/60781.svg" class="img-icon">
+                                    <!-- Comment -->
+                                    <div class="col">
+                                        <h6 class="card-subtitle mb-2">${this.cData.username}</h6>
+                                        <h5 class="card-title"> ${this.cData.content}</h5>
                                     </div>
-                                </div>
-                                <!-- Profile picture -->
-                                <div class="col-auto">
-                                    <img class="avatar" src="${this.cData.picture}">
-                                </div>
-                                <!-- Comment -->
-                                <div class="col">
-                                    <h6 class="card-subtitle mb-2">${this.cData.username}</h6>
-                                    <h5 class="card-title"> ${this.cData.content}</h5>
-                                </div>
 
-                                <div class="col-1">
-                                    <button @click="${this.get_userType}">A</button>
-                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
-                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}" onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
-                                </div>
+                                    <div class="col-1">
+                                        <button @click="${this.get_userType}">A</button>
+                                        <h5>${this.showBlock ? html`<button @click="${this.blockComment}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
+                                        <h5>${this.showDelete ? html`<button @click="${this.deleteComment}" onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     blockComment(e) {

@@ -83,27 +83,23 @@ export class CreatePost extends LitElement {
                             <!-- Form -->
                             <div class="row justify-content-left">
                                 <form class="form" id="createPost">
-                                    <h1>Register to forum</h1>
+                                    <h1 style="color: white">Register to forum</h1>
                                     <!--Første rad-->
                                     <div class="row mt-2">
                                         <div class="col">
-                                            <label for="title">Title</label>
+                                            <label for="title" style="color: white">Title</label>
                                             <input name="title" class="form-control" id="title" placeholder="Post title..." required>
                                         </div>
                                     </div>
                                     <!--Andre rad-->
                                     <div class="row mt-2">
                                         <div class="col">
-                                            <label for="content">Content</label>
+                                            <label for="content" style="color: white">Content</label>
                                             <input name="content" class="form-control" id="content" placeholder="Post content..." required>
                                         </div>
                                     </div>
                                     <div class="row mt-2">
-                                        <label for="image">Image</label>
-                                        <input type="file" name="image" class="form-control" id="image"> 
-                                    </div>
-                                    <div class="row mt-2">
-                                    <button type="button" @click="${this.createPost}" class="btn btn-primary">Create Post</button>
+                                        <button type="button" @click="${this.createPost}" class="btn btn-primary">Create Post</button>
                                     </div>
                                 </form>
                             </div>
@@ -115,9 +111,11 @@ export class CreatePost extends LitElement {
     }
 
     createPost(e) {
-        const newPost = new FormData(e.target.form);
+        let newPost = new FormData(e.target.form);
         e.preventDefault();
+        newPost.append("forum", "Trains");  //Hardkoda for nå
         console.log("Creating post...");
+
         fetch('http://localhost:8081/createPost', {
             method: 'post',
             credentials: 'include',
@@ -125,31 +123,6 @@ export class CreatePost extends LitElement {
         })
         .then(res => console.log(res))
         .catch(e => console.log(e))
-    }
-
-    postComment(e) {
-        //const newComment = new FormData(e.target.form);
-        var eCon = this.shadowRoot.getElementById("content").value;
-        var ePid = this.pid;
-        var newComment = JSON.stringify({con: eCon, pid: ePid})
-        e.preventDefault();
-        console.log("Comment posted")
-
-        fetch('http://localhost:8081/postComment',{
-            method:'post',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: newComment
-        })
-        .then(function(response){
-            return response.text();
-        })
-        .catch(function (error){
-            console.log(error);
-        })
     }
 }
 customElements.define("create-post", CreatePost);
