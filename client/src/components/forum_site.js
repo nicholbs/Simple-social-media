@@ -8,7 +8,6 @@ export class ForumSite extends LitElement {
             allPosts:  { type: Array },
             forum_url: { type: String },
             show: Object
-            // userType: {type: String }
         };
     }
     
@@ -17,38 +16,14 @@ export class ForumSite extends LitElement {
     this.fData = {};
     this.allPosts = [];
     this.fetch_data();
-    // this.get_userType();
     }
 
     static get styles() {
         return [
             css`
-            img {
-                object-fit:cover;
-                max-width:100%;
-                max-height:400px;
-                width: auto;
-                height: auto;
-            }
-            .img-icon {
-                width: 18px;
-                height: 18px;
-                margin-top: 0px;
-                margin-bottom: 0px;
-            }
-            .img-banner {
-                width: 100%;
-                height: 225px;
-            }
-            .img-forum-icon {
-                width: 128px;
-                height: 128px;
-                border-top-left-radius: 15px;
-                border-top-right-radius: 50px;
-                border-bottom-left-radius: 50px;
-                border-bottom-right-radius: 15px;
-                margin-top: 10px;
-                margin-bottom: 10px;
+            #createBtn {
+                background-color: gray;
+                border-color: orange;
             }
             .test {
                 margin: auto;
@@ -74,7 +49,7 @@ export class ForumSite extends LitElement {
         ]
     }
 
-    fetch_data() {
+    async fetch_data() {
         this.get_forum_data(this.get_forum_name(), this.get_sort())
     }
 
@@ -83,8 +58,7 @@ export class ForumSite extends LitElement {
         return urlParams.get("name");
     }
 
-    get_forum_data(url_forum, sort) {  
-        //Fetch forum data  
+    get_forum_data(url_forum) {  
         fetch(`${window.MyAppGlobals.serverURL}f/${url_forum}`, {
             credentials: "include"
         })
@@ -101,9 +75,9 @@ export class ForumSite extends LitElement {
     }
 
     get_posts(url_forum, sort) {
-    fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/${sort}`, {
-        credentials: "include"
-    })
+        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/${sort}`, {
+            credentials: "include"
+        })
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
@@ -131,23 +105,14 @@ export class ForumSite extends LitElement {
 
             <!-- Main page content -->
             <div class="container-fluid">
-                <!-- Forum banner -->
-                
-                <div class="row">
-                    <img id ="forum-banner" src="${this.fData.banner}" alt="forum-banner" class="img-banner">
-                </div>
                 <!-- Forum header -->
-                <div class="row justify-content-center" style="background-color: #1a1a1b;">
-                    <div class="col-1">
-                        <div class="row justify-content-center">
-                            <img id="forum-icon" src="${this.fData.icon}" alt="forum-icon" class="img-forum-icon">
-                        </div>
-                    </div>
-                    <div class="col-5">
+                <div class="col justify-content-center" style="background-color: #1a1a1b;">
+                    <div class="row justify-content-center">
                         <h1 class="display-4" id="forum-title">${this.fData.title}</h1>
-                        <h1 class="forum-subtitle" id="forum-address">f/${this.fData.name}</h1>
-                        <button class="btn btn-primary" onclick="location.href='/createPost?forum=${this.fData.name}'">Create post</button>
                     </div>
+                    <div class="row justify-content-center">
+                        <button id="createBtn" class="btn btn-primary" onclick="location.href='/createPost?forum=${this.fData.name}'">Create post</button>
+                    </div>      
                 </div>
 
                 <!-- Posts -->

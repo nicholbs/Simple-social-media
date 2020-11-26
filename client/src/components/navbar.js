@@ -87,9 +87,6 @@ export class NavBar extends LitElement {
 		const c = document.cookie;
 		if(!c.split("; ").find(row => row.startsWith('sort'))){
 			document.cookie = "sort=votes" + this.cookieProperty;
-			console.log("Initiated cookie");
-		}else{
-			console.log("Cookie already initiated");
 		}
 	}
 	_setSortDate() {
