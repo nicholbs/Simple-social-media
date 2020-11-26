@@ -7,6 +7,7 @@ export class ForumSite extends LitElement {
             fData : Object,
             allPosts:  { type: Array },
             forum_url: { type: String },
+            show: Object
             // userType: {type: String }
         };
     }
@@ -93,16 +94,23 @@ export class ForumSite extends LitElement {
             console.log("Forum Data:")
             console.log(this.fData);
         })
+        .then(res => {
+            this.get_posts(url_forum, this.get_sort()) 
+        })
         .catch(e => console.log(e))
+    }
 
-        //Fetch forum posts
-        fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/${sort}`)
+    get_posts(url_forum, sort) {
+    fetch(`${window.MyAppGlobals.serverURL}p/${url_forum}/${sort}`, {
+        credentials: "include"
+    })
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
             // console.log("Body type:   " + res.body.userType)
             console.log("Forum Posts:")
             console.log(this.allPosts);
+            this.show = true;
 
         })
         .catch(e => console.log(e))
@@ -124,6 +132,7 @@ export class ForumSite extends LitElement {
             <!-- Main page content -->
             <div class="container-fluid">
                 <!-- Forum banner -->
+                
                 <div class="row">
                     <img id ="forum-banner" src="${this.fData.banner}" alt="forum-banner" class="img-banner">
                 </div>
@@ -143,8 +152,10 @@ export class ForumSite extends LitElement {
 
                 <!-- Posts -->
                 <div id="post-col">
-                    ${this.allPosts.map(i => html`<post-preview .pData=${i}></post-preview>`)}
+                    ${this.show ? html`${this.allPosts.map(i => html`<post-preview .pData=${i}></post-preview>`)}` : html `<h1>You need to be logged in before you van view this forum's content</h1>`}
                 </div>
+                    
+               
             </div>
         `;
     }
