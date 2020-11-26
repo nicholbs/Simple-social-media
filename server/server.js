@@ -31,7 +31,7 @@ app.use(cookieParser('abcdef-12345'));
 app.use(cors({
   origin: "http://localhost:8080",
   credentials: true,
-})); //Odd Bypass sikkerhetsmekanismer for post YOLO
+})); //Using cors for authentication 
 // app.use(auth)      //Alle forespørsler til back-end må autentiseres
 // app.use(session({
 //   name:'session-id',
@@ -744,6 +744,7 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
+<<<<<<< HEAD
 
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
@@ -779,6 +780,8 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     }
     })
   });
+=======
+>>>>>>> 77d7a88c318cab0e1c681e2674c1103f71d11b75
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
