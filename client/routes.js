@@ -18,6 +18,7 @@ import '/src/components/adminComponents/requestCard.js'
 import '/src/components/searchResult.js'
 import '/src/components/logout.js'
 import '/src/components/postCreate.js'
+import '/src/components/createForum.js'
 
 			const outlet = document.getElementById('outlet'); //Rendrer innholdet i index.html
 			const router = new Router(outlet);
@@ -35,6 +36,7 @@ import '/src/components/postCreate.js'
 			  {path: '/logout', component: 'logout-page'},
  
 			  {path: '/createPost', component: 'create-post'},
+			  {path: '/createForum', component: 'CreateForum-page'},
 			]);
 
 			

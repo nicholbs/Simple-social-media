@@ -12,6 +12,7 @@ import { stringify } from 'querystring';
 import bcrypt from 'bcryptjs';
 import { rejects } from 'assert';
 import cookieParser from 'cookie-parser';
+import { timingSafeEqual } from 'crypto';
 
 
 
@@ -1240,3 +1241,34 @@ app.use('/postimages', express.static('/server/src/images/postPictures/'));
     })
     
     });
+
+
+    /**
+     * Create a Forum
+     */
+    app.post('/createforum', auth ,multerDecode.none(), (req, res) => {
+    var forumTitle = req.body.ForumTitle; //saves formdata information about Title
+    var forumName = req.body.ForumName; //Saves formdata information about Name
+    
+    var forumExp = new RegExp("[a-z0-9A-Z]{2,63}$"); //what we axept of valid characthers of a Forume name
+    
+    if(forumExp.test(forumTitle) && forumExp.test(forumName)){ //chek if the caracthers in title and forumnae is okay
+      console.log("Valid charachters for new forum: " + forumTitle);
+
+      db.query('INSERT INTO forums (name, title) VALUES (?,?)',[forumName,forumTitle,], function (err, result) {
+        if (err){
+          res.send("Error");
+          throw err;
+        }
+        else{ //If the forum was created sucessfully
+          res.send("ok");
+          console.log("Forum registerd with title:  " +forumTitle);
+        }
+      })
+
+    }
+    else if(!forumExp.test(forumTitle) || !forumExp.test(forumName)){
+      res.send("invalidChar") //If there som ileagel characthers in name ore title
+    }
+        
+    })
