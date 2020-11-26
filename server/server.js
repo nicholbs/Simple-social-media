@@ -1088,122 +1088,117 @@ app.post('/profilePicUpload', auth, (req, res) => {
  *  */
 app.use('/postimages', express.static('/server/src/images/postPictures/'));
 
-   /**
-   * Upload a post picture
-   */
-  app.post('/postPicUpload', auth, (req, res) => {
-    var isAPicture = true; //For response logic
-    var errorPicture = false; // for response logic
-    var imageName;  //Store the imagename 
-    var imageurl = 'http://localhost:8081/postimages/' //deafult url to pictureshare
-    var postPid; //Coneccted to sql string for updating the specific user with the image url, 
-    postPid = 2; //Put the postid here to identify post picture
-  
-    //Define pictureStore
-    var multerStorage =multer.diskStorage({
-      destination: './src/images/postPictures', //path to post pictures
-      //Create a image name:
-      filename: function(req,file,cb){
-          let nameTemp = randomstring.generate(); //generates a random filestring for random name
-          imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
-          cb(null,imageName); //Return file with filename and extention;
-      }
-    }) //End of storage logick
-  
-    //Image filter for filter datatypes backend
-    const pictureFilter = (reg,file,cb) => {
-      //Chek what filetype uploaded
-      if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-          cb(null, true);
-      //If not match the filefilter then:
-      } else {
-        req.fileValidationError = "Forbidden extension";
-        return cb(null, false, req.fileValidationError);
-      }
-    }//end of filefilter for picture
+  /**
+ * Upload a post picture
+ */
+app.post('/postPicUpload', auth, (req, res) => {
+  var isAPicture = true; //For response logic
+  var errorPicture = false; // for response logic
+  var imageName;  //Store the imagename 
+  var imageurl = 'http://localhost:8081/postimages/' //deafult url to pictureshare
+  var postPid; //Coneccted to sql string for updating the specific user with the image url, 
+  postPid = 2; //Put the postid here to identify post picture
+
+  //Define pictureStore
+  var multerStorage =multer.diskStorage({
+    destination: './src/images/postPictures', //path to post pictures
+    //Create a image name:
+    filename: function(req,file,cb){
+        let nameTemp = randomstring.generate(); //generates a random filestring for random name
+        imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
+        cb(null,imageName); //Return file with filename and extention;
+    }
+  }) //End of storage logick
+
+  //Image filter for filter datatypes backend
+  const pictureFilter = (reg,file,cb) => {
+    //Chek what filetype uploaded
+    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
+        cb(null, true);
+    //If not match the filefilter then:
+    } else {
+      req.fileValidationError = "Forbidden extension";
+      return cb(null, false, req.fileValidationError);
+    }
+  }//end of filefilter for picture
     
   
-    //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
-    var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
-   // pictureUpload = multer({ storage: multerStorage}).single('file');
+  //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
+  var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
+  // pictureUpload = multer({ storage: multerStorage}).single('file');
   
-    //Here we want to chek for errors and register the name in the database
-    pictureUpload(req, res, function(err) {
-    //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
-      if(err instanceof multer.MulterError){
-        console.log( "Error in Post-pictureUpload of image: " + imageName);
-        errorPicture = true; // Set errorPicture to tru if problem with multer
-      }
-      //If a filetype validation failed
-      else if(req.fileValidationError){
-        console.log("Post-Not valid fileformat only jpg and png allowed ref: " + imageName);
-        res.send("errorFileExt"); //Send message front end
-      }
-      else if(err){
-        console.log("Post-Some unspecifed error when handling of file: " + imageName);
-        errorPicture = true; //set errorPicture to true if some unspecifed eror
+  //Here we want to chek for errors and register the name in the database
+  pictureUpload(req, res, function(err) {
+  //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
+    if(err instanceof multer.MulterError){
+      console.log( "Error in Post-pictureUpload of image: " + imageName);
+      errorPicture = true; // Set errorPicture to tru if problem with multer
+    }
+    //If a filetype validation failed
+    else if(req.fileValidationError){
+      console.log("Post-Not valid fileformat only jpg and png allowed ref: " + imageName);
+      res.send("errorFileExt"); //Send message front end
+    }
+    else if(err){
+      console.log("Post-Some unspecifed error when handling of file: " + imageName);
+      errorPicture = true; //set errorPicture to true if some unspecifed eror
+      throw err;
+    }
+    //If it is a picture register the name in DB
+    else if(isAPicture){
+      var imageNamehttp = imageurl.concat(imageName); //Create the full image url
+      //Update the specifed user with imahe url on profilepicture
+      db.query('UPDATE posts SET image=? WHERE pid =?',[imageNamehttp,postPid], function(err,results){
+        if(err){
+          console.log(err);
+          errorPicture = true //Set the bool if problem with register 
+        } else{
+          //picture registed in db
+          console.log("postPic registerd in db with path: " + imageNamehttp);
+              res.send("ok");  //picture uploded sucefully
+        }
+      });
+    }//end of else  
+  })    
+});
+
+/**
+ * Create a Forum
+ */
+app.post('/createforum', auth ,multerDecode.none(), (req, res) => {
+  var forumTitle = req.body.ForumTitle; //saves formdata information about Title
+  var forumName = req.body.ForumName; //Saves formdata information about Name     
+  var forumExp = new RegExp("[a-z0-9A-Z]{2,63}$"); //what we axept of valid characthers of a Forume name
+  
+  if(forumExp.test(forumTitle) && forumExp.test(forumName)){ //chek if the caracthers in title and forumnae is okay
+    console.log("Valid charachters for new forum: " + forumTitle);
+    
+    //Chek if forumname alredy exist
+    db.query('SELECT COUNT(name) AS numberOfMatch FROM forums WHERE name =?',[forumName], function (err, result) {
+      if(err){ //if error with db
         throw err;
       }
-      //If it is a picture register the name in DB
-      else if(isAPicture){
-        var imageNamehttp = imageurl.concat(imageName); //Create the full image url
-        //Update the specifed user with imahe url on profilepicture
-        db.query('UPDATE posts SET image=? WHERE pid =?',[imageNamehttp,postPid], function(err,results){
-          if(err){
-            console.log(err);
-            errorPicture = true //Set the bool if problem with register 
-          } else{
-            //picture registed in db
-            console.log("postPic registerd in db with path: " + imageNamehttp);
-               res.send("ok");  //picture uploded sucefully
-          }
-        });
-  
-      }//end of else
-      
-    })
-    
-    });
-
-
-    /**
-     * Create a Forum
-     */
-    app.post('/createforum', auth ,multerDecode.none(), (req, res) => {
-      var forumTitle = req.body.ForumTitle; //saves formdata information about Title
-      var forumName = req.body.ForumName; //Saves formdata information about Name     
-      var forumExp = new RegExp("[a-z0-9A-Z]{2,63}$"); //what we axept of valid characthers of a Forume name
-      
-      if(forumExp.test(forumTitle) && forumExp.test(forumName)){ //chek if the caracthers in title and forumnae is okay
-        console.log("Valid charachters for new forum: " + forumTitle);
-        
-        //Chek if forumname alredy exist
-        db.query('SELECT COUNT(name) AS numberOfMatch FROM forums WHERE name =?',[forumName], function (err, result) {
-          if(err){ //if error with db
+      else if(result[0].numberOfMatch == 0){ //if not exist
+        console.log("status finnes: " + result[0].numberOfMatch )
+        //Register new forum
+        db.query('INSERT INTO forums (name, title) VALUES (?,?)',[forumName,forumTitle,], function (err, result) {
+          if (err){
+            res.send("Error");
             throw err;
           }
-          else if(result[0].numberOfMatch == 0){ //if not exist
-            console.log("status finnes: " + result[0].numberOfMatch )
-            //Register new forum
-            db.query('INSERT INTO forums (name, title) VALUES (?,?)',[forumName,forumTitle,], function (err, result) {
-              if (err){
-                res.send("Error");
-                throw err;
-              }
-              else{ //If the forum was created sucessfully
-                res.send("ok");
-                console.log("Forum registerd with title:  " +forumTitle);
-              }
-            })
+          else{ //If the forum was created sucessfully
+            res.send("ok");
+            console.log("Forum registerd with title:  " +forumTitle);
           }
-          else if(result[0].numberOfMatch != 0){ // if name exist
-           res.send("nameExist");
-           console.log("Forum alredy exist with name: " + forumTitle);
-          }
-        });
+        })
       }
-      else if(!forumExp.test(forumTitle) || !forumExp.test(forumName)){
-        res.send("invalidChar") //If there som ileagel characthers in name ore title
+      else if(result[0].numberOfMatch != 0){ // if name exist
+        res.send("nameExist");
+        console.log("Forum alredy exist with name: " + forumTitle);
       }
-          
+    });
+  }
+  else if(!forumExp.test(forumTitle) || !forumExp.test(forumName)){
+    res.send("invalidChar") //If there som ileagel characthers in name ore title
+  }      
 })
