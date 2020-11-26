@@ -1,4 +1,13 @@
 # Prosjekt - PROG2053
+# Installation notes: 
+**See the pdf Manual_and_Requirements.pdf for installation, short user manual and testusers. The file is located in the root directory**.
+## Group members:     
+- Oddbjørn S. Borge-Jensen
+- Odd Hald Bliksås
+- Nicholas Bodvin Sellevåg
+- Wojciech Kurp
+
+# Defult information provided from you:
 
 ## Installation notes: 
 - Install nodeJs
@@ -15,11 +24,7 @@ Want to reset your containers and volumes fully?
 Want to get in to a container for some reason? 
 - "docker-compose exec <containername> bash" 
 
-## Group members:     
-- Oddbjørn S. Borge-Jensen
-#Odd Hald Bliksås"#   
-- Nicholas Bodvin Sellevåg
-Wojciech Kurp
+
 ## Setup: 
 - docker-compose up -d   
 ---
