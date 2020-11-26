@@ -114,7 +114,7 @@ export class CreatePost extends LitElement {
     createPost(e) {
         let newPost = new FormData(e.target.form);
         e.preventDefault();
-        newPost.append("forum", this.forum);  //Hardkoda for nå
+        newPost.append("forum", this.forum);
         console.log("Creating post...");
 
         fetch('http://localhost:8081/createPost', {
