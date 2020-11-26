@@ -139,7 +139,16 @@ export class requests extends LitElement {
         }).then(response => response.json()) 
         .then(response=> {
             console.log("requestMod " + response)
-            console.log("requestMod mortal " + response.mortal)
+            var answer = Object.values(response);
+            console.log(answer[0])
+            if (answer[0] == "ok") {
+                
+                alert("Your request has been noticed!");
+            }
+            else if (answer[0] == "duplicate"){
+                alert("You already have a request to become a moderator!")
+
+            }
             
         })
     }

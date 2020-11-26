@@ -594,7 +594,7 @@ app.post('/getUsers', auth, function (req, res) {
   
   });
 
-  app.post('/requestDup', auth, function (req, res) {
+  app.post('/requestDup', auth, function (req, res, next) {
     console.log("Du er i requestDup");
             var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
     db.query(sql, function (err, result) {
@@ -603,26 +603,46 @@ app.post('/getUsers', auth, function (req, res) {
         console.log("Her er det error " + err)
       } 
       else {
-        var allUsers = Object.values(result);
-        const found = allUsers.find(element => element.uid == res.locals.uid);
-        console.log(found) 
-        if (found != null)
-        {
-          res.end(JSON.stringify( {
-            answer: "duplicate",
-            me: "mortal"
-          }));
-        }
-        else {
-          res.end(JSON.stringify( {
-            answer: "noDuplicate",
-            me: "mortal"
-          }));
+        
+        console.log("requestDup sin else ")
+        var allUsers = Object.values(result); //Denne ser ikke riktig ut
+        console.log("allUsers: " + allUsers);
+        console.log("allUsers length: " + allUsers.length);
+        console.log("allUsers uid: " + allUsers.user);
 
-        }
 
+            
+        if (allUsers.length != 0) {
+            console.log("requestDup sin if if ")
+            {
+              res.end(JSON.stringify( {
+                answer: "duplicate"
+              }));
+            }
+        } else {
+              console.log("requestDup sin if else ")
+              
+              db.query("INSERT INTO `requests`(`user`, `userType`) VALUES (" + res.locals.uid + "," + "'" + res.locals.userType +"'" + " )", function (err, result) {
+                if (err) {
+                  console.log("query sin if ")
+                  res.status(400).send('Error in database operation.');
+                } else {
+                  console.log("query sin else ")
+                  var answer = JSON.stringify({
+                    answer: "ok"
+                  });
+                  res.send(answer);
+                }
+              })
+          }
       }
     }
+
+
+
+
+
+
   )
   })
 
@@ -744,7 +764,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
 })
 
 
-<<<<<<< HEAD
 
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
@@ -780,8 +799,6 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     }
     })
   });
-=======
->>>>>>> 77d7a88c318cab0e1c681e2674c1103f71d11b75
 
 
 app.post('/deletePost', multerDecode.none(), function (req, res) {
