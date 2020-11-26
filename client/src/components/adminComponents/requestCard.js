@@ -98,9 +98,13 @@ export class requestCard extends LitElement {
                 <div class="row mt-2">
                    <div>${this.post.userType ? html`<button  @click="${this.deny}" onclick="setTimeout(location.reload.bind(location), 1)" class="btn btn-danger btn-sm">Deny</button>` : html``}</div>
                 </div>
+                   
             </div>
             `;
     }
+
+   
+
 
     accept(e) {
         console.log(this.userInt);

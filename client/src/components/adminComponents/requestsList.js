@@ -18,6 +18,7 @@ export class requests extends LitElement {
     static get properties() {
         return {
             allRequests: {type: Array},
+            requestButton: {type:Boolean}
         };
     }
 
@@ -71,7 +72,12 @@ export class requests extends LitElement {
     
         return html`
                 <div class="container">
+                <br>
+                <div>${this.requestButton ? html`<button  @click="${this.requestModerator}" class="btn btn-danger btn-sm">Request moderator status</button>` : html``}</div>
+                <br>
+               
                     <div class="row">${this.allRequests.map(i => html`<requestcard-page class="card" .post=${i} .userInt=${i.user} .userType=${i.userType}></requestcard-page>`)}</div>
+                
                 </div>
                 `;
         }
@@ -105,10 +111,41 @@ export class requests extends LitElement {
             {
             this.allRequests = Object.values(response)
             // console.log(response)
+
+            console.log("Her er respone i retrieveAllRequest: " + response.Object.ok)
+            try {
+                
+                if (response.Object.ok = true)
+            {
+                this.requestButton = true;
+                console.log("Du er i allRequest")
+
+            }
+            } catch (error) {
+                console.log("fikk ikke object.warning")
+            }
+            
+
             console.log("Dette er innholdet fra JSON objektet");
             console.log(this.allRequests);
         })
     }
+
+
+    requestModerator() {
+        fetch('http://localhost:8081/requestDup',{
+            method:'post',
+            credentials: "include",
+        }).then(response => response.json()) 
+        .then(response=> {
+            console.log("requestMod " + response)
+            console.log("requestMod mortal " + response.mortal)
+            
+        })
+    }
+
+
+
 
 
 }

@@ -19,6 +19,16 @@ CREATE TABLE `requests` (
   PRIMARY KEY (`rid`)
 ) ENGINE = InnoDB CHARSET = utf8 COLLATE utf8_bin;
 
+CREATE TABLE `comments` (
+  `cid` bigint(8) NOT NULL AUTO_INCREMENT,
+  `pid` bigint(8) NOT NULL,
+  `uid` bigint(8) NOT NULL,
+  `content` varchar(500) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `votes` int(11) DEFAULT 0,
+  `date` datetime DEFAULT current_timestamp(),
+   PRIMARY KEY (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `posts` (
   `pid` bigint(8) NOT NULL AUTO_INCREMENT,
@@ -43,10 +53,9 @@ CREATE TABLE `forums` (
 
 /* Insert data */
 INSERT INTO `users` (`uid`, `email`, `password`, `userType`, `picture`, `username`) VALUES
-(1, 'bartell.martine@example.com', '40bcc6f6193986153cae1bb1c36668650a3d5f97', 'admin', NULL, ''),
-(2, 'zcrona@example.net', '1f66d81577cd95514cedc8504d65ec8eff9c336a', 'user', NULL, ''),
-(3, 'wgaylord@example.com', '3fcba21eebd2d09681515b4849d2bbeae566451e', 'user', NULL, '');
-
+(1, 'alpha@domain.com', '$2a$10$wqOUJNcHEcWNG6komVIuje8vy9eApdIYlOhepuxp2as1FFje0Ib5i', 'admin', 'http://localhost:8081/images/userStandardPic.png', 'Alpha'),
+(2, 'bravo@domain.com', '$2a$10$7hYSy1tcV.JsstDLZNRsEefsoZlnESLxs2wk3uz.losnjxgVN606C', 'moderator', 'http://localhost:8081/images/userStandardPic.png', 'Bravo'),
+(3, 'charlie@domain.com', '$2a$10$1VaF/qbfoi05D.St7jACOe1e1j6e/unzCUKlhEoGNb/KZerO2HG/m', 'user', 'http://localhost:8081/images/userStandardPic.png', 'Charlie');
 
 INSERT INTO `requests`(`rid`, `user`, `userType`) VALUES 
 (1,2,"moderator"),
@@ -67,4 +76,11 @@ ALTER TABLE `posts`
   ADD CONSTRAINT `FK_PostForum` FOREIGN KEY (`forum`) REFERENCES `forums` (`name`),
   ADD CONSTRAINT `FK_PostUser` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`);
 
+ALTER TABLE `comments`
+  ADD KEY `FK_CommentUser` (`uid`),
+  ADD KEY `FK_CommentPost` (`pid`),
+  ADD CONSTRAINT `FK_CommentPost` FOREIGN KEY (`pid`) REFERENCES `posts` (`pid`),
+  ADD CONSTRAINT `FK_CommentUser` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`);
+
+  
 COMMIT;

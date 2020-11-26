@@ -117,6 +117,13 @@ export class PostComment extends LitElement {
                                     <h6 class="card-subtitle mb-2">${this.cData.username}</h6>
                                     <h5 class="card-title"> ${this.cData.content}</h5>
                                 </div>
+
+                                <div class="col-1">
+                                    <button @click="${this.get_userType}">A</button>
+                                    <h5>${this.showBlock ? html`<button @click="${this.blockComment}">Block</button>` : html``}</h5>
+                                    <h5>${this.showDelete ? html`<button @click="${this.deleteComment}">Delete</button>` : html``}</h5>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -124,5 +131,64 @@ export class PostComment extends LitElement {
             </div>
         `;
     }
+
+    blockComment(e) {
+        fetch('http://localhost:8081/blockComment',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.pData.cid 
+            })
+        })
+    }
+
+    deleteComment(e) {
+    fetch('http://localhost:8081/deleteComment',{
+                method:'post',
+                credentials: "include",
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({
+                    ownerId: this.pData.cid 
+                })
+    })
+}
+
+
+
+
+
+    get_userType() {    
+
+        console.log("Du er i forum post, her er post_id: " + this.cData.pid)
+        var uid = this.cData.uid;
+        fetch('http://localhost:8081/checkUserType',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.cData.uid 
+              })
+            
+            
+        }).then(res => res.json())
+        .then(res => {    
+            var data = Object.values(res); 
+
+            if(data[0] == true) {
+                this.showBlock = true;
+                console.log("Du er admin og kan slette + blocke")
+            }
+            if(data[1] == true) {
+                this.showDelete = true;
+                console.log("Du er eieren av post og kan slette")
+            }
+            if(data[1] == false) {
+                console.log("Du må logge inn for å redigere")
+            }
+        })
+    }
+
+
 }
 customElements.define("post-comment", PostComment);

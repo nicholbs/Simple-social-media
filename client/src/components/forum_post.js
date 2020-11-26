@@ -124,8 +124,8 @@ export class PostPreview extends LitElement {
                                 </div>
                                 <div class="col-1">
                                     <button @click="${this.get_userType}">A</button>
-                                    <h5>${this.showBlock ? html`<button>Block</button>` : html``}</h5>
-                                    <h5>${this.showDelete ? html`<button>Delete</button>` : html``}</h5>
+                                    <h5>${this.showBlock ? html`<button  @click="${this.blockPost}">Block</button>` : html``}</h5>
+                                    <h5>${this.showDelete ? html`<button @click="${this.deletePost}">Delete</button>` : html``}</h5>
                                 </div>
                             </div>
                             <!-- Post image -->
@@ -140,6 +140,32 @@ export class PostPreview extends LitElement {
             </div>
         `;
     }
+
+    blockPost(e) {
+        fetch('http://localhost:8081/blockPost',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                ownerId: this.pData.pid 
+            })
+})
+
+    }
+    deletePost(e) {
+    fetch('http://localhost:8081/deletePost',{
+                method:'post',
+                credentials: "include",
+                headers: { 'Content-type': 'application/json' },
+                body: JSON.stringify({
+                    ownerId: this.pData.pid 
+                })
+    })
+}
+
+
+
+
 
     get_userType() {    
 
