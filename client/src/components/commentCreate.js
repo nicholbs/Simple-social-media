@@ -106,7 +106,7 @@ export class CreateComment extends LitElement {
         console.log("Comment posted: \"" + eCon + "\"")
 
         //Await to prevent refresh before fetch is complete
-        var a = await fetch('http://localhost:8081/postComment',{
+        var w = await fetch('http://localhost:8081/postComment',{
             method:'post',
             credentials: "include",
             headers: {
@@ -115,11 +115,8 @@ export class CreateComment extends LitElement {
             },
             body: newComment
         })
-        .then(res => console.log(res))
+        .then(location.reload.bind(location))
         .catch(err => console.log(err))
-
-        if(a)
-            location.reload.bind(location);
     }
 }
 customElements.define("create-comment", CreateComment);
