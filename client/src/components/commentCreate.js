@@ -87,7 +87,7 @@ export class CreateComment extends LitElement {
                                 <div class="col">
                                     <form>
                                         <div><input id="content"></div>
-                                        <button @click="${this.postComment}" id="postComment">Post comment</button>
+                                        <button type="button" @click="${this.postComment}" id="postComment">Post comment</button>
                                     </form>
                                 </div>
                             </div>
@@ -99,13 +99,13 @@ export class CreateComment extends LitElement {
     }
 
     async postComment(e) {
-        //const newComment = new FormData(e.target.form);
         var eCon = this.shadowRoot.getElementById("content").value;
         var ePid = this.pid;
-        var newComment = JSON.stringify({con: eCon, pid: ePid})
+        var newComment = JSON.stringify({con: eCon, pid: ePid}) //Creates json {comment text, post ID}
         e.preventDefault();
         console.log("Comment posted: \"" + eCon + "\"")
 
+        //Await to prevent refresh before fetch is complete
         var a = await fetch('http://localhost:8081/postComment',{
             method:'post',
             credentials: "include",
@@ -115,14 +115,11 @@ export class CreateComment extends LitElement {
             },
             body: newComment
         })
-        .then(function(response){
-            return response.text();
-        })
-        .catch(function (error){
-            console.log(error);
-        })
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+
         if(a)
-            setTimeout(location.reload.bind(location), 1);
+            location.reload.bind(location);
     }
 }
 customElements.define("create-comment", CreateComment);

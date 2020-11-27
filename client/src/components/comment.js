@@ -3,10 +3,10 @@ import { LitElement, html, css } from 'lit-element';
 export class PostComment extends LitElement {
     static get properties() {
         return {
-            cData : Object,
-            shown_vote: {type: Number},
-            showBlock: {type: Boolean},
-            showDelete: {type: Boolean}
+            cData : Object,                 //Comment properties
+            shown_vote: {type: Number},     //Front end vote
+            showBlock: {type: Boolean},     //Toggles block functionality
+            showDelete: {type: Boolean}     //Toggles delete functionality    
         };
     }
     
@@ -86,6 +86,7 @@ export class PostComment extends LitElement {
         this.shown_vote -= 1
     }
 
+    //Sets front end vote to show user
     firstUpdated() {
         this.shown_vote = this.cData.votes
     }
@@ -128,7 +129,6 @@ export class PostComment extends LitElement {
                                         <h5>${this.showBlock ? html`<button type="button" @click="${this.blockComment}">Block</button>` : html``}</h5>
                                         <h5>${this.showDelete ? html`<button type="button" @click="${this.deleteComment}">Delete</button>` : html``}</h5>
                                     </div>
-
                                 </div>
                             </div>
                         </div>

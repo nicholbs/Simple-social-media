@@ -5,9 +5,9 @@ export class PostPreview extends LitElement {
     static get properties() {
         return {
             pData : Object,
-            shown_vote: {type: Number},
-            showBlock: {type: Boolean},
-            showDelete: {type: Boolean}
+            shown_vote: {type: Number},     //Front end vote
+            showBlock: {type: Boolean},     //Toggle block functionality
+            showDelete: {type: Boolean}     //Toggle delete functionality
          
         };
       }
@@ -15,7 +15,6 @@ export class PostPreview extends LitElement {
     constructor() {
         super();
         this.shown_vote = 0;
-        // this.showButton = true;
     }
 
     static get styles() {
@@ -81,6 +80,7 @@ export class PostPreview extends LitElement {
         .catch(err => console.log(err))
         this.shown_vote += 1
     }
+
     _voteDown(){
         fetch(`http://localhost:8081/posts/${this.pData.pid}/vote/0`)
         .then(res => console.log(res))
@@ -88,6 +88,7 @@ export class PostPreview extends LitElement {
         this.shown_vote -= 1
     }
 
+    //Sets front end vote when lit element is loaded
     connectedCallback() {
         super.connectedCallback()
         if(this.pData.votes != null)
@@ -128,8 +129,8 @@ export class PostPreview extends LitElement {
                                     </div>
                                     <div class="col-1">
                                         <button @click="${this.get_userType}">A</button>
-                                        <h5>${this.showBlock ? html`<button @click="${this.blockPost}" onclick="setTimeout(location.reload.bind(location), 1)">Block</button>` : html``}</h5>
-                                        <h5>${this.showDelete ? html`<button @click="${this.deletePost} " onclick="setTimeout(location.reload.bind(location), 1)">Delete</button>` : html``}</h5>
+                                        <h5>${this.showBlock ? html`<button type="button" @click="${this.blockPost}">Block</button>` : html``}</h5>
+                                        <h5>${this.showDelete ? html`<button type="button" @click="${this.deletePost}">Delete</button>` : html``}</h5>
                                     </div>
                                 </div>
                                 <!-- Post content -->
@@ -154,6 +155,7 @@ export class PostPreview extends LitElement {
                 pid: this.pData.pid 
             })  
         })
+        .then(location.reload.bind(location))
     }
 
     deletePost() {
@@ -165,10 +167,10 @@ export class PostPreview extends LitElement {
                     pid: this.pData.pid 
             })
         })
+        .then(location.reload.bind(location))
     }
 
     get_userType() {    
-
         console.log("Du er i get_userType, her er post_pid: " + this.pData.pid)
         console.log("Du er i get_userType, her er post_uid: " + this.pData.uid)
         fetch('http://localhost:8081/checkUserType',{
@@ -177,9 +179,7 @@ export class PostPreview extends LitElement {
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
                 ownerId: this.pData.uid 
-              })
-            
-            
+              })  
         }).then(res => res.json())
         .then(res => {    
             var data = Object.values(res); 

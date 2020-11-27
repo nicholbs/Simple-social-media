@@ -117,15 +117,16 @@ export class CreatePost extends LitElement {
         newPost.append("forum", this.forum);
         console.log("Creating post...");
 
-        var a = await fetch('http://localhost:8081/createPost', {
+        var w = await fetch('http://localhost:8081/createPost', {
             method: 'post',
             credentials: 'include',
             body: newPost
         })
-        .then(res => console.log(res))
+        .then(console.log)
         .catch(e => console.log(e))
-        if(a)
-            location.replace(`http://localhost:8080/f/${this.forum}`);
+
+        //Sends user back to forum page
+        location.replace(`http://localhost:8080/forum?name=${this.forum}`)
     }
 }
 customElements.define("create-post", CreatePost);

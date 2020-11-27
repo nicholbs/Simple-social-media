@@ -80,19 +80,23 @@ export class NavBar extends LitElement {
         `;
     }
 
+	//Onclick event for search button
 	_searchPosts() {
         location.href = '/search?q=' + this.shadowRoot.getElementById("searchKey").value;
 	}
+	//Initiates sort cookie if there is none
 	iniSort() {
 		const c = document.cookie;
 		if(!c.split("; ").find(row => row.startsWith('sort'))){
 			document.cookie = "sort=votes" + this.cookieProperty;
 		}
 	}
+	//Sets sort cookie to datetime
 	_setSortDate() {
 		document.cookie = "sort=date" + this.cookieProperty;
 		setTimeout(location.reload.bind(location), 1)
 	}
+	//Sets sort cookie to votes
 	_setSortVote() {
 		document.cookie = "sort=votes" + this.cookieProperty;
 		setTimeout(location.reload.bind(location), 1)
