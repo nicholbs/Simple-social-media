@@ -7,7 +7,7 @@ export class NavBar extends LitElement {
 			userData : Object,
 			cookieProperty: {type: String}
         };
-      }
+	}
     
     constructor() {
 		super();

@@ -667,7 +667,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
         console.log("Passord er endrett");
       }
     })
-
   }
   else if(req.body.password.length <8){
     res.send("pwToChort"); //If the password is to short
@@ -917,7 +916,7 @@ app.get('/s/:keyword/:sort', function (req, res) {
 app.get('/c/:post/:sort', function (req, res) {
   var post = req.params.post;
   var sort = req.params.sort;
-  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
+  db.query(`SELECT comments.*, users.* FROM comments
             INNER JOIN users ON comments.uid = users.uid 
             WHERE pid = ${post}
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -931,12 +930,13 @@ app.get('/c/:post/:sort', function (req, res) {
 });
 
 // Fetches all comments for a specific user
-app.get('/user/c/:sort', auth, function (req, res) {
-  var uid = res.locals.uid;
+app.get('/user/c/:uid/:sort', auth, function (req, res) {
+  var uid = req.params.uid;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
-            INNER JOIN users ON posts.uid = users.uid 
-            WHERE posts.uid = '${uid}'`, function (err, result) {
+  db.query(`SELECT comments.*, users.* FROM comments
+            INNER JOIN users ON users.uid = comments.uid 
+            WHERE comments.uid = '${uid}'
+            ORDER BY comments.${sort} DESC`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -947,13 +947,13 @@ app.get('/user/c/:sort', auth, function (req, res) {
 });
 
 // Fetches all posts for a specific user
-app.get('/user/p/:sort', auth, function (req, res) {
-  var uid = res.locals.uid;
+app.get('/user/p/:uid/:sort', auth, function (req, res) {
+  var uid = req.params.uid;
   var sort = req.params.sort;
-  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
-            INNER JOIN users ON comments.uid = users.uid 
-            WHERE pid = ${post}
-            ORDER BY ${sort} DESC;`, function (err, result) {
+  db.query(`SELECT posts.*, users.* FROM posts
+            INNER JOIN users ON users.uid = posts.uid 
+            WHERE posts.uid = ${uid}
+            ORDER BY posts.${sort} DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {

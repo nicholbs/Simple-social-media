@@ -12,10 +12,10 @@ export class ForumSite extends LitElement {
     }
     
     constructor() {
-    super();
-    this.fData = {};
-    this.allPosts = [];
-    this.fetch_data();
+        super();
+        this.fData = {};
+        this.allPosts = [];
+        this.fetch_data();
     }
 
     static get styles() {
@@ -65,8 +65,7 @@ export class ForumSite extends LitElement {
         .then(res => res.json())
         .then(res => {    
             this.fData = Object.values(res)[0]; 
-            console.log("Forum Data:")
-            console.log(this.fData);
+            console.log("Forum Data:\n" + this.fData)
         })
         .then(res => {
             this.get_posts(url_forum, this.get_sort()) 
@@ -81,9 +80,7 @@ export class ForumSite extends LitElement {
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
-            // console.log("Body type:   " + res.body.userType)
-            console.log("Forum Posts:")
-            console.log(this.allPosts);
+            console.log("Forum Posts:\n" + this.allPosts)
             this.show = true;
 
         })

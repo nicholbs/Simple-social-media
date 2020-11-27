@@ -124,7 +124,7 @@ export class PostPreview extends LitElement {
                                     <!-- Post title -->
                                     <div class="col" onclick="location.href='/post?id=${this.pData.pid}';" style="cursor: pointer;">
                                         <h5 class="card-title"> ${this.pData.title} </h5>
-                                        <h6 class="card-subtitle mb-2">Posted by ${this.pData.username} </h6>
+                                        <h6 class="card-subtitle mb-2">Posted by <a onclick="setTimeout(location.reload.bind(location), 1)" href="/user?id=${this.pData.uid}">${this.pData.username}</a></h6>
                                     </div>
                                     <div class="col-1">
                                         <button @click="${this.get_userType}">A</button>

@@ -11,11 +11,11 @@ export class SearchResult extends LitElement {
     }
     
     constructor() {
-    super();
-    this.search_query = "";
-    this.result_amount = 0;
-    this.allPosts = [];
-    this.fetch_data();
+        super();
+        this.search_query = "";
+        this.result_amount = 0;
+        this.allPosts = [];
+        this.fetch_data();
     }
 
     static get styles() {
@@ -73,7 +73,7 @@ export class SearchResult extends LitElement {
     }
 
     fetch_data() {
-        this.get_search_results(this.get_search_query());
+        this.get_search_results(this.get_search_query(), this.get_sort());
     }
 
     get_search_query() {
@@ -81,8 +81,8 @@ export class SearchResult extends LitElement {
         return this.search_query = urlParams.get("q");
     }
 
-    get_search_results() {
-        fetch(`${window.MyAppGlobals.serverURL}s/${this.search_query}`)
+    async get_search_results(query, sort) {
+        fetch(`${window.MyAppGlobals.serverURL}s/${query}/${sort}`)
         .then(res => res.json())
         .then(res => {
             this.allPosts = Object.values(res);
@@ -91,6 +91,11 @@ export class SearchResult extends LitElement {
             console.log(this.allPosts);
         })
         .catch(e => console.log(e))
+    }
+
+    get_sort() {
+        const c = document.cookie;
+        return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];
     }
 
     render() {
@@ -103,16 +108,16 @@ export class SearchResult extends LitElement {
         
             <!-- Main page content -->
             <div class="container-fluid">
-                <!-- Forum header -->
+                <!-- Search header -->
                 <div class="row justify-content-center" style="background-color: #1a1a1b;">
                     <div class="col-5">
-                        <h1 class="display-4" id="forum-title">Results for "${this.search_query}"</h1>
-                        <h1 class="forum-subtitle" id="forum-address">${this.result_amount} matches found!</h1>
+                        <h1 class="display-4">Results for "${this.search_query}"</h1>
+                        <h1 class="forum-subtitle">${this.result_amount} matches found!</h1>
                     </div>
                 </div>
 
                 <!-- Posts -->
-                <div id="post-col">
+                <div>
                     ${this.allPosts.map(i => html`<post-preview .pData=${i}></post-preview>`)}
                 </div>
             </div>

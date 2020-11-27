@@ -117,7 +117,9 @@ export class PostComment extends LitElement {
                                     </div>
                                     <!-- Comment -->
                                     <div class="col">
-                                        <h6 class="card-subtitle mb-2">${this.cData.username}</h6>
+                                        <h6 class="card-subtitle mb-2">
+                                            <a onclick="setTimeout(location.reload.bind(location), 1)" href="/user?id=${this.cData.uid}">${this.cData.username}</a>
+                                        </h6>
                                         <h5 class="card-title"> ${this.cData.content}</h5>
                                     </div>
 
@@ -150,22 +152,17 @@ export class PostComment extends LitElement {
     
     deleteComment(e) {
         console.log("delete cid: " + this.cData.cid)
-    fetch('http://localhost:8081/deleteComment',{
-                method:'post',
-                credentials: "include",
-                headers: { 'Content-type': 'application/json' },
-                body: JSON.stringify({
-                    cid: this.cData.cid 
-                })
-    })
-}
-
-
-
-
+        fetch('http://localhost:8081/deleteComment',{
+            method:'post',
+            credentials: "include",
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({
+                cid: this.cData.cid 
+            })
+        })
+    }
 
     get_userType() {    
-
         console.log("Du er i forum post, her er post_id: " + this.cData.pid)
         var uid = this.cData.uid;
         fetch('http://localhost:8081/checkUserType',{
@@ -174,13 +171,11 @@ export class PostComment extends LitElement {
             headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({
                 ownerId: this.cData.uid 
-              })
-            
-            
-        }).then(res => res.json())
+            })    
+        })
+        .then(res => res.json())
         .then(res => {    
             var data = Object.values(res); 
-
             if(data[0] == true) {
                 this.showBlock = true;
                 console.log("Du er admin og kan slette + blocke")
@@ -194,7 +189,5 @@ export class PostComment extends LitElement {
             }
         })
     }
-
-
 }
 customElements.define("post-comment", PostComment);
