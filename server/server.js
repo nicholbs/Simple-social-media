@@ -972,11 +972,11 @@ app.get('/:type/:id/vote/:updown', function(req, res) {
     }
   }else{
     if(updo == 1){
-      db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${id}`)
+      db.query(`UPDATE comments SET votes = votes + 1 WHERE cid = ${id}`)
       .then(res.send("success"))
       .catch(err => res.send(err))
     }else{
-      db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${id}`)
+      db.query(`UPDATE comments SET votes = votes - 1 WHERE cid = ${id}`)
       .then(res.send("success"))
       .catch(err => res.send(err))
     }
