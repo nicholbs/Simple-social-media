@@ -1,4 +1,29 @@
 # Prosjekt - PROG2053
+# Installation notes: 
+**See the pdf Manual_and_Requirements.pdf for installation, short user manual and testusers. The file is located in the root directory**.
+## Group members:     
+- Oddbjørn S. Borge-Jensen
+- Odd Hald Bliksås
+- Nicholas Bodvin Sellevåg
+- Wojciech Kurp
+
+## Local Dependences:
+- **See the pdf Manual_and_Requirements.pdf for the dependensies. It is also mention here as a eseaky copy past if nessecvery BUT USE the PDF**
+
+## Server:
+- cd til servermappe
+- npm install mysql --save //for mysql
+- npm install multer --save //Brukes til formdata på serversiden --Odd
+- npm install cors --save //Brukes for cors autentisering mot express api --Odd
+- npm install fs --save //Brukes for filhåndtering --Odd
+- npm install randomstring --save //Brukes for randomisering av filnavn --Odd
+- npm install express-session --save    //brukes for å lage coocies --Nicholas
+- npm install bcryptjs --save     //brukes for hashing av passord --Nicholas
+- npm install cookie-parser --save     //Tror denne er glemlt i dokumentasjon for Coockise, kan du vertifisere Nicolas? - Odd (jeg terengte denne)
+
+## Client:
+- npm install @vaadin/router --save //Brukes til å sette opp ruter --Odd
+# Defult information provided from you:
 
 ## Installation notes: 
 - Install nodeJs
@@ -15,11 +40,7 @@ Want to reset your containers and volumes fully?
 Want to get in to a container for some reason? 
 - "docker-compose exec <containername> bash" 
 
-## Group members:     
-- Oddbjørn S. Borge-Jensen
-#Odd Hald Bliksås"#   
-- Nicholas Bodvin Sellevåg
-Wojciech Kurp
+
 ## Setup: 
 - docker-compose up -d   
 ---

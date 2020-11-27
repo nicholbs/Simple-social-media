@@ -2,7 +2,7 @@
 //LitElement for register page
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
-export class requests extends LitElement {
+export class blocked extends LitElement {
 
 
     /*********************************************
@@ -17,7 +17,8 @@ export class requests extends LitElement {
      ********************************************/
     static get properties() {
         return {
-            allRequests: {type: Array},
+            allBlockedPosts: {type: Array},
+            allBlockedComments: {type: Array},
             requestButton: {type:Boolean}
         };
     }
@@ -27,7 +28,8 @@ export class requests extends LitElement {
 
     constructor() {
         super();
-        this.retrieveAllRequests();
+        this.retrieveBlockedPosts();
+        this.retrieveBlockedComments();
     }
 
      
@@ -42,6 +44,11 @@ export class requests extends LitElement {
     .grid-container {
         display: grid;
         grid-template-columns: auto auto auto auto;
+    }
+
+    h1 {
+        color: blue;
+    
     }
     `;
 
@@ -71,18 +78,28 @@ export class requests extends LitElement {
         console.log("hei dette er requests");    //log message available from web-browser, inspect->console
     
         return html`
-                <div class="container">
-                <br>
-                <div>${this.requestButton ? html`<button  @click="${this.requestModerator}" class="btn btn-danger btn-sm">Request moderator status</button>` : html``}</div>
-                <br>
-               
-                    <div class="row">${this.allRequests.map(i => html`<requestcard-page class="card" .post=${i} .userInt=${i.user} .userType=${i.userType}></requestcard-page>`)}</div>
-                
-                </div>
-                `;
+        <div class="container">
+            <div class="row">
+                <h1>All blocked Posts:</h1>
+            </div>
+            <div class="row">${this.allBlockedPosts.map(i => html`<blocked-post .blockedPost=${i}></blocked-post>`)}</div>
+            
+            
+            <div class="row">
+                <h1>All blocked Comments:</h1>
+            </div>
+            <div class="row">${this.allBlockedComments.map(i => html`<blocked-comment .blockedComment=${i}>asdsa</blocked-comment>`)}</div>
+        </div>
+        `;
         }
+        // console.log("retrieve content uid " + this.allBlockedPosts[0].uid)
+        // <div class="row">${this.allRequests.map(i => html`<requestcard-page class="card" .post=${i} .userInt=${i.user} .userType=${i.userType}></requestcard-page>`)}</div>
 
 
+
+        // <br>
+        // <div>${this.requestButton ? html`<button  @click="${this.requestModerator}" class="btn btn-danger btn-sm">Request moderator status</button>` : html``}</div>
+        // <br>
 
 
      /**************************************************************************
@@ -101,61 +118,62 @@ export class requests extends LitElement {
      * @see properties - allPosts
      * @author Nicholas Bodvin Sellevaag
      *************************************************************************/
-    retrieveAllRequests() {
-        fetch(`${window.MyAppGlobals.serverURL}requests`, {
+    retrieveBlockedPosts() {
+        fetch(`${window.MyAppGlobals.serverURL}blockedPosts`, {
             method:'get',
             credentials: "include",
         })
         .then(response => response.json())
         .then(response => 
             {
-            this.allRequests = Object.values(response)
-            // console.log(response)
-
-         
-            try {
-                
-                if (response.Object.ok = true)
-            {
-                this.requestButton = true;
-                console.log("Du er i allRequest")
-
-            }
-            } catch (error) {
-                console.log("fikk ikke object.warning")
-            }
+            this.allBlockedPosts = Object.values(response)
             
-
-            console.log("Dette er innholdet fra JSON objektet");
-            console.log(this.allRequests);
+        
+            console.log("retrieve content warning " + this.allBlockedPosts[0].warning)
+            console.log("retrieve content hei " + this.allBlockedPosts[0].hei)
+            console.log("retrieve content uid " + this.allBlockedPosts[0].uid)
         })
     }
 
 
-    requestModerator() {
-        fetch('http://localhost:8081/requestDup',{
-            method:'post',
+    retrieveBlockedComments() {
+        fetch(`${window.MyAppGlobals.serverURL}blockedComments`, {
+            method:'get',
             credentials: "include",
-        }).then(response => response.json()) 
-        .then(response=> {
-            console.log("requestMod " + response)
-            var answer = Object.values(response);
-            console.log(answer[0])
-            if (answer[0] == "ok") {
-                
-                alert("Your request has been noticed!");
-            }
-            else if (answer[0] == "duplicate"){
-                alert("You already have a request to become a moderator!")
-
-            }
-            
+        })
+        .then(response => response.json())
+        .then(response => 
+            {
+            this.allBlockedComments = Object.values(response)
+            console.log("retrieve Comments" + this.allBlockedComments)
         })
     }
+
+
+    // requestModerator() {
+    //     fetch('http://localhost:8081/requestDup',{
+    //         method:'post',
+    //         credentials: "include",
+    //     }).then(response => response.json()) 
+    //     .then(response=> {
+    //         console.log("requestMod " + response)
+    //         var answer = Object.values(response);
+    //         console.log(answer[0])
+    //         if (answer[0] == "ok") {
+                
+    //             alert("Your request has been noticed!");
+    //         }
+    //         else if (answer[0] == "duplicate"){
+    //             alert("You already have a request to become a moderator!")
+
+    //         }
+            
+    //     })
+    // }
 
 
 
 
 
 }
-customElements.define('requests-page', requests);
+customElements.define('blocked-page', blocked);

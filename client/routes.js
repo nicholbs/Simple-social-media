@@ -20,6 +20,9 @@ import '/src/components/logout.js'
 import '/src/components/postCreate.js'
 import '/src/components/createForum.js'
 import '/src/components/forumLink.js'
+import '/src/components/adminComponents/blockedList.js'
+import '/src/components/adminComponents/blockedComments.js'
+import '/src/components/adminComponents/blockedPosts.js'
 import '/src/components/userActivity.js'
 
 
@@ -35,6 +38,7 @@ import '/src/components/userActivity.js'
 			  {path: '/forum', component: 'forum-site'},
 			  {path: '/post', component: 'post-site'},
 			  {path: '/requests', component: 'requests-page'},
+			  {path: '/blocked', component: 'blocked-page'},
 			  {path: '/administrer', component: 'admin-page'},
 			  {path: '/search', component: 'search-result'},
 			  {path: '/logout', component: 'logout-page'},
