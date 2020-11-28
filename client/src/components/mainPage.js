@@ -1,5 +1,3 @@
-//LitElement for register page
-//LitElement for register page
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
 export class mainPage extends LitElement {
