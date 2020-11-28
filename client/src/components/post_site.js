@@ -1,3 +1,12 @@
+/** 
+ * Lit Element for post page
+ * 
+ * Loads post as a single lit element, and comments as their own lit elemets.
+ * Loads lit element for comment creation between post and comments.
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class PostSite extends LitElement {
@@ -78,7 +87,8 @@ export class PostSite extends LitElement {
         return urlParams.get("id");
     }
 
-    get_post_data(pid, sort) {    
+    get_post_data(pid, sort) {  
+        //Fetch post properties  
         fetch(`${window.MyAppGlobals.serverURL}p/${pid}`, {
             credentials: "include"
         })
@@ -90,6 +100,7 @@ export class PostSite extends LitElement {
         })
         .catch(e => console.log(e))
 
+        //Fetch post comments
         fetch(`${window.MyAppGlobals.serverURL}c/${pid}/${sort}`, {
             credentials: "include"
         })
@@ -110,9 +121,11 @@ export class PostSite extends LitElement {
 
     render() {
         return html`
+            <!-- Post -->
             <post-preview .pData=${this.pData} .shown_vote=${this.pData.votes}></post-preview>
+            <!-- Create comment -->
             <create-comment .pid=${this.pData.pid} .avatar=${this.pData.picture}></create-comment>
-            <!-- Posts -->
+            <!-- Comments -->
             <div id="post-col">
                 ${this.allComments.map(i => html`<post-comment .cData=${i}></post-comment>`)}
             </div>

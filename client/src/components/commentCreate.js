@@ -1,3 +1,9 @@
+/** 
+ * Lit Element for creating a new comment
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class CreateComment extends LitElement {

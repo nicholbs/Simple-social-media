@@ -1,3 +1,9 @@
+/** 
+ * Page for showing search results
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class SearchResult extends LitElement {
@@ -76,6 +82,7 @@ export class SearchResult extends LitElement {
         this.get_search_results(this.get_search_query(), this.get_sort());
     }
 
+    //Gets search query from url
     get_search_query() {
         const urlParams = new URLSearchParams(window.location.search);
         return this.search_query = urlParams.get("q");
@@ -93,6 +100,7 @@ export class SearchResult extends LitElement {
         .catch(e => console.log(e))
     }
 
+    //Gets sort type from cookie
     get_sort() {
         const c = document.cookie;
         return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];
@@ -100,9 +108,6 @@ export class SearchResult extends LitElement {
 
     render() {
         return html`
-            <!-- DIN HTML HER -->
-            <!-- Action: i HTML-formen er ikke nødvendig så lenge du bruker: -->
-            <!-- Gi button din property: @click="${this.register}" -->
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
         
@@ -115,7 +120,6 @@ export class SearchResult extends LitElement {
                         <h1 class="forum-subtitle">${this.result_amount} matches found!</h1>
                     </div>
                 </div>
-
                 <!-- Posts -->
                 <div>
                     ${this.allPosts.map(i => html`<post-preview .pData=${i}></post-preview>`)}

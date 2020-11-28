@@ -1,3 +1,11 @@
+/** 
+ * Lit Element for a single post
+ * 
+ * Used for both several posts on forum page and the single post on a post page
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class PostPreview extends LitElement {
@@ -98,9 +106,6 @@ export class PostPreview extends LitElement {
     render() {
         if(!this.pData.blocked) {
             return html`
-                <!-- DIN HTML HER -->
-                <!-- Action: i HTML-formen er ikke nødvendig så lenge du bruker: -->
-                <!-- Gi button din property: @click="${this.register}" -->
                 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
                 
@@ -127,6 +132,7 @@ export class PostPreview extends LitElement {
                                         <h5 class="card-title"> ${this.pData.title} </h5>
                                         <h6 class="card-subtitle mb-2">Posted by <a onclick="setTimeout(location.reload.bind(location), 1)" href="/user?id=${this.pData.uid}">${this.pData.username}</a></h6>
                                     </div>
+                                    <!-- Block/delete -->
                                     <div class="col-1">
                                         <button @click="${this.get_userType}">A</button>
                                         <h5>${this.showBlock ? html`<button type="button" @click="${this.blockPost}">Block</button>` : html``}</h5>
@@ -170,6 +176,7 @@ export class PostPreview extends LitElement {
         .then(location.reload.bind(location))
     }
 
+    //Checks user type to see if user can block/delete
     get_userType() {    
         console.log("Du er i get_userType, her er post_pid: " + this.pData.pid)
         console.log("Du er i get_userType, her er post_uid: " + this.pData.uid)

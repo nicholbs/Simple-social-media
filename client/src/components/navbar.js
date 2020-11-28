@@ -1,3 +1,11 @@
+/** 
+ * Lit element for site navbar
+ * 
+ * Includes search fuctionality and a cookie for setting sort as datetime or votes
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class NavBar extends LitElement {

@@ -1,3 +1,12 @@
+/** 
+ * Lit Element for creating a new post
+ * 
+ * Takes user input for post title and content, sets forum automatically based on url param.
+ * Returns user to relevant forum upon post completion.
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class CreatePost extends LitElement {
@@ -85,14 +94,14 @@ export class CreatePost extends LitElement {
                             <div class="row justify-content-left">
                                 <form class="form" id="createPost">
                                     <h1 style="color: white">Create Post</h1>
-                                    <!--Første rad-->
+                                    <!-- Title input -->
                                     <div class="row mt-2">
                                         <div class="col">
                                             <label for="title" style="color: white">Title</label>
                                             <input name="title" class="form-control" id="title" placeholder="Post title..." required>
                                         </div>
                                     </div>
-                                    <!--Andre rad-->
+                                    <!-- Content input -->
                                     <div class="row mt-2">
                                         <div class="col">
                                             <label for="content" style="color: white">Content</label>
@@ -112,9 +121,9 @@ export class CreatePost extends LitElement {
     }
 
     async createPost(e) {
-        let newPost = new FormData(e.target.form);
+        let newPost = new FormData(e.target.form);  //Gets post title and content
         e.preventDefault();
-        newPost.append("forum", this.forum);
+        newPost.append("forum", this.forum);        //Gets post forum
         console.log("Creating post...");
 
         var w = await fetch('http://localhost:8081/createPost', {
