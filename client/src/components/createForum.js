@@ -1,3 +1,4 @@
+//This litElement creates create a forum
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
 export class CreateForum extends LitElement {
@@ -12,7 +13,7 @@ export class CreateForum extends LitElement {
         return html`
 
         <div class="d-flex justify-content-center">
-        <!--Selve formen som skal registrere data-->
+        <!--The form for creating a forum-->
         <form class="form" id="registerForum">
         <h1>Create new forum</h1>
         <!--Første rad-->
@@ -35,6 +36,9 @@ export class CreateForum extends LitElement {
     </div>
         `;
     }
+     /**
+     * This function take the formdata from registerForum and sends it backend for creating a new forum
+     */
     registerForum(e){
         const newUser = new FormData(e.target.form);
         e.preventDefault();
@@ -49,15 +53,15 @@ export class CreateForum extends LitElement {
             return response.text();
         })
         .then(function (text){
-            if(text =='ok'){
+            if(text =='ok'){ //If all thing was okay and the forum was created okay
                 console.log("registrert");
-                alert("Forum Created");
-                location.replace("http://localhost:8080/")
+                alert("Forum Created, You will be redirected to homepage");
+                location.replace("http://localhost:8080/") //redirect to homepage
             }
-            else if(text == 'invalidChar'){
+            else if(text == 'invalidChar'){ //invalid characters
                 alert("Title ore name characther not valid, can only contain 0-9,A-Z,a-z");
             }
-            else if(text=='nameExist'){
+            else if(text=='nameExist'){ //if the forumname alredy exist
                 alert("Forum name alredy exist, plese chose anotherone!");
             }
             
