@@ -98,7 +98,7 @@ export class blocked extends LitElement {
             <div class="row">
                 <h1>All blocked Comments:</h1>
             </div>
-            <div class="row">${this.allBlockedComments.map(i => html`<blocked-comment .blockedComment=${i}>asdsa</blocked-comment>`)}</div>
+            <div class="row">${this.allBlockedComments.map(i => html`<blocked-comment .blockedComment=${i}></blocked-comment>`)}</div>
         </div>
         `;
         }
