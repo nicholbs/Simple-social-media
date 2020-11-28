@@ -68,15 +68,14 @@ export class userCard extends LitElement {
     console.log("Dett er userCard: ");    //log message available from web-browser, inspect->console
 
     return html`
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <h5>${this.post.username ? html`${this.post.username}` : html``}</h5>
-                    <h5>${this.post.userType ? html`${this.post.userType}` : html``}</h5>
-                    <h5>${this.post.warning ? html`${this.post.warning}` : html``}</h5>
-                </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5>${this.post.username ? html`<a onclick="setTimeout(location.reload.bind(location), 1)" href="/user?id=${this.post.uid}">${this.post.username}</a>` : html``}</h5>
+                <h5>${this.post.userType ? html`${this.post.userType}` : html``}</h5>
+                <h5>${this.post.warning ? html`${this.post.warning}` : html``}</h5>
             </div>
-            `;
-    }
+        </div>
+    `;}
 }
 
 

@@ -102,6 +102,7 @@ export class PostSite extends LitElement {
         .catch(e => console.log(e))
     }
 
+    //Sets sort based on cookie
     get_sort() {
         const c = document.cookie;
         return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];

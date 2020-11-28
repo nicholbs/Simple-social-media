@@ -21,6 +21,9 @@ export class UserActivity extends LitElement {
     static get styles() {
         return [
             css`
+            h4 {
+                color: white;
+            }
             img {
                 object-fit:cover;
                 max-width:100%;
@@ -72,12 +75,9 @@ export class UserActivity extends LitElement {
         ]
     }
 
-    fetch_data() {
-        const sort = this.get_sort();
-        const params = new URLSearchParams();
-        this.userID = params.get("id");
-        this.userPosts = get_posts(sort, userID);
-        this.userComments = get_comments(sort, userID);
+    get_uid() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return this.userID = urlParams.get("id");
     }
 
     get_sort() {
@@ -91,7 +91,7 @@ export class UserActivity extends LitElement {
         })
         .then(res => res.json())
         .then(res => { 
-            return Object.values(res);  
+            this.userPosts =  Object.values(res);  
         })
     }
 
@@ -101,8 +101,15 @@ export class UserActivity extends LitElement {
         })
         .then(res => res.json())
         .then(res => { 
-            return Object.values(res);  
+            this.userComments = Object.values(res);  
         })
+    }
+
+    fetch_data() {
+        const sort = this.get_sort();
+        this.get_uid();
+        this.get_posts(sort, this.userID);
+        this.get_comments(sort, this.userID);
     }
 
     render() {
@@ -113,13 +120,17 @@ export class UserActivity extends LitElement {
             <!-- Main page content -->
             <div class="container-fluid">
                 <!-- Posts -->
+                <br><br>
+                <div class="row justify-content-center"><h4>User Posts</h4></div>
                 <div>
                     ${this.userPosts.map(i => html`<post-preview .pData=${i}></post-preview>`)}
                 </div>
 
                 <!-- Comments -->
+                <br><br>
+                <div class="row justify-content-center"><h4>User Comments</h4></div>
                 <div>
-                    ${this.userComments.map(i => html`<post-preview .cData=${i}></post-preview>`)}
+                    ${this.userComments.map(i => html`<post-comment .cData=${i}></post-comment>`)}
                 </div>
             </div>
         `;

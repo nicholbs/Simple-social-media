@@ -246,73 +246,7 @@ app.get('/blockedComments', auth, (req, res)=> {
   // })
 })
 
-app.post('/lolol',multerDecode.none(), validateCookie, function (req, res, next) {
 
-  db.query('SELECT * FROM users', function (err, result) {
-    if (err) {      //If the Sql query fails
-      console.log("Det var en error i query")
-      res.send("SQL did not work")    //Should put a warning in the response instead
-    }
-    else {
-
-      JSON.stringify(result);
-      console.log("------------------------Nytt Sok------------------------")
-
-      var allUsers = Object.values(result);
-      const found = allUsers.find(element => element.email == req.body.email); 
-      
-
-        if (found == null) {
-          console.log("Cannot find user");
-          console.log(req.body.email)
-
-          res.send("Cannot find user " + req.body.email)
-        }
-        else {
-          console.log("Funnet bruker: " + found.email)
-          console.log("bruker hentet fra database: " + found.email)
-          res.locals.foundPassword = found.password;
-          console.log("found.uid: " + found.uid)
-          console.log("found.userType: " + found.userType)
-          res.locals.uid = found.uid;
-          res.locals.userType = found.userType;
-          // console.log("coockie id fra databasen er brukeren sin uid: " + found.uid);
-          next()
-        }
-    }
-  })
-}, async function (req, res) {
-
-  var passwordValid = false;
-  console.log("Du er i async function ")
-  await bcrypt.compare(req.body.password, res.locals.foundPassword).then(function(result) {
-    if (result == true) {
-      passwordValid = true
-    }
-    
-    
-
-  }).then(function() {
-
-    if (res.locals.foundPassword != null) {
-      if (passwordValid == true) {
-        console.log("Success på matching av hash");
-        res.cookie("uid", res.locals.uid);
-        res.cookie("userType", res.locals.userType);
-        // res.status(200).json({ msg: 'Logged in.'});
-        res.send("Success på matching av hash");
-      }
-      else {
-        console.log("Failed på matching av hash");
-        res.send("Failed på matching av hash")
-      }
-    }
-    else {
-      console.log("foundUserPassword var tom");
-      res.send("Failed, passordet var tomt");
-    }
-  })
-})
 
 
 /*****************************************************
@@ -472,92 +406,6 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
     res.send("missMatch"); //hvis inpund data ikke matcher 
   }
   
-})
-
-//registrering av ny bruker
-app.post('/registerHashed',multerDecode.none(), async (req,res) => {
-
-  // if (res.locals.uid)
-  // console.log("Du er logga inn fortsett: " + res.locals.uid) //2
-
-  // if (res.locals.userType)
-  // console.log("Du er ikke logga inn sluittter her" + res.locals.userType) //Admin
-
- const hashedPassword = await bcrypt.hash(req.body.password, 10)
-
-  const formData = req.body; //Lagrer unna formdata objekt
-  console.log('form data', formData.email); //Skriver ut formdata objekt
-  console.log("Formdata brukernavn " + formData.username);
-  var regPers = new person(formData); //lager en ny person temp
-  console.log("BrukernavnKlasse: " + regPers.username);
-  var userReg =  "INSERT INTO users (email, password, userType) VALUES ('"+regPers.email+"','"+ hashedPassword +"','user')"; //registrer en bruker
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = 'zcrona@example.net'"
-  //var dbSjekk = "SELECT COUNT(email) AS numberOfMatch FROM users WHERE email = '"+regPers.email+"'"
-  var usernameExist = false;
-  var tempUserType = 'bruker';
-  //Hvis inpud data frontend matcher
-  console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
-  if(regPers.matcingInfo() && regPers.validateInput() && regPers.validateInputUserName()){
-    regPers.validateInput();
-    console.log("er brukernavn tegn gyldig: " + regPers.validateInputUserName());
-
-   //Chek if username exist in DB
-   db.query('SELECT COUNT(username) AS numberOfMatch FROM users WHERE username =?',[regPers.username], function (err,result) {
-    if(err){
-      throw err;
-    }
-    console.log("Sjekker brukernavn " + result[0].numberOfMatch);
-    //If username not exist
-    if(result[0].numberOfMatch == 0 ){
-      console.log("Ingen funn av brukernavn")
-      usernameExist = false;
-    }
-    else{
-      //If username exist
-      console.log("Brukernavn finnes")
-      usernameExist = true;
-    }
-   })
-
-   console.log("Bool: " + usernameExist);
-   
-    db.query('SELECT COUNT(email) AS numberOfMatch FROM users WHERE email =?',[regPers.email], function (err, result) {
-      if (err) 
-        throw err;
-        console.log(result[0].numberOfMatch); 
-        //Hvis det er ingen oppforinger i db
-       if(result[0].numberOfMatch ==0 && usernameExist == false) {
-         console.log("ingenMatch")
-         //db.query(userReg); //register a new user
-         db.query('INSERT INTO users (email, password, username) VALUES (?,?,?)',[regPers.email,hashedPassword, regPers.username], function (err, result) {
-          if (err)
-          throw err;
-          console.log("User registerd");
-          res.send("ok"); //send respons frontend
-         });
-
-         //res.send("ok"); //send respons frontend
-       }
-       else if(usernameExist == true){
-         res.send("UsernameExist") //If username exist
-       }
-       else {
-         res.send("emailFinnes"); //If emai exist, send message frontend
-       }
-      }); 
-      
-  }
-  else if(regPers.validateInputUserName() == false){
-    console.log("Username characther not valid")
-    res.send("UserNameCharNot");
-  }
-  else{
-    res.send("missMatch"); //hvis inpund data ikke matcher 
-  }
-  
-  //TODO passord encryption
-  
-
 })
 
 /*******************************************************************************
@@ -766,7 +614,6 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
         console.log("Passord er endrett");
       }
     })
-
   }
   else if(req.body.password.length <8){
     res.send("pwToChort"); //If the password is to short
@@ -1016,7 +863,7 @@ app.get('/s/:keyword/:sort', function (req, res) {
 app.get('/c/:post/:sort', function (req, res) {
   var post = req.params.post;
   var sort = req.params.sort;
-  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
+  db.query(`SELECT comments.*, users.* FROM comments
             INNER JOIN users ON comments.uid = users.uid 
             WHERE pid = ${post}
             ORDER BY ${sort} DESC;`, function (err, result) {
@@ -1030,12 +877,13 @@ app.get('/c/:post/:sort', function (req, res) {
 });
 
 // Fetches all comments for a specific user
-app.get('/user/c/:sort', auth, function (req, res) {
-  var uid = res.locals.uid;
+app.get('/user/c/:uid/:sort', auth, function (req, res) {
+  var uid = req.params.uid;
   var sort = req.params.sort;
-  db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
-            INNER JOIN users ON posts.uid = users.uid 
-            WHERE posts.uid = '${uid}'`, function (err, result) {
+  db.query(`SELECT comments.*, users.* FROM comments
+            INNER JOIN users ON users.uid = comments.uid 
+            WHERE comments.uid = '${uid}'
+            ORDER BY comments.${sort} DESC`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -1046,13 +894,13 @@ app.get('/user/c/:sort', auth, function (req, res) {
 });
 
 // Fetches all posts for a specific user
-app.get('/user/p/:sort', auth, function (req, res) {
-  var uid = res.locals.uid;
+app.get('/user/p/:uid/:sort', auth, function (req, res) {
+  var uid = req.params.uid;
   var sort = req.params.sort;
-  db.query(`SELECT cid, comments.uid, content, votes, date, blocked, users.username, users.picture FROM comments
-            INNER JOIN users ON comments.uid = users.uid 
-            WHERE pid = ${post}
-            ORDER BY ${sort} DESC;`, function (err, result) {
+  db.query(`SELECT posts.*, users.* FROM posts
+            INNER JOIN users ON users.uid = posts.uid 
+            WHERE posts.uid = ${uid}
+            ORDER BY posts.${sort} DESC;`, function (err, result) {
     if(err) {
       res.status(400).send('Error in database operation.');
     } else {
@@ -1124,36 +972,17 @@ app.get('/:type/:id/vote/:updown', function(req, res) {
     }
   }else{
     if(updo == 1){
-      db.query(`UPDATE posts SET votes = votes + 1 WHERE pid = ${id}`)
+      db.query(`UPDATE comments SET votes = votes + 1 WHERE cid = ${id}`)
       .then(res.send("success"))
       .catch(err => res.send(err))
     }else{
-      db.query(`UPDATE posts SET votes = votes - 1 WHERE pid = ${id}`)
+      db.query(`UPDATE comments SET votes = votes - 1 WHERE cid = ${id}`)
       .then(res.send("success"))
       .catch(err => res.send(err))
     }
   }
 })
 
-/**
- * Get single picture
- */
-
-app.get('/profilepic', function (req, res) {
-  var uid2 = 20; //bare for test må erstates med authentisert uid
- var tempPath = '/server/src/images/userProfile/' //path to folder
-  
- db.query('SELECT profilepic FROM users WHERE uid =?',[uid2], function (err, result) {
-  if (err) 
-    throw err;
-    //Hvis det er ingen oppforinger i db
-   else {
-     tempPath = tempPath.concat(result[0].profilepic); //setter sammen bildetsti
-    console.log(tempPath);
-    res.sendFile(tempPath); //sender bildet frontend
-   }
-  }); 
-});
 
 /** 
  * Get hole pictureFolder
@@ -1241,86 +1070,6 @@ app.post('/profilePicUpload', auth, (req, res) => {
   
   });
  
-/** 
- * Get access to the Post image folder, Publishing under http://localhost:8081/postimages/
- * 
- *  */
-app.use('/postimages', express.static('/server/src/images/postPictures/'));
-
-  /**
- * Upload a post picture
- */
-app.post('/postPicUpload', auth, (req, res) => {
-  var isAPicture = true; //For response logic
-  var errorPicture = false; // for response logic
-  var imageName;  //Store the imagename 
-  var imageurl = 'http://localhost:8081/postimages/' //deafult url to pictureshare
-  var postPid; //Coneccted to sql string for updating the specific user with the image url, 
-  postPid = 2; //Put the postid here to identify post picture
-
-  //Define pictureStore
-  var multerStorage =multer.diskStorage({
-    destination: './src/images/postPictures', //path to post pictures
-    //Create a image name:
-    filename: function(req,file,cb){
-        let nameTemp = randomstring.generate(); //generates a random filestring for random name
-        imageName = nameTemp + path.extname(file.originalname); //apennder random name with file extention
-        cb(null,imageName); //Return file with filename and extention;
-    }
-  }) //End of storage logick
-
-  //Image filter for filter datatypes backend
-  const pictureFilter = (reg,file,cb) => {
-    //Chek what filetype uploaded
-    if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-        cb(null, true);
-    //If not match the filefilter then:
-    } else {
-      req.fileValidationError = "Forbidden extension";
-      return cb(null, false, req.fileValidationError);
-    }
-  }//end of filefilter for picture
-    
-  
-  //var pictureUpload = multer({ storage: multerStorage}).single('file'); //save all the settings to a object
-  var pictureUpload = multer({ storage: multerStorage, fileFilter:pictureFilter}).single('file');
-  // pictureUpload = multer({ storage: multerStorage}).single('file');
-  
-  //Here we want to chek for errors and register the name in the database
-  pictureUpload(req, res, function(err) {
-  //Errorhandling from multer, see documenation https://www.npmjs.com/package/multer
-    if(err instanceof multer.MulterError){
-      console.log( "Error in Post-pictureUpload of image: " + imageName);
-      errorPicture = true; // Set errorPicture to tru if problem with multer
-    }
-    //If a filetype validation failed
-    else if(req.fileValidationError){
-      console.log("Post-Not valid fileformat only jpg and png allowed ref: " + imageName);
-      res.send("errorFileExt"); //Send message front end
-    }
-    else if(err){
-      console.log("Post-Some unspecifed error when handling of file: " + imageName);
-      errorPicture = true; //set errorPicture to true if some unspecifed eror
-      throw err;
-    }
-    //If it is a picture register the name in DB
-    else if(isAPicture){
-      var imageNamehttp = imageurl.concat(imageName); //Create the full image url
-      //Update the specifed user with imahe url on profilepicture
-      db.query('UPDATE posts SET image=? WHERE pid =?',[imageNamehttp,postPid], function(err,results){
-        if(err){
-          console.log(err);
-          errorPicture = true //Set the bool if problem with register 
-        } else{
-          //picture registed in db
-          console.log("postPic registerd in db with path: " + imageNamehttp);
-              res.send("ok");  //picture uploded sucefully
-        }
-      });
-    }//end of else  
-  })    
-});
-
 /**
  * Create a Forum
  */

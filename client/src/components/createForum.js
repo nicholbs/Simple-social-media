@@ -49,10 +49,10 @@ export class CreateForum extends LitElement {
             return response.text();
         })
         .then(function (text){
-            //console.log(text);
             if(text =='ok'){
                 console.log("registrert");
                 alert("Forum Created");
+                location.replace("http://localhost:8080/")
             }
             else if(text == 'invalidChar'){
                 alert("Title ore name characther not valid, can only contain 0-9,A-Z,a-z");

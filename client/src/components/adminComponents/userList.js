@@ -35,6 +35,7 @@ export class adminPage extends LitElement {
      ***************************************************************/
     constructor() {
         super();
+        this.allUsers = [];
         this.retrieveAllUsers();
     }
 
