@@ -1,3 +1,9 @@
+/** 
+ * Page showing all posts and comments for a specific user
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class UserActivity extends LitElement {
@@ -75,11 +81,13 @@ export class UserActivity extends LitElement {
         ]
     }
 
+    //Gets uid from url
     get_uid() {
         const urlParams = new URLSearchParams(window.location.search);
         return this.userID = urlParams.get("id");
     }
 
+    //Gets sort type from cookie
     get_sort() {
         const c = document.cookie;
         return c.split("; ").find(row => row.startsWith("sort")).split("=")[1];

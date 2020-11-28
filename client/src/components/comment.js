@@ -1,3 +1,9 @@
+/** 
+ * Lit Element for a single comment
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class PostComment extends LitElement {

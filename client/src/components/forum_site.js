@@ -1,7 +1,13 @@
+/** 
+ * Lit Element for forum page
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ **/
+
 import { LitElement, html, css } from 'lit-element';
 
 export class ForumSite extends LitElement {
-
+    
     static get properties() {
         return {
             fData : Object,
@@ -53,7 +59,7 @@ export class ForumSite extends LitElement {
         this.get_forum_data(this.get_forum_name(), this.get_sort())
     }
 
-    //Gets forum name from
+    //Gets forum name from url
     get_forum_name() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get("name");
@@ -108,6 +114,7 @@ export class ForumSite extends LitElement {
                     <div class="row justify-content-center">
                         <h1 class="display-4" id="forum-title">${this.fData.title}</h1>
                     </div>
+                    <!-- Create post button -->
                     <div class="row justify-content-center">
                         <button id="createBtn" class="btn btn-primary" onclick="location.href='/createPost?forum=${this.fData.name}'">Create post</button>
                     </div>      

@@ -1,6 +1,8 @@
 //LitElement for retrieving posts
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
+//OUTDATED
+
 export class RetrievePosts extends LitElement {
     
     //"styles" property of this lit-element specifies which styling is applied to the rendered html
