@@ -1,5 +1,4 @@
-//LitElement for register page
-//LitElement for register page
+//LitElement for uploading a profile picture ore chaning a password for a user
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
 export class settingsPage extends LitElement {
@@ -17,8 +16,9 @@ export class settingsPage extends LitElement {
     render() {
         return html`
      
-     <div>
+     <div> 
         <div class="d-flex justify-content-center"> 
+                 <!--The form for picture upload-->
                 <form class="form" id="uplaodPicture" enctype="multipart/form-data">
                         <h1>Upload Profile Picture</h1>
                         <div class="row mt-2">
@@ -36,6 +36,7 @@ export class settingsPage extends LitElement {
 
         <div>
         <div class="d-flex justify-content-center"> 
+                 <!--The form for passwordChange-->
                 <form class="form" id="changeUser">     
                         <h1>Change Password</h1>
                         <div class="row mt-10">
@@ -55,7 +56,7 @@ export class settingsPage extends LitElement {
 
      `;
     }
-
+    //Function for chaning the password of a user
     changeUserInfo(e) {
         console.log("Du er i changeUser")
         const userInfo = new FormData(e.target.form);
@@ -89,7 +90,7 @@ export class settingsPage extends LitElement {
         })
 
     }
-
+    //Function for uploading a image
     uploadPic(e){
         const userPic = new FormData(e.target.form);
         e.preventDefault();
@@ -106,18 +107,18 @@ export class settingsPage extends LitElement {
         .then(function (text){
             console.log(text);
             //Alt ok 
-            if(text=='ok'){
+            if(text=='ok'){ //If the upload suceeded
                 alert("Profilpicture uploaded, you wil be redirected to homepage");
                 location.replace("http://localhost:8080/")
             }
             //feil i multer
-            else if(text=='errorMulter'){
+            else if(text=='errorMulter'){ //if there is an error in multer backend
                 alert("Fatal error in multer - backend");
             }
-            else if(text=='errorFileExt'){
+            else if(text=='errorFileExt'){ //If ilegal fileExtention
                 alert("Only jpg and png pictures allowed");
             }
-            //annen uspesifikk feil
+            //Other unspecifed error
             else {
                 alert("some other fatal error backend");
             }

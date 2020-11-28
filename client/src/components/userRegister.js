@@ -1,5 +1,6 @@
 //LitElement for register page
 //LitElement for register page
+//Lit element for register a user
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
 export class RegisterPage extends LitElement {
@@ -14,7 +15,7 @@ export class RegisterPage extends LitElement {
         return html`
 
         <div class="d-flex justify-content-center">
-        <!--Selve formen som skal registrere data-->
+        <!--The form thath register a user-->
         <form class="form" id="registerUser">
         <h1>Register to forum</h1>
         <!--Første rad-->
@@ -50,6 +51,7 @@ export class RegisterPage extends LitElement {
     </div>
         `;
     }
+    //This function create a formdata and send the formdata backend
     registerUser(e){
         const newUser = new FormData(e.target.form);
         e.preventDefault();
@@ -65,22 +67,22 @@ export class RegisterPage extends LitElement {
         })
         .then(function (text){
             //console.log(text);
-            if(text =='ok'){
+            if(text =='ok'){ //If reply message is ok and the user is registerd
                 console.log("registrert");
                 alert("User Registered! You will be redirected to home");
                 location.replace("http://localhost:8080/");
             } 
-            else if(text=='emailFinnes'){
+            else if(text=='emailFinnes'){ //If the email alredy exist
                 alert("Bruker Finnes fra før");
             
             }
-            else if(text=='UsernameExist'){
+            else if(text=='UsernameExist'){ //If the username exist 
                 alert("Username exist");
             }
-            else if(text =='UserNameCharNot'){
+            else if(text =='UserNameCharNot'){ //if the username caracther is not valid
                 alert("Username characther not valid, can only contain 0-9,A-Z,a-z");
             }
-            else if(text =='missMatch'){
+            else if(text =='missMatch'){ 
                 //alert("Feil i brukernavn eller passord under registrering");
                 alert("input value not vallid username, password missmatch ");
             }
