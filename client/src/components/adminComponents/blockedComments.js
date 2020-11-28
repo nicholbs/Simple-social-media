@@ -33,7 +33,7 @@ export class blockedComment extends LitElement {
      * are variables, used in the
      * rendered html
      * 
-     * @var post - contains a post object sent as parameter form creator
+     * @var blockedComment - contains object of a blocked comment
      * @author Nicholas Bodvin Sellevaag
      ******************************************************************/
     static get properties() {
@@ -58,7 +58,7 @@ export class blockedComment extends LitElement {
      * @author Nicholas Bodvin Sellevaag
      ***************************************************************/
     constructor(){
-        super()
+        super();
         
     }
     
@@ -78,8 +78,7 @@ export class blockedComment extends LitElement {
      * Notewhorty! The '?' is used as an if statement
      * for example if post.pid is set the HTML is set
      * to the consecutive text this.post.pid. if the
-     * post.pid is not set the HTML is set as 
-     * "Mangler 'pid' i post"
+     * post.pid is not set the HTML is not visible
      * 
      * @see properties - post
      * @author Nicholas Bodvin Sellevaag
@@ -99,4 +98,4 @@ export class blockedComment extends LitElement {
 
 
 //Important! DO NOT USE CAPITAL LETTERS IN A LIT-ELEMENT'S NAME
-customElements.define('blocked-comment', blockedComment);     //'retrieve-posts' is the lit-element's name, can be seen in "index.html" as <retrieve-posts>
+customElements.define('blocked-comment', blockedComment);  

@@ -12,7 +12,7 @@ export class requests extends LitElement {
      * are variables, used in the
      * rendered html
      * 
-     * @var allPosts - array som holder alle posts
+     * @var allRequest - array of all requests
      * @author Nicholas Bodvin Sellevaag
      ********************************************/
     static get properties() {
@@ -58,13 +58,12 @@ export class requests extends LitElement {
      * In other words, our lit-element's contain HTML
      * which needs to be rendered.
      * 
-     * Notewhorty! allPosts.map is used to put each
+     * Notewhorty! map is used to put each
      * value mapped with key "i" into a new html
-     * element, namely <post-lit>. Effectively
+     * element. Effectively
      * creating a new lit-element for each post
      * 
-     * @method allPosts.map - for each key
-     * @see properties - allPosts
+     * @see properties
      * @author Nicholas Bodvin Sellevaag
      ***********************************************/
     render() {
@@ -85,22 +84,12 @@ export class requests extends LitElement {
 
 
 
-     /**************************************************************************
-     * Function sends a request with purpose of receiving all posts in database
-     * 
-     * 
-     * Request is sent to "route" specified in the "URL" of http request
-     * Method used is "GET" which always carries parameters in
-     * the URL of request.
-     * in contrast to "POST" parameters which are sent inside the
-     * body of the request itself.
-     * 
-     * The rendered html contains the information of posts retrieved
+     /***************************************************************************
+     * Function sends a request with purpose of receiving all requests in database
      *
      * @var response - JSON object sent from back-end containing all posts
-     * @see properties - allPosts
      * @author Nicholas Bodvin Sellevaag
-     *************************************************************************/
+     ***************************************************************************/
     retrieveAllRequests() {
         fetch(`${window.MyAppGlobals.serverURL}requests`, {
             method:'get',
@@ -131,7 +120,13 @@ export class requests extends LitElement {
         })
     }
 
-
+     /***************************************************************************
+     * Function sends a request with purpose of letting a user request to
+     * become a moderator
+     *
+     * @var response - JSON object sent from back-end containing all posts
+     * @author Nicholas Bodvin Sellevaag
+     ***************************************************************************/
     requestModerator() {
         fetch('http://localhost:8081/requestDup',{
             method:'post',

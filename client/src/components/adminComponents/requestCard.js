@@ -29,7 +29,7 @@ export class requestCard extends LitElement {
      * are variables, used in the
      * rendered html
      * 
-     * @var post - contains a post object sent as parameter form creator
+     * @var post - contains a post object sent as parameter from creator
      * @author Nicholas Bodvin Sellevaag
      ******************************************************************/
     static get properties() {
@@ -56,7 +56,7 @@ export class requestCard extends LitElement {
      * @author Nicholas Bodvin Sellevaag
      ***************************************************************/
     constructor(){
-        super()
+        super();
         
     }
     
@@ -76,8 +76,7 @@ export class requestCard extends LitElement {
      * Notewhorty! The '?' is used as an if statement
      * for example if post.pid is set the HTML is set
      * to the consecutive text this.post.pid. if the
-     * post.pid is not set the HTML is set as 
-     * "Mangler 'pid' i post"
+     * post.pid is not set the HTML is not set
      * 
      * @see properties - post
      * @author Nicholas Bodvin Sellevaag
@@ -105,7 +104,13 @@ export class requestCard extends LitElement {
 
    
 
-
+    /**************************************************************************
+     * Function sends a request with purpose of accepting user request to
+     * become moderator
+     *
+     * @see properties
+     * @author Nicholas Bodvin Sellevaag
+     *************************************************************************/
     accept(e) {
         console.log(this.userInt);
         console.log(this.userType);
@@ -124,6 +129,14 @@ export class requestCard extends LitElement {
         })
     }
 
+
+    /**************************************************************************
+     * Function sends a request with purpose of denying user request to
+     * become moderator
+     *
+     * @see properties
+     * @author Nicholas Bodvin Sellevaag
+     *************************************************************************/
     deny(e) {
         console.log(this.userInt);
         console.log(this.userType);

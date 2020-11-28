@@ -5,27 +5,38 @@ import { LitElement, html, css } from '/client/node_modules/lit-element/lit-elem
 export class blocked extends LitElement {
 
 
-    /*********************************************
+    /********************************************************************
      * Properties for lit-element
      * 
      * In practive these properties 
      * are variables, used in the
      * rendered html
      * 
-     * @var allPosts - array som holder alle posts
+     * @var allBlockedComments - contains all object of blocked comments
+     * @var allBlockedPosts - contains all object of blocked Posts
      * @author Nicholas Bodvin Sellevaag
-     ********************************************/
+     *******************************************************************/
     static get properties() {
         return {
             allBlockedPosts: {type: Array},
             allBlockedComments: {type: Array},
-            requestButton: {type:Boolean}
         };
     }
 
 
 
-
+    /****************************************************************
+     * This code is the first to run when creating instance of object
+     * 
+     * Constructor is the function which is called before all else
+     * when creating an instance of this lit-element.
+     * Super() - Necessary in lit-element constructors. Have not used
+     * it in practice yet, but can be applied to other functions you
+     * create to ensure the function becomes part of the initial 
+     * creation of the object (lit-element).
+     * 
+     * @author Nicholas Bodvin Sellevaag
+     ***************************************************************/
     constructor() {
         super();
         this.retrieveBlockedPosts();
@@ -34,7 +45,7 @@ export class blocked extends LitElement {
 
      
 
-
+//"styles" property of this lit-element specifies which styling is applied to the rendered html
     static styles = css`
     :host {
         display: block;
@@ -67,11 +78,10 @@ export class blocked extends LitElement {
      * 
      * Notewhorty! allPosts.map is used to put each
      * value mapped with key "i" into a new html
-     * element, namely <post-lit>. Effectively
-     * creating a new lit-element for each post
+     * element. Effectively
+     * creating a new lit-element
      * 
-     * @method allPosts.map - for each key
-     * @see properties - allPosts
+     * @see properties
      * @author Nicholas Bodvin Sellevaag
      ***********************************************/
     render() {
@@ -92,30 +102,15 @@ export class blocked extends LitElement {
         </div>
         `;
         }
-        // console.log("retrieve content uid " + this.allBlockedPosts[0].uid)
-        // <div class="row">${this.allRequests.map(i => html`<requestcard-page class="card" .post=${i} .userInt=${i.user} .userType=${i.userType}></requestcard-page>`)}</div>
-
-
-
-        // <br>
-        // <div>${this.requestButton ? html`<button  @click="${this.requestModerator}" class="btn btn-danger btn-sm">Request moderator status</button>` : html``}</div>
-        // <br>
-
 
      /**************************************************************************
-     * Function sends a request with purpose of receiving all posts in database
-     * 
-     * 
-     * Request is sent to "route" specified in the "URL" of http request
-     * Method used is "GET" which always carries parameters in
-     * the URL of request.
-     * in contrast to "POST" parameters which are sent inside the
-     * body of the request itself.
-     * 
-     * The rendered html contains the information of posts retrieved
+     * Function sends a request with purpose of receiving all blocked posts.
      *
+     * After receiving all blocked posts the rendered html will include all
+     * blocked posts.
+     * 
      * @var response - JSON object sent from back-end containing all posts
-     * @see properties - allPosts
+     * @see properties
      * @author Nicholas Bodvin Sellevaag
      *************************************************************************/
     retrieveBlockedPosts() {
@@ -135,7 +130,16 @@ export class blocked extends LitElement {
         })
     }
 
-
+    /**************************************************************************
+     * Function sends a request with purpose of receiving all blocked comments.
+     *
+     * After receiving all blocked comments the rendered html will include all
+     * blocked comments.
+     * 
+     * @var response - JSON object sent from back-end containing all comments
+     * @see properties
+     * @author Nicholas Bodvin Sellevaag
+     *************************************************************************/
     retrieveBlockedComments() {
         fetch(`${window.MyAppGlobals.serverURL}blockedComments`, {
             method:'get',
@@ -148,32 +152,5 @@ export class blocked extends LitElement {
             console.log("retrieve Comments" + this.allBlockedComments)
         })
     }
-
-
-    // requestModerator() {
-    //     fetch('http://localhost:8081/requestDup',{
-    //         method:'post',
-    //         credentials: "include",
-    //     }).then(response => response.json()) 
-    //     .then(response=> {
-    //         console.log("requestMod " + response)
-    //         var answer = Object.values(response);
-    //         console.log(answer[0])
-    //         if (answer[0] == "ok") {
-                
-    //             alert("Your request has been noticed!");
-    //         }
-    //         else if (answer[0] == "duplicate"){
-    //             alert("You already have a request to become a moderator!")
-
-    //         }
-            
-    //     })
-    // }
-
-
-
-
-
 }
 customElements.define('blocked-page', blocked);
