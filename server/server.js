@@ -55,6 +55,64 @@ app.get('/', (req, res) => {
 })
 
 
+
+
+/***************************************************************************
+ * handler checks the user's priviliges when they try to change the "settings"
+ * of a post or comment
+ * 
+ * 
+ * @var res.locals.uid -  int of user id is stored and made available as res.locals.uid
+ * @var res.locals.userType - string of user type is stored and made available as res.locals.userType
+ * @author Nicholas Bodvin Sellevaag
+ ***************************************************************************/
+app.post('/checkUserType', auth, function (req,res) {
+    console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
+    console.log("------------------ her er ownerId: " + req.body.ownerId)
+    console.log("uid: " + res.locals.uid)
+    console.log("ownerId" + req.body.ownerId)
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+  
+    
+    if(res.locals.userType == "moderator" || res.locals.userType == "admin"){
+      console.log("Du er inni checkuser if")
+      var answer = JSON.stringify({
+        admin: true,
+        user: true
+      })
+      res.end(answer);
+    }
+    else if (res.locals.uid == req.body.ownerId) {
+      console.log("Du er inni checkuser else if")
+      
+      console.log(req.body.ownerId)
+      var answer = JSON.stringify({
+        admin: false,
+        user: true
+      }) 
+      res.end(answer);
+    }
+    
+    else {
+      console.log("Du er inni checkuser else")
+      var answer = JSON.stringify({
+      admin: false,
+      user: false
+    })
+    res.end(answer);
+  }
+  
+  });
+
+
+
+
+
+
+
+
+
+
 /***************************************************************************
  * Function sends a request with purpose of authenticating the user and
  * make them logged in.
