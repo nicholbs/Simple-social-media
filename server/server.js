@@ -722,7 +722,13 @@ app.get('/f/:forum', function (req, res) {
   });
 });
 
-// Fetches all posts for specified forum
+/**
+ * Fetches all posts for specified forum
+ * 
+ * @var forum - Name of forum to fetch from
+ * @var sort  - Sort type (date or votes)
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/p/:forum/:sort', auth, function (req, res) {
   var forum = req.params.forum;
   var sort = req.params.sort;
@@ -739,7 +745,12 @@ app.get('/p/:forum/:sort', auth, function (req, res) {
     });
 });
 
-// Fetches post properties
+/**
+ * Fetches post properties for single post
+ * 
+ * @var pid - Post id
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/p/:pid', function (req, res) {
   var pid = req.params.pid;
   db.query(`SELECT pid, title, forum, content, votes, blocked, users.username, users.uid FROM posts
@@ -754,7 +765,13 @@ app.get('/p/:pid', function (req, res) {
     });
 });
 
-// Fetches all posts matching search criteria
+/**
+ * Fetches all posts matching search criteria
+ * 
+ * @var keyword - Search criteria
+ * @var sort    - Sort type (date or votes)
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/s/:keyword/:sort', function (req, res) {
   var keyword = req.params.keyword;
   var sort = req.params.sort;
@@ -771,7 +788,13 @@ app.get('/s/:keyword/:sort', function (req, res) {
   });
 });
 
-// Fetches all comments for a specific post
+/**
+ * Fetches all comments for a specific post
+ * 
+ * @var post  - Post id
+ * @var sort  - Sort type (date or votes)
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/c/:post/:sort', function (req, res) {
   var post = req.params.post;
   var sort = req.params.sort;
@@ -788,7 +811,13 @@ app.get('/c/:post/:sort', function (req, res) {
   });
 });
 
-// Fetches all comments for a specific user
+/**
+ * Fetches all comments for a specific user
+ * 
+ * @var uid   - User id
+ * @var sort  - Sort type (date or votes)
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/user/c/:uid/:sort', auth, function (req, res) {
   var uid = req.params.uid;
   var sort = req.params.sort;
@@ -805,7 +834,13 @@ app.get('/user/c/:uid/:sort', auth, function (req, res) {
   });
 });
 
-// Fetches all posts for a specific user
+/**
+ * Fetches all posts for a specific user
+ * 
+ * @var uid   - User id
+ * @var sort  - Sort type (date or votes)
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/user/p/:uid/:sort', auth, function (req, res) {
   var uid = req.params.uid;
   var sort = req.params.sort;
@@ -822,10 +857,13 @@ app.get('/user/p/:uid/:sort', auth, function (req, res) {
   });
 });
 
-// Creates new post
+/**
+ * Creates new post
+ * 
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.post('/createPost', auth, multerDecode.none(), function(req, res) {
   var p = req.body;
-  //console.log(p);
 
   db.query(`INSERT INTO posts (forum, uid, title, content) 
             VALUES ('${p.forum}', '${res.locals.uid}', '${p.title}', '${p.content}');`, function(err, result) {
@@ -838,7 +876,14 @@ app.post('/createPost', auth, multerDecode.none(), function(req, res) {
   })
 })
 
-// Inserts a new comment to database
+/**
+ * Creates new comment
+ * 
+ * @var uid - User ID of comment poster
+ * @var pid - ID of post to attach comment to
+ * @var con - Comment content
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.post('/postComment', auth, function(req, res) {
   var uid = res.locals.uid;
   var pid = req.body.pid;
@@ -872,7 +917,14 @@ app.get('/retrieveForums', function(req, res) {
   })
 })
 
-//Upvote | downvote
+/**
+ * Upvote /downvote functionality for posts and comments
+ * 
+ * @var type  - Either "post" or "comment"
+ * @var id    - Post/comment ID
+ * @var updo  - Either 1/0 for upvote/downvote
+ * @author Oddbjørn S Borge-Jensen
+ */
 app.get('/:type/:id/vote/:updown', function(req, res) {
   var type = req.params.type;
   var id = req.params.id;
