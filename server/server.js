@@ -1,24 +1,22 @@
 "use strict";
 
-import express, { json } from 'express';
-import path, { resolve } from 'path';
-import mysql from 'mysql';
-import cors from 'cors'; //Authentication to serverbackend from API requests
-import multer from 'multer'; //For form data til post express API
-import fs from 'fs'; //brukes til filhåndtering
-import randomstring from 'randomstring'; //Randomgennerering filnavn
-import {person} from './src/components/userClass.js'; //Import av brukerKlassen
-import { stringify } from 'querystring';
-import bcrypt from 'bcryptjs';
-import { rejects } from 'assert';
-import cookieParser from 'cookie-parser';
-import { timingSafeEqual } from 'crypto';
+import express, { json } from 'express';  //application framework which provides us WWW features used throughout the app
+import path, { resolve } from 'path';     //module which provides features for working with file and directory paths
+import mysql from 'mysql';                //module with features to connect and communicate with Mysql database
+import cors from 'cors';                  //Authentication to serverbackend from API requests
+import multer from 'multer';              //module comes with middleware for handling form data sent to our express application
+import fs from 'fs';                      //module comes with features for handling file systems
+import randomstring from 'randomstring';  //module for randomly generating strings which we use for name giving
+import {person} from './src/components/userClass.js'; //Our own class for which users/moderators/administrators are created from
+import { stringify } from 'querystring';  //module for parsing and handling the URL in queries
+import bcrypt from 'bcryptjs';            //module comes with utilities for hashing, for example hashing password strings
+import { rejects } from 'assert';         //module for testing expressions, for example asserting wether expression is true or false
+import cookieParser from 'cookie-parser'; //module with features for parsing and handling cookies in browser from requests
 
 
-
-const app = express();
-const PORT = 8081;
-const multerDecode = multer(); //For å mota formData til post request
+const app = express();         //constructor of express creates an app object, essentially our application
+const PORT = 8081;             //port for which our back-end application will be available from
+const multerDecode = multer(); //decoder for handling formdata from requests
 
 
 
@@ -27,27 +25,22 @@ app.listen(PORT, () => {
 })
 
 app.use(express.static(path.resolve() + '/server'));
-app.use(express.urlencoded());  //parse URL-encoded bodies (as sent by HTML forms)
-app.use(express.json());  //parse JSON bodies (as sent by API clients)
+app.use(express.urlencoded());          //parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.json());                //parse JSON bodies (as sent by API clients)
 app.use(cookieParser('abcdef-12345'));
-app.use(cors({
-  origin: "http://localhost:8080",
+app.use(cors({                          //all requests which requires a user to be logged in will have their information sent
+  origin: "http://localhost:8080",      //with requests where credentials are included
   credentials: true,
-})); //Using cors for authentication 
-// app.use(auth)      //Alle forespørsler til back-end må autentiseres
-// app.use(session({
-//   name:'session-id',
-//   secret:'123456',
-//   saveUninitialized: false,
-//   resave: false
-// }))
+}));                                    //Using cors for authentication 
 
-var db = mysql.createConnection({
+
+var db = mysql.createConnection({       //create a connection to the Mysql database and hold onto the connection with the "db" variable
   host: "db",
   user: "admin",
   password: "password",
   database: 'prog2053-proj'
 });
+
 
 db.connect(function (err) {
   if (err) {
@@ -61,9 +54,21 @@ app.get('/', (req, res) => {
   res.send("Hello world");
 })
 
-var upload=multer();
 
-/******************************************************** */
+/***************************************************************************
+ * Function sends a request with purpose of authenticating the user and
+ * make them logged in.
+ * 
+ * User is logged in when their browser has a hashed cookie with data about
+ * the user from the database. This function is applied to other get/post
+ * handling functions as a middleware which authenticate the users of our
+ * application. Furthermore, the middleware creates two local variables
+ * in res.locals which makes it easy to do additional checks
+ *
+ * @var res.locals.uid -  int of user id is stored and made available as res.locals.uid
+ * @var res.locals.userType - string of user type is stored and made available as res.locals.userType
+ * @author Nicholas Bodvin Sellevaag
+ ***************************************************************************/
 function auth(req, res, next) {
   if(!req.signedCookies.user) {
 
@@ -148,7 +153,13 @@ app.get('/secret', auth, (req, res)=> {
 })
 
 
-
+/***************************************************************************
+ * Retrieves all blocked posts from database
+ * 
+ * Depending on user priviliges a list of blocked posts are sent
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***************************************************************************/
 app.get('/blockedPosts', auth, (req, res)=> {
   console.log("Du er i blockedPosts");
   if (res.locals.userType == "user") {
@@ -185,19 +196,16 @@ app.get('/blockedPosts', auth, (req, res)=> {
         res.end(JSON.stringify(result));
       }
     })
-
   }
-  // db.query('SELECT * FROM `posts` WHERE blocked=1', function (err, result) {
-  //   if (err) {
-  //     res.status(400).send('Error in database operation.');
-  //   } else {
-  //     res.writeHead(200, { 'Content-Type': 'application/json' });
-  //     res.end(JSON.stringify(result));
-  //   }
-  // })
 })
 
-
+/***************************************************************************
+ * Retrieves all blocked comments from database
+ * 
+ * Depending on user priviliges a list of blocked comments are sent
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***************************************************************************/
 app.get('/blockedComments', auth, (req, res)=> {
   console.log("Du er i blockedComments");
   if (res.locals.userType == "user") {
@@ -235,108 +243,13 @@ app.get('/blockedComments', auth, (req, res)=> {
       }
     })
   }
-
-  //  db.query('SELECT * FROM `comments` WHERE blocked=1', function (err, result) {
-  //   if (err) {
-  //     res.status(400).send('Error in database operation.');
-  //   } else {
-  //     res.writeHead(200, { 'Content-Type': 'application/json' });
-  //     res.end(JSON.stringify(result));
-  //   }
-  // })
 })
-
-
-
-
-/*****************************************************
- * For å sjekke om bruker er logget inn gjør følgende:
- * 
- * Gå inn på din nettleser og trykk på inspect->Application->cookies
- * Så trykker du to ganger på skjema og lager en cookie som heter
- * "uid" og "userType". Sett disse variablene sine Value til 
- * den brukeren du ønsker å være sin uid for eks 2
- * eller userType for eks Admin. 
- * 
- * Deretter i dine app.post funksjoner bruk denne funksjonen
- * som middleware. For eks app.post(.....,validateCookie, function {
- * 
- * })
- * 
- * Inne i din funksjon kan du ta sjekke med:
- * 
- * if (res.locals.uid)
- *    console.log(res.locals.uid) //for eks får du da '2'
- *    gjør noe...
- * if (res.locals.userType) 
- *    gjør noe....
- */
-function validateCookie(req, res, next) {
-  console.log("Du er i validateCookie")
-  const { cookies } = req;
-
-  // console.log("Her er req sin cookie: " + req.cookies)
-  console.log('Cookies: ', req.cookies)
-  console.log('Signed Cookies: ', req.signedCookies)
-  if ('uid' in cookies) {
-    console.log("----------------Du er i validate-------------");
-    console.log("Session id exists");
-    res.locals.uid = cookies.uid;
-    console.log("dette er res.locals.uid" + res.locals.uid);
-  } 
-  if ('userType' in cookies) {
-    console.log("----------------Du er i validate-------------");
-    console.log("user type exists");
-    res.locals.userType = cookies.userType;
-    console.log("dette er res.locals.userType " + res.locals.userType);
-  } 
-  next();
-}
-
-app.post('/checkUserType', auth, function (req,res) {
-  console.log("Du er inni checkUserType her er userType: " + res.locals.userType)
-  console.log("------------------ her er ownerId: " + req.body.ownerId)
-  console.log("uid: " + res.locals.uid)
-  console.log("ownerId" + req.body.ownerId)
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-
-  
-  if(res.locals.userType == "moderator" || res.locals.userType == "admin"){
-    console.log("Du er inni checkuser if")
-    var answer = JSON.stringify({
-      admin: true,
-      user: true
-    })
-    res.end(answer);
-  }
-  else if (res.locals.uid == req.body.ownerId) {
-    console.log("Du er inni checkuser else if")
-    
-    console.log(req.body.ownerId)
-    var answer = JSON.stringify({
-      admin: false,
-      user: true
-    }) 
-    res.end(answer);
-  }
-  
-  else {
-    console.log("Du er inni checkuser else")
-    var answer = JSON.stringify({
-    admin: false,
-    user: false
-  })
-  res.end(answer);
-}
-
-});
 
 
 /**
  * This route creates a new user
  * @see /server/src/components/UserClass - the class of a new user
  */
-
 app.post('/registerUser',multerDecode.none(), function (req,res) {
   var usernameExist = false; //Does username exist?
   
@@ -408,22 +321,6 @@ app.post('/registerUser',multerDecode.none(), function (req,res) {
   
 })
 
-/*******************************************************************************
- * Function creates new "entry" inn MySql database
- * 
- * Values for entry is retrievew from the body of http request
- * body contains "formData" and its values is found with:
- * req.body."keyName"
- * The values from request are put into "sql" string with "query" format
- * Lastly the generated query is sent to database which creates the entry
- * 
- * @var upload - Decoder for formdata, necessary if request comes with formdata
- * @var sql - SQL string, in practice PHP, sent to database
- * @var db - connection to database
- * @var result - result from database query
- * @author Nicholas Bodvin Sellevaag
- ******************************************************************************/
-
 /*************************************************************************
  * Function creates new "entry" inn MySql database
  * 
@@ -461,10 +358,10 @@ app.get('/retrievePosts', function(req, res) {
 
 
 /************************************************************************
+ * Function retrieves all users from database
  * 
- * Notewhorty! Content-Type is specified to be of application/json, this
- * information can be seen in the response header while inside
- * browser->networking->requestName
+ * Depending on user privileges a list of users is sent
+ * @author Nicholas Bodvin Sellevaag
  ***********************************************************************/
 app.post('/getUsers', auth, function (req, res) {
   console.log("Du er i getUsers her er userType" + res.locals.userType)
@@ -502,13 +399,16 @@ app.post('/getUsers', auth, function (req, res) {
         res.end(JSON.stringify(result));
       }
     });
+  }  
+});
 
-  }
-    
 
-  
-  });
-
+/************************************************************************
+ * Function checks incomming user requests to become admin, if there are
+ * no duplicates an entry into the request table is created
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
 app.post('/requestDup', auth, function (req, res, next) {
   console.log("Du er i requestDup");
           var sql = "SELECT * FROM `requests` WHERE USER=" + res.locals.uid;
@@ -549,10 +449,11 @@ app.post('/requestDup', auth, function (req, res, next) {
 })
 
 /************************************************************************
+ * Function sends all requests from database
  * 
- * Notewhorty! Content-Type is specified to be of application/json, this
- * information can be seen in the response header while inside
- * browser->networking->requestName
+ * depending on user priviliges a list of all requests from database is sent
+ * 
+ * @author Nicholas Bodvin Sellevaag
  ***********************************************************************/
 app.get('/requests', auth, function (req, res) {
   console.log("Du er i requests");
@@ -620,6 +521,15 @@ app.post('/changeUserInfo', auth ,multerDecode.none(), (req, res) => {
   }
 })
 
+
+/************************************************************************
+ * Updates blocked attribute of a post
+ * 
+ * users of high privilige can block a post, this handler updates the
+ * attribute inside the database of a post to be blocked
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
 app.post('/blockPost', multerDecode.none(), function (req, res) {
   console.log("Du er i blockPost");
   
@@ -637,14 +547,20 @@ app.post('/blockPost', multerDecode.none(), function (req, res) {
     })
   });
 
-    // -----------------------------------------Her må kanskje sql variabel endres ettersom navn på table til comments blir laget---------
-app.post('/blockComment', multerDecode.none(), function (req, res) {
+/************************************************************************
+ * Updates blocked attribute of a comment
+ * 
+ * users of high privilige can block a comment, this handler updates the
+ * attribute inside the database of a comment to be blocked
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
+  app.post('/blockComment', multerDecode.none(), function (req, res) {
   console.log("Du er i blocComment");
   
   console.log("blockComment sin cid " + req.body.cid);
 
   var sql = "UPDATE `comments` SET `blocked`=1 WHERE cid=" + req.body.cid;
-            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
   db.query(sql, function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
@@ -655,7 +571,14 @@ app.post('/blockComment', multerDecode.none(), function (req, res) {
     })
   });
 
-
+/************************************************************************
+ * Deletes an entry of a post
+ * 
+ * users of high privilige can delete a post, this handler deletes the
+ * databse entry of the post to be deleted
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
 app.post('/deletePost', multerDecode.none(), function (req, res) {
   console.log("Du er i deletePost");
   
@@ -673,7 +596,14 @@ app.post('/deletePost', multerDecode.none(), function (req, res) {
     })
   });
 
-  // -----------------------------------------Her må kanskje sql variabel endres ettersom navn på table til comments blir laget---------
+/************************************************************************
+ * Deletes an entry of a comment
+ * 
+ * users of high privilige can delete a comment, this handler deletes the
+ * databse entry of the comment to be deleted
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
 app.post('/deleteComment', multerDecode.none(), function (req, res) {
   console.log("Du er i deleteComment");
   
@@ -692,10 +622,12 @@ app.post('/deleteComment', multerDecode.none(), function (req, res) {
   });
 
 /************************************************************************
+ * handler for accepting a user request to become moderator
  * 
- * Notewhorty! Content-Type is specified to be of application/json, this
- * information can be seen in the response header while inside
- * browser->networking->requestName
+ * handler updates user info inside the databse, in practice the user
+ * becomes an moderator if request is accepted
+ * 
+ * @author Nicholas Bodvin Sellevaag
  ***********************************************************************/
 app.post('/accept', multerDecode.none(), function (req, res) {
   console.log("Du er i accept");
@@ -703,18 +635,7 @@ app.post('/accept', multerDecode.none(), function (req, res) {
   console.log("Accept sin userInt " + req.body.userInt);
   console.log("Accept sin userType " + req.body.userType);
   var sql = "DELETE FROM `requests` WHERE user=" + req.body.userInt;
-            //  DELETE FROM `requests` WHERE user=3; UPDATE users SET userType = 'moderator' WHERE uid =3;
- 
- /**
-            db.query(sql, function (err, result) {
-    if (err) {
-      res.status(400).send('Error in database operation.');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(result));
-    }
-  });
-**/
+
   db.query('DELETE FROM `requests` WHERE user=?',[req.body.userInt], function (err, result) {
     if (err) {
       res.status(400).send('Error in database operation.');
@@ -728,17 +649,6 @@ app.post('/accept', multerDecode.none(), function (req, res) {
           res.end(JSON.stringify(result));
         }
       }); 
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      //res.writeHead(200, { 'Content-Type': 'application/json' });
-      //res.end(JSON.stringify(result));
     }
   });
 
@@ -746,10 +656,12 @@ app.post('/accept', multerDecode.none(), function (req, res) {
 
 
 /************************************************************************
+ * handler for denying a user request to become moderator
  * 
- * Notewhorty! Content-Type is specified to be of application/json, this
- * information can be seen in the response header while inside
- * browser->networking->requestName
+ * handler updates user info inside the databse, in practice the user
+ * does not become an moderator if request is denied
+ * 
+ * @author Nicholas Bodvin Sellevaag
  ***********************************************************************/
 app.post('/deny', multerDecode.none(), function (req, res) {
   console.log("Du er i deny");
@@ -944,6 +856,11 @@ app.post('/postComment', auth, function(req, res) {
   })
 })
 
+/************************************************************************
+ * handler sends a list of all forum names and titles from database
+ * 
+ * @author Nicholas Bodvin Sellevaag
+ ***********************************************************************/
 app.get('/retrieveForums', function(req, res) {
   db.query("SELECT name, title FROM `forums`",  function (err, result) {
     if(err) {

@@ -108,10 +108,6 @@ export class RetrievePosts extends LitElement {
             `;
     }
 
-                // <div>
-                //     <button class="btn btn-primary"  @click="${this.retrieveAllPost}"   type="submit">Button</button>
-                // </div>
-
 }
 
 //Important! DO NOT USE CAPITAL LETTERS IN A LIT-ELEMENT'S NAME
