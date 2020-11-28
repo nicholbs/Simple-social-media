@@ -36,7 +36,9 @@ export class CreateForum extends LitElement {
     </div>
         `;
     }
-    //This function send info backend for creating a forum
+     /**
+     * This function take the formdata from registerForum and sends it backend for creating a new forum
+     */
     registerForum(e){
         const newUser = new FormData(e.target.form);
         e.preventDefault();
@@ -54,7 +56,7 @@ export class CreateForum extends LitElement {
             if(text =='ok'){ //If all thing was okay and the forum was created okay
                 console.log("registrert");
                 alert("Forum Created, You will be redirected to homepage");
-                location.replace("http://localhost:8080/")
+                location.replace("http://localhost:8080/") //redirect to homepage
             }
             else if(text == 'invalidChar'){ //invalid characters
                 alert("Title ore name characther not valid, can only contain 0-9,A-Z,a-z");

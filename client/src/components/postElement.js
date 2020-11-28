@@ -1,6 +1,13 @@
 //LitElement for retrieving posts
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
+
+
+
+
+//Outdated, not in use!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//lit element forum-post is used instead of this element to showcase information about a post
+
 export class PostLitElement extends LitElement {
     
     //"styles" property of this lit-element specifies which styling is applied to the rendered html

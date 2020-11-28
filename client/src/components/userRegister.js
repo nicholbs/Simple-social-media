@@ -1,5 +1,3 @@
-//LitElement for register page
-//LitElement for register page
 //Lit element for register a user
 import { LitElement, html, css } from '/client/node_modules/lit-element/lit-element';
 
@@ -51,9 +49,11 @@ export class RegisterPage extends LitElement {
     </div>
         `;
     }
-    //This function create a formdata and send the formdata backend
+     /**
+     * This function take the formData registerUser and send it backend for creating a new user 
+     */
     registerUser(e){
-        const newUser = new FormData(e.target.form);
+        const newUser = new FormData(e.target.form); //Create a formdata from formen registerUser
         e.preventDefault();
         console.log("event");
 
@@ -70,7 +70,7 @@ export class RegisterPage extends LitElement {
             if(text =='ok'){ //If reply message is ok and the user is registerd
                 console.log("registrert");
                 alert("User Registered! You will be redirected to home");
-                location.replace("http://localhost:8080/");
+                location.replace("http://localhost:8080/"); //redirect to homepage
             } 
             else if(text=='emailFinnes'){ //If the email alredy exist
                 alert("Bruker Finnes fra før");

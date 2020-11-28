@@ -56,10 +56,12 @@ export class settingsPage extends LitElement {
 
      `;
     }
-    //Function for chaning the password of a user
+     /**
+     * This function take the desierd password and send it backend for registring the new password
+     */
     changeUserInfo(e) {
         console.log("Du er i changeUser")
-        const userInfo = new FormData(e.target.form);
+        const userInfo = new FormData(e.target.form); //create formdata from formen changeUser
         e.preventDefault();
         fetch('http://localhost:8081/changeUserInfo',{
             method: 'post',
@@ -90,9 +92,12 @@ export class settingsPage extends LitElement {
         })
 
     }
-    //Function for uploading a image
+    /**
+     * This function take the uploaded profilepic image and sent it backend 
+     */
+
     uploadPic(e){
-        const userPic = new FormData(e.target.form);
+        const userPic = new FormData(e.target.form); //create formdata from the form uploadPicture
         e.preventDefault();
         console.log("event");
 
@@ -109,7 +114,7 @@ export class settingsPage extends LitElement {
             //Alt ok 
             if(text=='ok'){ //If the upload suceeded
                 alert("Profilpicture uploaded, you wil be redirected to homepage");
-                location.replace("http://localhost:8080/")
+                location.replace("http://localhost:8080/") //redirect to homepage
             }
             //feil i multer
             else if(text=='errorMulter'){ //if there is an error in multer backend
